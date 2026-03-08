@@ -1,0 +1,5 @@
+{
+  "name": "Ummah AI",
+  "description": "A premium Islamic platform featuring prayer times, Quran, Qibla, Zakat tools, and a Scholar AI assistant.",
+  "requestFramePermissions": ["geolocation"]
+}
