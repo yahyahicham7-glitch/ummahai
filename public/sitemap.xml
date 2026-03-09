@@ -1,33 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.alummahai.com/</loc><priority>1.0</priority><changefreq>daily</changefreq></url>
-  <url><loc>https://www.alummahai.com/quran</loc><priority>0.9</priority></url>
-  <url><loc>https://www.alummahai.com/qibla</loc><priority>0.8</priority></url>
-  <url><loc>https://www.alummahai.com/zakat</loc><priority>0.8</priority></url>
-  <url><loc>https://www.alummahai.com/hajj</loc><priority>0.9</priority></url>
-  <url><loc>https://www.alummahai.com/blog</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/scholar</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/store</loc><priority>0.6</priority></url>
-  <url><loc>https://www.alummahai.com/halal-money</loc><priority>0.8</priority></url>
-  <!-- Major Cities Prayer Times -->
-  <url><loc>https://www.alummahai.com/prayer-times/london</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/paris</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/madrid</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/dubai</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/riyadh</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/jakarta</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/istanbul</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/new-york</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/cairo</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/kuala-lumpur</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/toronto</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/berlin</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/amsterdam</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/brussels</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/rome</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/stockholm</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/chicago</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/los-angeles</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/sydney</loc><priority>0.7</priority></url>
-  <url><loc>https://www.alummahai.com/prayer-times/karachi</loc><priority>0.7</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- ═══ CORE PAGES ═══ -->
+  <url>
+    <loc>https://www.alummahai.com/</loc>
+    <lastmod>2026-03-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.alummahai.com/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.alummahai.com/ar/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.alummahai.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.alummahai.com/es/"/>
+  </url>
+  <url><loc>https://www.alummahai.com/quran</loc><lastmod>2026-03-09</lastmod><changefreq>weekly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://www.alummahai.com/hajj</loc><lastmod>2026-03-09</lastmod><changefreq>weekly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://www.alummahai.com/qibla</loc><lastmod>2026-03-09</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/zakat</loc><lastmod>2026-03-09</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/halal-money</loc><lastmod>2026-03-09</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/blog</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.90</priority></url>
+  <url><loc>https://www.alummahai.com/scholar</loc><lastmod>2026-03-09</lastmod><changefreq>weekly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/store</loc><lastmod>2026-03-09</lastmod><changefreq>weekly</changefreq><priority>0.70</priority></url>
+
+  <!-- ═══ BLOG — HIGH TRAFFIC ARTICLES ═══ -->
+  <url><loc>https://www.alummahai.com/blog/last-10-nights-ramadan</loc><lastmod>2026-03-09</lastmod><changefreq>yearly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://www.alummahai.com/blog/laylatul-qadr-signs</loc><lastmod>2026-03-09</lastmod><changefreq>yearly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://www.alummahai.com/blog/ramadan-2026-guide</loc><lastmod>2026-03-09</lastmod><changefreq>monthly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://www.alummahai.com/blog/how-to-pray-fajr</loc><lastmod>2026-03-09</lastmod><changefreq>yearly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://www.alummahai.com/blog/zakat-al-fitr-2026</loc><lastmod>2026-03-09</lastmod><changefreq>yearly</changefreq><priority>0.88</priority></url>
+  <url><loc>https://www.alummahai.com/blog/best-duas-morning-evening</loc><lastmod>2026-03-09</lastmod><changefreq>yearly</changefreq><priority>0.88</priority></url>
+  <url><loc>https://www.alummahai.com/blog/hajj-2026-complete-guide</loc><lastmod>2026-03-09</lastmod><changefreq>monthly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://www.alummahai.com/blog/tasbih-benefits</loc><lastmod>2026-03-09</lastmod><changefreq>yearly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/blog/how-to-calculate-zakat</loc><lastmod>2026-03-09</lastmod><changefreq>yearly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/blog/qibla-direction-from-anywhere</loc><lastmod>2026-03-09</lastmod><changefreq>yearly</changefreq><priority>0.82</priority></url>
+
+  <!-- ═══ PRAYER TIMES — MAJOR CITIES ═══ -->
+  <url><loc>https://www.alummahai.com/prayer-times/london</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/paris</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/madrid</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/barcelona</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/dubai</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/riyadh</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/mecca</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.90</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/medina</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.90</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/jakarta</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/istanbul</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/new-york</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/cairo</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/kuala-lumpur</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/toronto</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/berlin</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/amsterdam</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/brussels</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/rome</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/stockholm</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/chicago</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/los-angeles</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/sydney</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/karachi</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/lahore</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/dhaka</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/tehran</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/casablanca</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/tunis</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/algiers</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/baghdad</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/amman</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/beirut</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/moscow</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/singapore</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.82</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/houston</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/melbourne</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/montreal</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/milan</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/frankfurt</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.80</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/copenhagen</loc><lastmod>2026-03-09</lastmod><changefreq>daily</changefreq><priority>0.78</priority></url>
+
 </urlset>
