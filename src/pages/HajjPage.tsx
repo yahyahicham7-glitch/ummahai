@@ -5,12 +5,30 @@ import { SEO } from '@/src/components/SEO';
 import { motion } from 'motion/react';
 
 export function HajjPage() {
+  const hajjSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Premium Hajj Package 2026",
+    "description": "All-inclusive premium Hajj package with 5-star lodging, VIP tents, and expert spiritual guidance.",
+    "brand": {
+      "@type": "Brand",
+      "name": "Ummah AI Travel"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "8500.00",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/PreOrder"
+    }
+  };
+
   return (
     <div className="space-y-24 pb-24">
       <SEO 
         title="Hajj & Umrah Packages" 
         description="Premium Hajj and Umrah travel packages for 2026. Experience a spiritually fulfilling journey with expert guidance and premium lodging."
         keywords="hajj packages 2026, umrah packages, islamic travel, makkah travel"
+        schema={hajjSchema}
       />
 
       <section className="relative h-[70vh] flex items-center justify-center bg-glamour-blue overflow-hidden">

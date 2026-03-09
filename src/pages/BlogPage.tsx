@@ -3,6 +3,8 @@ import { motion } from 'motion/react';
 import { SEO } from '@/src/components/SEO';
 import { Calendar, User, ArrowRight, MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { AdSense } from '@/src/components/AdSense';
 
 interface BlogPost {
   id: string;
@@ -16,31 +18,49 @@ interface BlogPost {
 
 const posts: BlogPost[] = [
   {
-    id: '1',
-    title: 'Finding Peace in Prayer: A Journey to Islam',
-    excerpt: 'How one woman found solace and purpose through the daily rhythms of Salah and the community of the Ummah.',
-    author: 'Sarah Ahmed',
-    date: '2024-03-15',
-    image: 'https://picsum.photos/seed/prayer/800/600',
-    category: 'Stories'
-  },
-  {
-    id: '2',
-    title: 'The Science of Fasting: Beyond the Spiritual',
-    excerpt: 'Exploring the physical and mental benefits of Ramadan fasting from a modern scientific perspective.',
-    author: 'Dr. Omar Farooq',
-    date: '2024-03-10',
-    image: 'https://picsum.photos/seed/fasting/800/600',
+    id: 'fajr-time-today',
+    title: 'What Time is Fajr Today? A Complete Guide to Prayer Timing',
+    excerpt: 'Understanding the importance of Fajr prayer and how to accurately determine the start of dawn for your daily Salah.',
+    author: 'Ummah AI Team',
+    date: '2024-03-20',
+    image: 'https://picsum.photos/seed/fajr/800/600',
     category: 'Knowledge'
   },
   {
-    id: '3',
-    title: 'Islamic Architecture: A Legacy of Beauty',
-    excerpt: 'A visual tour of the worlds most stunning mosques and the geometric philosophy behind their design.',
-    author: 'Zaid Ibrahim',
-    date: '2024-03-05',
-    image: 'https://picsum.photos/seed/mosque/800/600',
-    category: 'Culture'
+    id: 'calculate-zakat-2026',
+    title: 'How to Calculate Zakat 2026: The Ultimate Step-by-Step Guide',
+    excerpt: 'Everything you need to know about Nisab, Zakat on gold, silver, cash, and investments for the year 2026.',
+    author: 'Ummah AI Team',
+    date: '2024-03-18',
+    image: 'https://picsum.photos/seed/zakat/800/600',
+    category: 'Finance'
+  },
+  {
+    id: 'hajj-packages-uk-2026',
+    title: 'Hajj Packages from UK 2026 — Complete Guide for Pilgrims',
+    excerpt: 'Planning your sacred journey? Compare Hajj 2026 packages, requirements, and tips for a successful pilgrimage from the United Kingdom.',
+    author: 'Ummah AI Team',
+    date: '2024-03-15',
+    image: 'https://picsum.photos/seed/hajj/800/600',
+    category: 'Travel'
+  },
+  {
+    id: 'best-halal-investment-apps-2026',
+    title: 'Best Halal Investment Apps 2026: Grow Your Wealth Ethically',
+    excerpt: 'Discover the top Sharia-compliant investment platforms like Wahed and Zoya to build a halal portfolio in 2026.',
+    author: 'Ummah AI Team',
+    date: '2024-03-12',
+    image: 'https://picsum.photos/seed/invest/800/600',
+    category: 'Finance'
+  },
+  {
+    id: 'ramadan-2026-prayer-timetable',
+    title: 'Ramadan 2026 Prayer Timetable by City: Prepare for the Holy Month',
+    excerpt: 'Get your local Ramadan 2026 calendar with accurate Suhoor and Iftar times for cities worldwide.',
+    author: 'Ummah AI Team',
+    date: '2024-03-10',
+    image: 'https://picsum.photos/seed/ramadan/800/600',
+    category: 'Events'
   }
 ];
 
@@ -50,9 +70,9 @@ export function BlogPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-24">
       <SEO 
-        title="Islamic Blog & Stories" 
-        description="Read inspiring stories of faith, Islamic knowledge, and cultural insights from the global Ummah."
-        keywords="islamic blog, muslim stories, conversion stories, islamic knowledge"
+        title="Islamic Blog & Knowledge Base" 
+        description="Expert guides on Fajr times, Zakat calculation, Hajj 2026, and Halal investing. Stay informed with Ummah AI."
+        keywords="fajr time today, calculate zakat 2026, hajj packages uk 2026, halal investment apps, ramadan 2026 timetable"
       />
 
       <div className="space-y-20">
@@ -66,7 +86,7 @@ export function BlogPage() {
           </motion.div>
           <h1 className="text-6xl md:text-9xl font-display font-black text-cream tracking-tighter">Islamic Blog</h1>
           <p className="text-gold/60 text-lg max-w-2xl mx-auto font-light leading-relaxed">
-            Discover stories of faith, wisdom, and the beauty of Islam from voices across the globe.
+            Discover expert guides, spiritual wisdom, and practical knowledge for the modern Muslim.
           </p>
         </div>
 
@@ -107,13 +127,15 @@ export function BlogPage() {
                   {post.excerpt}
                 </p>
 
-                <button className="flex items-center text-gold text-[10px] font-black uppercase tracking-[0.3em] group/btn pt-6 border-t border-gold/10">
-                  Read Full Story <ArrowRight className="w-4 h-4 ml-3 group-hover/btn:translate-x-2 transition-transform" />
-                </button>
+                <Link to={`/blog/${post.id}`} className="flex items-center text-gold text-[10px] font-black uppercase tracking-[0.3em] group/btn pt-6 border-t border-gold/10">
+                  Read Full Article <ArrowRight className="w-4 h-4 ml-3 group-hover/btn:translate-x-2 transition-transform" />
+                </Link>
               </div>
             </motion.article>
           ))}
         </div>
+
+        <AdSense slot="3002505678" format="rectangle" className="max-w-md mx-auto" />
 
         <div className="glass-card p-16 text-center space-y-8 bg-gradient-to-b from-gold/5 to-transparent border-gold/20">
           <MessageSquare className="w-16 h-16 text-gold mx-auto" />

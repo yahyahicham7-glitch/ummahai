@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://www.alummahai.com/</loc><priority>1.0</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://www.alummahai.com/quran</loc><priority>0.9</priority></url>
+  <url><loc>https://www.alummahai.com/qibla</loc><priority>0.8</priority></url>
+  <url><loc>https://www.alummahai.com/zakat</loc><priority>0.8</priority></url>
+  <url><loc>https://www.alummahai.com/hajj</loc><priority>0.9</priority></url>
+  <url><loc>https://www.alummahai.com/blog</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/scholar</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/store</loc><priority>0.6</priority></url>
+  <url><loc>https://www.alummahai.com/halal-money</loc><priority>0.8</priority></url>
+  <!-- Major Cities Prayer Times -->
+  <url><loc>https://www.alummahai.com/prayer-times/london</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/paris</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/madrid</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/dubai</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/riyadh</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/jakarta</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/istanbul</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/new-york</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/cairo</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/kuala-lumpur</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/toronto</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/berlin</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/amsterdam</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/brussels</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/rome</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/stockholm</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/chicago</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/los-angeles</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/sydney</loc><priority>0.7</priority></url>
+  <url><loc>https://www.alummahai.com/prayer-times/karachi</loc><priority>0.7</priority></url>
+</urlset>

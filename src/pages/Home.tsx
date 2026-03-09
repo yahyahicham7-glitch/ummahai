@@ -22,12 +22,35 @@ export function Home() {
     }
   };
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is Ummah AI?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ummah AI is a comprehensive Islamic platform providing accurate prayer times, Quran reading, Qibla direction, Zakat calculation, and AI-powered scholarly guidance."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Are the prayer times accurate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, we use high-precision astronomical calculations and your GPS location to provide the most accurate prayer times for your specific city."
+        }
+      }
+    ]
+  };
+
   return (
     <div className="space-y-24 pb-24">
       <SEO 
         title={t('nav.home')} 
         description={t('home.hero_subtitle')}
-        schema={homeSchema}
+        schema={[homeSchema, faqSchema]}
       />
 
       {/* Hero Section */}

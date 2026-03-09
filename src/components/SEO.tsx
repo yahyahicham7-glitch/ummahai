@@ -36,11 +36,12 @@ export function SEO({ title, description, keywords, canonical, ogImage, schema }
       {canonical && <link rel="canonical" href={canonical} />}
 
       {/* Multilingual SEO */}
-      <link rel="alternate" hrefLang="en" href={`${window.location.origin}${window.location.pathname}`} />
-      <link rel="alternate" hrefLang="ar" href={`${window.location.origin}${window.location.pathname}`} />
-      <link rel="alternate" hrefLang="fr" href={`${window.location.origin}${window.location.pathname}`} />
-      <link rel="alternate" hrefLang="es" href={`${window.location.origin}${window.location.pathname}`} />
-      <link rel="alternate" hrefLang="x-default" href={`${window.location.origin}${window.location.pathname}`} />
+      <link rel="alternate" hrefLang="en" href={`${window.location.origin}${window.location.pathname.replace(/^\/(ar|es|fr|id)/, '')}`} />
+      <link rel="alternate" hrefLang="ar" href={`${window.location.origin}/ar${window.location.pathname.replace(/^\/(ar|es|fr|id)/, '')}`} />
+      <link rel="alternate" hrefLang="fr" href={`${window.location.origin}/fr${window.location.pathname.replace(/^\/(ar|es|fr|id)/, '')}`} />
+      <link rel="alternate" hrefLang="es" href={`${window.location.origin}/es${window.location.pathname.replace(/^\/(ar|es|fr|id)/, '')}`} />
+      <link rel="alternate" hrefLang="id" href={`${window.location.origin}/id${window.location.pathname.replace(/^\/(ar|es|fr|id)/, '')}`} />
+      <link rel="alternate" hrefLang="x-default" href={`${window.location.origin}${window.location.pathname.replace(/^\/(ar|es|fr|id)/, '')}`} />
 
       {/* Structured Data */}
       {schema && (

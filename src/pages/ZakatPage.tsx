@@ -18,12 +18,38 @@ export function ZakatPage() {
   const zakatDue = totalWealth > 0 ? totalWealth * 0.025 : 0;
   const nisab = 6000; // Example Nisab in USD
 
+  const zakatSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Calculate Zakat",
+    "description": "A step-by-step guide to calculating your Zakat obligation based on Islamic principles.",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "text": "Identify all your liquid assets including cash, bank balances, and gold/silver."
+      },
+      {
+        "@type": "HowToStep",
+        "text": "Subtract any immediate debts or liabilities from your total assets."
+      },
+      {
+        "@type": "HowToStep",
+        "text": "Check if your net wealth exceeds the Nisab threshold (87.48g of gold)."
+      },
+      {
+        "@type": "HowToStep",
+        "text": "If above Nisab for one lunar year, calculate 2.5% of your net wealth as Zakat."
+      }
+    ]
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-16">
       <SEO 
         title="Zakat Calculator" 
         description="Calculate your Zakat accurately based on current gold, silver, and currency rates. Fulfill your third pillar of Islam with ease."
         keywords="zakat calculator, calculate zakat, islamic charity, nisab threshold"
+        schema={zakatSchema}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">

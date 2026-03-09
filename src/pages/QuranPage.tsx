@@ -89,6 +89,15 @@ export function QuranPage() {
     );
   }, [surahs, searchQuery]);
 
+  const quranSchema = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    "name": "The Holy Quran",
+    "author": "Allah (SWT)",
+    "about": "The central religious text of Islam, which Muslims believe to be a revelation from God.",
+    "genre": "Religious Text"
+  };
+
   if (loading && surahs.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-glamour-blue">
@@ -108,6 +117,7 @@ export function QuranPage() {
         title={selectedSurah ? `Surah ${selectedSurah.englishName}` : t('quran.title')} 
         description={selectedSurah ? `Read Surah ${selectedSurah.englishName} with translation and audio.` : t('quran.read_listen')}
         keywords={selectedSurah ? `surah ${selectedSurah.englishName}, quran ${selectedSurah.number}` : t('quran.online_translation')}
+        schema={quranSchema}
       />
 
       <AnimatePresence mode="wait">

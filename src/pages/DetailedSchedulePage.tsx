@@ -4,6 +4,8 @@ import { SEO } from '@/src/components/SEO';
 import { Clock, Calendar, MapPin, ChevronLeft, Download, Share2, Bell } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
+import { useParams } from 'react-router-dom';
+import { AdSense } from '@/src/components/AdSense';
 
 interface PrayerTimes {
   Fajr: string;
@@ -16,14 +18,16 @@ interface PrayerTimes {
 
 export function DetailedSchedulePage() {
   const { t } = useTranslation();
+  const { city: cityParam } = useParams();
   const [times, setTimes] = useState<PrayerTimes | null>(null);
-  const [location, setLocation] = useState<string>(t('prayer.detecting'));
+  const [location, setLocation] = useState<string>(cityParam ? cityParam.charAt(0).toUpperCase() + cityParam.slice(1) : t('prayer.detecting'));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTimes = async () => {
       const today = format(new Date(), 'yyyy-MM-dd');
-      const cachedData = localStorage.getItem(`prayer_times_${today}`);
+      const cacheKey = cityParam ? `prayer_times_${cityParam}_${today}` : `prayer_times_local_${today}`;
+      const cachedData = localStorage.getItem(cacheKey);
       
       if (cachedData) {
         const { times: cachedTimes, location: cachedLoc } = JSON.parse(cachedData);
@@ -34,29 +38,44 @@ export function DetailedSchedulePage() {
       }
 
       try {
-        const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
-        });
+        let lat, lon;
 
-        const { latitude, longitude } = pos.coords;
+        if (cityParam) {
+          // Geocode city name
+          const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${cityParam}&limit=1`);
+          const geoData = await geoRes.json();
+          if (geoData.length > 0) {
+            lat = geoData[0].lat;
+            lon = geoData[0].lon;
+            setLocation(geoData[0].display_name.split(',')[0]);
+          }
+        }
+
+        if (!lat || !lon) {
+          const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+          });
+          lat = pos.coords.latitude;
+          lon = pos.coords.longitude;
+        }
         
         // Parallel fetch for speed
         const [locRes, prayerRes] = await Promise.all([
-          fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`),
-          fetch(`https://api.aladhan.com/v1/timings/${Math.floor(Date.now() / 1000)}?latitude=${latitude}&longitude=${longitude}&method=2`)
+          fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`),
+          fetch(`https://api.aladhan.com/v1/timings/${Math.floor(Date.now() / 1000)}?latitude=${lat}&longitude=${lon}&method=2`)
         ]);
 
         const locData = await locRes.json();
         const prayerData = await prayerRes.json();
         
-        const newLoc = `${locData.city}, ${locData.countryName}`;
+        const newLoc = cityParam ? location : `${locData.city}, ${locData.countryName}`;
         const newTimes = prayerData.data.timings;
 
         setTimes(newTimes);
         setLocation(newLoc);
         
         // Cache for today
-        localStorage.setItem(`prayer_times_${today}`, JSON.stringify({
+        localStorage.setItem(cacheKey, JSON.stringify({
           times: newTimes,
           location: newLoc
         }));
@@ -69,7 +88,7 @@ export function DetailedSchedulePage() {
     };
 
     fetchTimes();
-  }, [t]);
+  }, [t, cityParam]);
 
   const prayerIcons = {
     Fajr: '🌅',
@@ -80,12 +99,27 @@ export function DetailedSchedulePage() {
     Isha: '🌙'
   };
 
+  // Schema for prayer times
+  const prayerSchema = times ? {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": `Prayer Times in ${location}`,
+    "startDate": format(new Date(), 'yyyy-MM-dd'),
+    "location": {
+      "@type": "Place",
+      "name": location,
+      "address": location
+    },
+    "description": `Daily Islamic prayer times for ${location}: Fajr, Dhuhr, Asr, Maghrib, Isha.`
+  } : undefined;
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-24">
       <SEO 
-        title={`${t('prayer.title')} in ${location}`} 
-        description={`Accurate daily prayer times for ${location}. Fajr, Dhuhr, Asr, Maghrib, and Isha times with spiritual guidance.`}
-        keywords={`prayer times ${location}, salat schedule ${location}, islamic prayer ${location}`}
+        title={`${t('prayer.title')} in ${location} Today`} 
+        description={`Accurate daily prayer times for ${location}. Fajr, Dhuhr, Asr, Maghrib, and Isha times with spiritual guidance. Updated for ${format(new Date(), 'MMMM yyyy')}.`}
+        keywords={`prayer times ${location}, salat schedule ${location}, islamic prayer ${location}, fajr time ${location}`}
+        schema={prayerSchema}
       />
 
       <div className="space-y-16">
@@ -122,6 +156,8 @@ export function DetailedSchedulePage() {
             </span>
           </div>
         </motion.div>
+
+        <AdSense slot="7289012345" className="hidden md:flex" />
 
         {loading ? (
           <div className="flex justify-center py-32">
@@ -165,6 +201,8 @@ export function DetailedSchedulePage() {
             ))}
           </div>
         )}
+
+        <AdSense slot="3002501234" className="md:hidden" />
 
         <motion.div 
           initial={{ opacity: 0 }}
