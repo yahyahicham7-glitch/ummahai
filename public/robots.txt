@@ -1,3 +1,26 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Priority crawl for SEO-rich pages
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Block scrapers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+# Sitemaps
 Sitemap: https://www.alummahai.com/sitemap.xml
+Sitemap: https://www.alummahai.com/sitemap-blog.xml
+Sitemap: https://www.alummahai.com/sitemap-cities.xml
