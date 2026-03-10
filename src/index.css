@@ -1,73 +1,50 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
 
 @theme {
-  --font-display: "Inter", sans-serif;
-  --font-serif: "Cormorant Garamond", serif;
-  --font-arabic: "Amiri", serif;
-  --color-gold: #D4AF37;
+  --font-display: "Playfair Display", serif;
+  --font-sans:    "DM Sans", sans-serif;
+  --font-arabic:  "Amiri", serif;
+  --color-gold:       #D4AF37;
   --color-gold-light: #F1D279;
-  --color-navy: #060f1e;
+  --color-navy:       #0a2540;
 }
 
 @layer base {
-  *, *::before, *::after { box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  /* WHITE body — pages control their own bg */
   body {
-    background: #060f1e;
-    color: #ffffff;
-    font-family: "Inter", sans-serif;
+    background: #ffffff;
+    color: #0a2540;
+    font-family: "DM Sans", sans-serif;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Headings inherit from parent — NO global white override */
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Inter", sans-serif;
+    font-family: "Playfair Display", serif;
     font-weight: 900;
     letter-spacing: -0.02em;
-    color: #ffffff;
+    color: inherit;
   }
 
-  p { color: rgba(255,255,255,0.55); }
-
-  ::selection { background: rgba(212,175,55,0.3); color: #ffffff; }
+  p    { color: inherit; }
+  a    { color: inherit; }
+  input::placeholder { color: rgba(10,37,64,0.35); }
+  ::selection { background: rgba(212,175,55,0.25); }
   html { scroll-behavior: smooth; }
-  input::placeholder { color: rgba(255,255,255,0.3); }
 }
 
-/* ─── SCROLLBAR ── */
+/* scrollbar */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #060f1e; }
-::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,0.4); }
+::-webkit-scrollbar-track { background: #f7f8fa; }
+::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.15); border-radius: 2px; }
 
-/* ─── ANIMATIONS ── */
-
-@keyframes marquee {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.animate-marquee { animation: marquee 55s linear infinite; }
-
-@keyframes shimmer-gold {
-  0%   { background-position: -400% 0; }
-  100% { background-position: 400% 0; }
-}
-.animate-shimmer {
-  background: linear-gradient(90deg, #D4AF37 0%, #F1D279 30%, #D4AF37 50%, #F1D279 80%, #D4AF37 100%);
-  background-size: 400% 100%;
-  animation: shimmer-gold 5s linear infinite;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-@keyframes float-up-down {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-8px); }
-}
-.animate-float { animation: float-up-down 4s ease-in-out infinite; }
-
-/* No scrollbar utility */
+/* utility */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@keyframes spin      { from{ transform:rotate(0deg)   } to{ transform:rotate(360deg)   } }
+@keyframes fadein    { from{ opacity:0;transform:translateY(8px) } to{ opacity:1;transform:translateY(0) } }
+@keyframes pulseGold { 0%,100%{ opacity:1 } 50%{ opacity:.4 } }
