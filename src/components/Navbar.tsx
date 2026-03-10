@@ -1,216 +1,212 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { X, Menu, Moon, Sun } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Menu, Moon, BookOpen, Compass, Calculator, Star, MessageSquare, ShoppingBag, Info, FileText, Sparkles } from 'lucide-react';
 
-const GROUPS = [
+const MENU_GROUPS = [
   {
-    label: 'Worship',
+    group: 'Worship',
     items: [
-      { name: 'Prayer Times', href: '/', icon: Moon, desc: 'GPS-accurate Fajr to Isha' },
-      { name: 'Qibla Finder', href: '/qibla', icon: Compass, desc: 'Direction toward Mecca' },
-      { name: 'Holy Quran', href: '/quran', icon: BookOpen, desc: '15 translations + audio' },
-      { name: 'Zakat Calculator', href: '/zakat', icon: Calculator, desc: 'Annual obligation 2026' },
+      { label: 'Prayer Times', href: '/',       emoji: '🕐', desc: 'GPS-accurate daily prayers' },
+      { label: 'Qibla Finder', href: '/qibla',  emoji: '🧭', desc: 'Direction to Mecca' },
+      { label: 'Quran',        href: '/quran',  emoji: '📖', desc: 'Read & listen with audio' },
+      { label: 'Zakat',        href: '/zakat',  emoji: '💛', desc: 'Calculate your obligation' },
     ],
   },
   {
-    label: 'Learn',
+    group: 'Learn',
     items: [
-      { name: 'Ramadan 2026', href: '/ramadan', icon: Star, desc: 'Complete Ramadan guide' },
-      { name: 'Islamic Articles', href: '/blog', icon: FileText, desc: 'Guides & knowledge' },
-      { name: 'Scholar AI', href: '/scholar', icon: MessageSquare, desc: 'Ask Islamic questions' },
-      { name: 'Halal Finance', href: '/halal-money', icon: Sparkles, desc: 'Islamic investing' },
+      { label: 'Ramadan',    href: '/ramadan', emoji: '🌙', desc: 'Complete 2026 guide' },
+      { label: 'Duas',       href: '/blog/morning-evening-adhkar', emoji: '🤲', desc: 'Daily supplications' },
+      { label: 'Articles',   href: '/blog',    emoji: '✍️', desc: 'Islamic guides & knowledge' },
+      { label: 'Scholar AI', href: '/scholar', emoji: '✨', desc: 'Ask any Islamic question' },
     ],
   },
   {
-    label: 'Explore',
+    group: 'Explore',
     items: [
-      { name: 'Islamic Store', href: '/store', icon: ShoppingBag, desc: 'Halal products' },
-      { name: 'About', href: '/about', icon: Info, desc: 'Our mission' },
+      { label: 'Hajj Guide',    href: '/hajj',   emoji: '🕋', desc: 'Pilgrimage essentials' },
+      { label: 'Islamic Store', href: '/store',  emoji: '🛍️', desc: 'Premium Islamic products' },
+      { label: 'About Us',      href: '/about',  emoji: '💎', desc: 'Our mission' },
+      { label: 'Contact',       href: 'mailto:contact@alummahai.com', emoji: '✉️', desc: 'Get in touch' },
     ],
   },
 ];
 
+const LANGS = [
+  { code: 'en', label: 'EN' },
+  { code: 'ar', label: 'ع' },
+  { code: 'fr', label: 'FR' },
+  { code: 'es', label: 'ES' },
+];
+
 export function Navbar() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen]       = useState(false);
+  const [dark, setDark]       = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const location = useLocation();
+  const { i18n }              = useTranslation();
+  const location              = useLocation();
+  const panelRef              = useRef<HTMLDivElement>(null);
 
-  // Close on route change
-  useEffect(() => { setOpen(false); }, [location.pathname]);
+  useEffect(() => { setOpen(false); }, [location]);
 
-  // Scroll detection
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 30);
+    const fn = () => setScrolled(window.scrollY > 8);
     window.addEventListener('scroll', fn, { passive: true });
     return () => window.removeEventListener('scroll', fn);
   }, []);
 
-  // Lock body scroll when open
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    if (!open) return;
+    const fn = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', fn);
+    return () => document.removeEventListener('mousedown', fn);
   }, [open]);
+
+  useEffect(() => {
+    document.body.style.backgroundColor = dark ? '#071a2e' : '#ffffff';
+    document.body.style.color           = dark ? '#f0f4f8' : '#0a2540';
+  }, [dark]);
+
+  /* Determine if navbar is over dark hero */
+  const isOnHero = !scrolled;
+
+  const navBg = scrolled
+    ? 'rgba(255,255,255,0.97)'
+    : 'transparent';
+
+  const textColor = isOnHero ? '#ffffff' : '#0a2540';
+  const borderColor = scrolled ? 'rgba(10,37,64,0.08)' : 'transparent';
+
+  const iconStyle = (active = false): React.CSSProperties => ({
+    width: 34, height: 34, borderRadius: 8,
+    border: `1px solid ${isOnHero
+      ? (active ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.15)')
+      : (active ? '#0a2540' : 'rgba(10,37,64,0.12)')}`,
+    background: active ? (isOnHero ? 'rgba(255,255,255,0.15)' : '#0a2540') : 'transparent',
+    color: active ? (isOnHero ? '#ffffff' : '#ffffff') : textColor,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    cursor: 'pointer', transition: 'all 0.2s', padding: 0, flexShrink: 0,
+  });
 
   return (
     <>
-      {/* ── HEADER BAR ── */}
-      <header
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-400"
-        style={{
-          background: scrolled ? 'rgba(6,15,30,0.94)' : 'rgba(6,15,30,0.2)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderBottom: scrolled ? '1px solid rgba(212,175,55,0.1)' : '1px solid transparent',
-        }}
-      >
-        <div className="max-w-6xl mx-auto px-5 h-[60px] flex items-center justify-between">
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
+        height: 64,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 clamp(16px,5vw,40px)',
+        background: navBg,
+        backdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'none',
+        borderBottom: `1px solid ${borderColor}`,
+        transition: 'all 0.3s ease',
+      }}>
 
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2.5 group">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 group-hover:scale-110"
-              style={{ background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.25)' }}>
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                <path d="M6.5 1L7.8 4.7L11.7 4.7L8.7 7.1L9.9 10.8L6.5 8.8L3.1 10.8L4.3 7.1L1.3 4.7L5.2 4.7Z"
-                  stroke="#D4AF37" strokeWidth="0.9" fill="none" />
-              </svg>
-            </div>
-            <span className="font-black text-[13px] tracking-tight" style={{ color: '#ffffff' }}>
+        {/* ── Logo ── */}
+        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 32, height: 32, borderRadius: 7, background: isOnHero ? 'rgba(212,175,55,0.15)' : '#0a2540', border: isOnHero ? '1px solid rgba(212,175,55,0.3)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.3s' }}>
+            <span style={{ color: '#D4AF37', fontSize: '1rem', lineHeight: 1 }}>☽</span>
+          </div>
+          <div>
+            <div style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: '0.95rem', color: textColor, letterSpacing: '-0.015em', lineHeight: 1.1, transition: 'color 0.3s' }}>
               Al Ummah <span style={{ color: '#D4AF37' }}>AI</span>
-            </span>
+            </div>
+            <div style={{ fontSize: '0.48rem', fontWeight: 700, color: isOnHero ? 'rgba(255,255,255,0.35)' : 'rgba(10,37,64,0.32)', letterSpacing: '0.22em', textTransform: 'uppercase', transition: 'color 0.3s' }}>
+              Islamic Platform
+            </div>
+          </div>
+        </Link>
+
+        {/* ── Right controls ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+
+          {/* Language tabs — always visible */}
+          <div style={{ display: 'flex', gap: 2, background: isOnHero ? 'rgba(255,255,255,0.08)' : 'rgba(10,37,64,0.05)', borderRadius: 8, padding: 3, border: `1px solid ${isOnHero ? 'rgba(255,255,255,0.1)' : 'rgba(10,37,64,0.08)'}` }}>
+            {LANGS.map(l => {
+              const active = i18n.language.startsWith(l.code);
+              return (
+                <button key={l.code} onClick={() => i18n.changeLanguage(l.code)}
+                  style={{ padding: '4px 9px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.04em', transition: 'all 0.15s', background: active ? (isOnHero ? '#D4AF37' : '#0a2540') : 'transparent', color: active ? (isOnHero ? '#0a2540' : '#ffffff') : (isOnHero ? 'rgba(255,255,255,0.55)' : 'rgba(10,37,64,0.45)') }}>
+                  {l.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Dark mode */}
+          <button onClick={() => setDark(d => !d)} style={iconStyle()} aria-label="Dark mode" title="Toggle dark mode">
+            {dark ? <Sun size={14} /> : <Moon size={14} />}
+          </button>
+
+          {/* CTA */}
+          <Link to="/" style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: '#D4AF37', color: '#0a2540',
+            padding: '7px 14px', borderRadius: 8,
+            fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.7rem',
+            textTransform: 'uppercase', letterSpacing: '0.1em',
+            textDecoration: 'none', whiteSpace: 'nowrap',
+            boxShadow: '0 3px 12px rgba(212,175,55,0.3)',
+            transition: 'transform 0.18s',
+          }}
+            onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
+            onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}>
+            🕐 <span>Prayer Times</span>
           </Link>
 
-          {/* Right side */}
-          <div className="flex items-center space-x-2.5">
-            {/* CTA — desktop only */}
-            <Link to="/"
-              className="hidden sm:inline-flex items-center px-4 py-2 rounded-full font-black text-[10px] uppercase tracking-widest transition-all duration-200 hover:scale-[1.03]"
-              style={{ background: 'linear-gradient(135deg, #D4AF37, #F1D279)', color: '#060f1e' }}>
-              Prayer Times
-            </Link>
-
-            {/* Menu toggle */}
-            <button
-              onClick={() => setOpen(o => !o)}
-              aria-label={open ? 'Close menu' : 'Open menu'}
-              className="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200"
-              style={{
-                background: open ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.055)',
-                border: '1px solid rgba(212,175,55,0.18)',
-              }}>
-              {open
-                ? <X style={{ width: '0.9rem', height: '0.9rem', color: '#D4AF37' }} />
-                : <Menu style={{ width: '0.9rem', height: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />}
-            </button>
-          </div>
+          {/* Menu button */}
+          <button onClick={() => setOpen(o => !o)} style={iconStyle(open)} aria-label="Menu" aria-expanded={open}>
+            {open ? <X size={15} /> : <Menu size={15} />}
+          </button>
         </div>
-      </header>
+      </nav>
 
-      {/* ── FULLSCREEN MENU OVERLAY ── */}
+      {/* ── Mega menu ── */}
       <AnimatePresence>
         {open && (
           <>
-            {/* Backdrop */}
-            <motion.div
-              key="backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-              className="fixed inset-0 z-40"
-              style={{ background: 'rgba(6,15,30,0.96)', backdropFilter: 'blur(28px)', WebkitBackdropFilter: 'blur(28px)' }}
-              onClick={() => setOpen(false)}
-            />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}
+              style={{ position: 'fixed', inset: 0, zIndex: 198, background: 'rgba(10,37,64,0.2)', backdropFilter: 'blur(3px)' }}
+              onClick={() => setOpen(false)} />
 
-            {/* Menu panel */}
-            <motion.div
-              key="menu"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 40 }}
-              transition={{ duration: 0.28, type: 'spring', damping: 22 }}
-              className="fixed top-0 right-0 bottom-0 z-50 overflow-y-auto"
-              style={{
-                width: 'min(100vw, 420px)',
-                background: 'rgba(6,15,30,0.98)',
-                borderLeft: '1px solid rgba(212,175,55,0.1)',
-                boxShadow: '-20px 0 60px rgba(0,0,0,0.5)',
-              }}
-              onClick={e => e.stopPropagation()}
-            >
-              {/* Top gold line */}
-              <div className="h-px w-full" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.35), transparent)' }} />
+            <motion.div ref={panelRef}
+              initial={{ opacity: 0, y: -10, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.97 }}
+              transition={{ duration: 0.22, ease: [0.16,1,0.3,1] }}
+              style={{ position: 'fixed', top: 72, right: 'clamp(12px,5vw,40px)', zIndex: 199, background: '#ffffff', borderRadius: 20, border: '1px solid rgba(10,37,64,0.08)', boxShadow: '0 24px 80px rgba(10,37,64,0.16)', padding: 20, width: 'min(540px,calc(100vw - 24px))' }}>
 
-              {/* Header */}
-              <div className="px-8 pt-6 pb-2 flex items-center justify-between">
-                <span className="font-black text-[13px]" style={{ color: '#ffffff' }}>
-                  Al Ummah <span style={{ color: '#D4AF37' }}>AI</span>
-                </span>
-                <button onClick={() => setOpen(false)}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:scale-110"
-                  style={{ background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.15)' }}>
-                  <X style={{ width: '0.8rem', height: '0.8rem', color: '#D4AF37' }} />
-                </button>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 4 }}>
+                {MENU_GROUPS.map(section => (
+                  <div key={section.group}>
+                    <div style={{ fontSize: '0.56rem', fontWeight: 800, color: 'rgba(10,37,64,0.27)', textTransform: 'uppercase', letterSpacing: '0.22em', marginBottom: 8, paddingLeft: 8 }}>
+                      {section.group}
+                    </div>
+                    {section.items.map(item => (
+                      <Link key={item.label} to={item.href}
+                        style={{ display: 'flex', alignItems: 'flex-start', gap: 9, padding: '8px 10px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.13s' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(212,175,55,0.07)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                        <span style={{ fontSize: '1rem', marginTop: 1, flexShrink: 0 }}>{item.emoji}</span>
+                        <div>
+                          <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.8rem', fontWeight: 700, color: '#0a2540', lineHeight: 1.25 }}>{item.label}</div>
+                          <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.61rem', color: 'rgba(10,37,64,0.38)', marginTop: 1 }}>{item.desc}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ))}
               </div>
 
-              {/* Groups */}
-              <div className="px-6 pt-6 pb-10 space-y-8">
-                {GROUPS.map((group, gi) => (
-                  <motion.div
-                    key={group.label}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, delay: gi * 0.07 }}
-                  >
-                    <p className="text-[8.5px] font-black tracking-[0.45em] uppercase px-2 mb-3"
-                      style={{ color: 'rgba(212,175,55,0.5)' }}>
-                      {group.label}
-                    </p>
-                    <div className="space-y-0.5">
-                      {group.items.map((item, ii) => (
-                        <motion.div
-                          key={item.href}
-                          initial={{ opacity: 0, x: 12 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3, delay: gi * 0.07 + ii * 0.04 }}
-                        >
-                          <Link
-                            to={item.href}
-                            className="flex items-center space-x-3.5 px-4 py-3 rounded-xl transition-all duration-150"
-                            style={{ border: '1px solid transparent' }}
-                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.055)'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.14)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}
-                          >
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                              style={{ background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.14)' }}>
-                              <item.icon style={{ width: '0.85rem', height: '0.85rem', color: '#D4AF37' }} />
-                            </div>
-                            <div>
-                              <p className="text-[13px] font-black" style={{ color: '#ffffff' }}>{item.name}</p>
-                              <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{item.desc}</p>
-                            </div>
-                          </Link>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                ))}
-
-                {/* Footer links */}
-                <motion.div
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.38 }}
-                  className="pt-4 flex flex-wrap gap-x-5 gap-y-2"
-                  style={{ borderTop: '1px solid rgba(255,255,255,0.055)' }}>
-                  {[{ name: 'Privacy', href: '/privacy' }, { name: 'Terms', href: '/terms' }, { name: 'Contact', href: '/about' }].map(l => (
-                    <Link key={l.href} to={l.href}
-                      className="text-[9px] font-black tracking-widest uppercase transition-colors"
-                      style={{ color: 'rgba(255,255,255,0.2)' }}
-                      onMouseEnter={e => (e.currentTarget.style.color = '#D4AF37')}
-                      onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}>
-                      {l.name}
-                    </Link>
-                  ))}
-                </motion.div>
+              <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid rgba(10,37,64,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.66rem', color: 'rgba(10,37,64,0.3)', fontWeight: 500 }}>Free for 1.8 billion Muslims</span>
+                <Link to="/" onClick={() => setOpen(false)}
+                  style={{ background: '#0a2540', color: '#ffffff', padding: '7px 14px', borderRadius: 8, fontFamily: "'DM Sans',sans-serif", fontSize: '0.67rem', fontWeight: 800, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  🕐 Prayer Times
+                </Link>
               </div>
             </motion.div>
           </>
