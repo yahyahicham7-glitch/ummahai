@@ -34,7 +34,7 @@ export default function App() {
       <Router>
         <div className="flex flex-col min-h-screen bg-glamour-blue text-cream">
           <Navbar />
-          <main className="flex-grow pt-24">
+          <main className="flex-grow">
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
                 <Route path="/" element={<Home />} />
