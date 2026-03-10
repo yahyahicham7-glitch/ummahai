@@ -32,7 +32,7 @@ export default function App() {
   return (
     <HelmetProvider>
       <Router>
-        <div className="flex flex-col min-h-screen" style={{background:"#ffffff",color:"#0a2540"}}>
+        <div className="flex flex-col min-h-screen" style={{ background: '#ffffff', color: '#0a2540' }}>
           <Navbar />
           <main className="flex-grow">
             <Suspense fallback={<LoadingFallback />}>
