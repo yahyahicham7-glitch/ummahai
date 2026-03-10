@@ -1,74 +1,110 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Moon, Facebook, Twitter, Instagram, Youtube, Mail } from 'lucide-react';
+
+const COLS = {
+  'Sacred Tools': [
+    { label: 'Prayer Times',     href: '/' },
+    { label: 'Qibla Finder',     href: '/qibla' },
+    { label: 'Quran',            href: '/quran' },
+    { label: 'Zakat Calculator', href: '/zakat' },
+    { label: 'Hajj Guide',       href: '/hajj' },
+  ],
+  'Knowledge': [
+    { label: 'Islamic Blog',  href: '/blog' },
+    { label: 'Ramadan 2026',  href: '/ramadan' },
+    { label: 'Scholar AI',    href: '/scholar' },
+    { label: 'Daily Duas',    href: '/blog/morning-evening-adhkar' },
+    { label: 'How to Pray',   href: '/blog/how-to-pray-salah-beginners' },
+  ],
+  'Company': [
+    { label: 'About Us',         href: '/about' },
+    { label: 'Islamic Store',    href: '/store' },
+    { label: 'Privacy Policy',   href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Sitemap',          href: '/sitemap.xml' },
+  ],
+};
 
 export function Footer() {
+  const lk: React.CSSProperties = { color: 'rgba(255,255,255,0.45)', fontSize: '0.84rem', fontFamily: "'DM Sans',sans-serif", fontWeight: 500, textDecoration: 'none', transition: 'color 0.15s' };
+
   return (
-    <footer className="bg-glamour-blue-light text-cream/60 pt-20 pb-10 border-t border-gold/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-16">
-          <div className="space-y-8">
-            <Link to="/" className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-glamour-blue rounded-full flex items-center justify-center border border-gold/30 shadow-lg">
-                <Moon className="text-gold w-7 h-7" />
+    <footer style={{ background: '#071a2e', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 72, paddingBottom: 36 }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 clamp(16px,5vw,48px)' }}>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 48, marginBottom: 56 }}>
+
+          {/* Brand */}
+          <div>
+            <Link to="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ color: '#D4AF37', fontSize: '1.05rem' }}>☽</span>
               </div>
-              <span className="text-2xl font-display font-black text-cream tracking-tighter">UMMAH AI</span>
+              <div>
+                <div style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: '0.96rem', color: '#ffffff', letterSpacing: '-0.01em' }}>
+                  Al Ummah <span style={{ color: '#D4AF37' }}>AI</span>
+                </div>
+                <div style={{ fontSize: '0.48rem', fontWeight: 700, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.22em', textTransform: 'uppercase' }}>
+                  Islamic Platform
+                </div>
+              </div>
             </Link>
-            <p className="text-sm leading-relaxed font-light">
-              The world's most advanced Islamic ecosystem. Empowering the global Ummah with premium digital tools and authentic knowledge.
+            <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, fontSize: '0.84rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.75, maxWidth: 210, marginBottom: 22 }}>
+              The complete Islamic platform. Prayer times, Quran, Qibla and daily guidance — free forever.
             </p>
-            <div className="flex space-x-5">
-              <a href="#" className="hover:text-gold transition-all hover:scale-110"><Facebook className="w-5 h-5" /></a>
-              <a href="#" className="hover:text-gold transition-all hover:scale-110"><Twitter className="w-5 h-5" /></a>
-              <a href="#" className="hover:text-gold transition-all hover:scale-110"><Instagram className="w-5 h-5" /></a>
-              <a href="#" className="hover:text-gold transition-all hover:scale-110"><Youtube className="w-5 h-5" /></a>
+            {/* Social icons */}
+            <div style={{ display: 'flex', gap: 9 }}>
+              {[
+                { href: 'https://instagram.com', label: '📸' },
+                { href: 'https://twitter.com',   label: '🐦' },
+                { href: 'https://youtube.com',   label: '▶️' },
+                { href: 'mailto:contact@alummahai.com', label: '✉️' },
+              ].map(({ href, label }) => (
+                <a key={href} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
+                  style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.82rem', textDecoration: 'none', transition: 'border-color 0.18s' }}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(212,175,55,0.4)')}
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}>
+                  {label}
+                </a>
+              ))}
             </div>
           </div>
 
-          <div>
-            <h3 className="text-gold font-display font-black mb-8 tracking-[0.2em] text-[10px] uppercase">Sacred Tools</h3>
-            <ul className="space-y-5 text-xs font-bold tracking-widest uppercase">
-              <li><Link to="/quran" className="hover:text-gold transition-colors">Holy Quran</Link></li>
-              <li><Link to="/prayer-times" className="hover:text-gold transition-colors">Prayer Times</Link></li>
-              <li><Link to="/qibla" className="hover:text-gold transition-colors">Qibla Finder</Link></li>
-              <li><Link to="/zakat" className="hover:text-gold transition-colors">Zakat Calculator</Link></li>
-              <li><Link to="/scholar" className="hover:text-gold transition-colors">Scholar AI</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-gold font-display font-black mb-8 tracking-[0.2em] text-[10px] uppercase">Community</h3>
-            <ul className="space-y-5 text-xs font-bold tracking-widest uppercase">
-              <li><Link to="/hajj" className="hover:text-gold transition-colors">Hajj & Umrah</Link></li>
-              <li><Link to="/store" className="hover:text-gold transition-colors">Islamic Store</Link></li>
-              <li><Link to="/news" className="hover:text-gold transition-colors">Islamic News</Link></li>
-              <li><Link to="/duas" className="hover:text-gold transition-colors">Daily Duas</Link></li>
-              <li><Link to="/about" className="hover:text-gold transition-colors">About Us</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-gold font-display font-black mb-8 tracking-[0.2em] text-[10px] uppercase">Newsletter</h3>
-            <p className="text-xs mb-6 font-light leading-relaxed">Join 50,000+ Muslims receiving weekly spiritual insights and platform updates.</p>
-            <form className="flex flex-col space-y-3">
-              <input 
-                type="email" 
-                placeholder="Email address" 
-                className="bg-glamour-blue/50 border border-gold/20 rounded-xl px-5 py-3 text-xs focus:outline-none focus:border-gold transition-colors placeholder:text-cream/20"
-              />
-              <button className="bg-gold text-glamour-blue px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gold-light transition-all shadow-lg">
-                Subscribe
-              </button>
-            </form>
-          </div>
+          {/* Link columns */}
+          {Object.entries(COLS).map(([group, links]) => (
+            <div key={group}>
+              <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.58rem', fontWeight: 800, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.22em', marginBottom: 18 }}>
+                {group}
+              </div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 11 }}>
+                {links.map(({ label, href }) => (
+                  <li key={label}>
+                    <Link to={href} style={lk}
+                      onMouseEnter={e => (e.currentTarget.style.color = '#D4AF37')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="mt-20 pt-10 border-t border-gold/5 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 text-[10px] font-bold tracking-[0.2em] uppercase text-cream/30">
-          <p>© 2026 UMMAH AI. Spiritual Excellence Guaranteed.</p>
-          <div className="flex space-x-8">
-            <Link to="/privacy" className="hover:text-gold transition-colors">Privacy</Link>
-            <Link to="/terms" className="hover:text-gold transition-colors">Terms</Link>
-            <Link to="/contact" className="hover:text-gold transition-colors">Contact</Link>
+        {/* Bottom */}
+        <div style={{ paddingTop: 28, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+          <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.7rem', fontWeight: 500, color: 'rgba(255,255,255,0.22)' }}>
+            © 2026 Al Ummah AI · For the Global Ummah
+          </span>
+          <div style={{ display: 'flex', gap: 20 }}>
+            {[['Privacy', '/privacy'], ['Terms', '/terms'], ['About', '/about']].map(([label, href]) => (
+              <Link key={label} to={href}
+                style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.7rem', fontWeight: 600, color: 'rgba(255,255,255,0.22)', textDecoration: 'none', transition: 'color 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#D4AF37')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.22)')}>
+                {label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
