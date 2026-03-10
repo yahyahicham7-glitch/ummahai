@@ -1,14 +1,14 @@
 {
-  "name": "react-example",
+  "name": "al-ummah-ai",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build",
+    "dev":     "vite --port=3000 --host=0.0.0.0",
+    "build":   "vite build && node prerender.mjs",
     "preview": "vite preview",
-    "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "clean":   "rm -rf dist",
+    "lint":    "tsc --noEmit"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
