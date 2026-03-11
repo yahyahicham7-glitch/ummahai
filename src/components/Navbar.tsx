@@ -3,29 +3,49 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   X, Menu, Moon, Sun, Clock, Compass, BookOpen, Calculator,
   Star, PenLine, Sparkles, MapPin, ShoppingBag, Heart,
-  Globe, Check, ChevronRight
+  Globe, Check, ChevronRight, Wallet
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'motion/react';
 
-const MENU_ITEMS = [
-  { label: 'Prayer Times', href: '/',        Icon: Clock,       desc: 'GPS-accurate · 5 daily prayers' },
-  { label: 'Qibla Finder', href: '/qibla',   Icon: Compass,     desc: 'Real-time direction to Mecca'   },
-  { label: 'Quran',        href: '/quran',   Icon: BookOpen,    desc: 'Full Quran with translations'   },
-  { label: 'Zakat',        href: '/zakat',   Icon: Calculator,  desc: 'Calculator · 2026 Nisab rates'  },
-  { label: 'Ramadan 2026', href: '/ramadan', Icon: Star,        desc: 'Complete guide & timetable'     },
-  { label: 'Blog',         href: '/blog',    Icon: PenLine,     desc: 'Islamic articles & knowledge'   },
-  { label: 'Scholar AI',   href: '/scholar', Icon: Sparkles,    desc: 'Ask any Islamic question'       },
-  { label: 'Hajj Guide',   href: '/hajj',    Icon: MapPin,      desc: 'Pilgrimage essentials'          },
-  { label: 'Store',        href: '/store',   Icon: ShoppingBag, desc: 'Premium Islamic products'       },
-  { label: 'About',        href: '/about',   Icon: Heart,       desc: 'Our mission'                    },
+/* ─── Menu — grouped with section headers ─────────────────── */
+const SECTIONS = [
+  {
+    title: 'Prayer & Worship',
+    color: '#1a6b4a',   // deep green accent for this section
+    items: [
+      { label: 'Prayer Times', href: '/',       Icon: Clock,      desc: 'GPS-accurate · 5 daily prayers'  },
+      { label: 'Qibla Finder', href: '/qibla',  Icon: Compass,    desc: 'Real-time direction to Mecca'    },
+      { label: 'Quran',        href: '/quran',  Icon: BookOpen,   desc: 'Full Quran with translations'    },
+      { label: 'Zakat',        href: '/zakat',  Icon: Wallet,     desc: 'Calculator · 2026 Nisab rates'   },
+    ],
+  },
+  {
+    title: 'Learn & Grow',
+    color: '#7c4d00',
+    items: [
+      { label: 'Ramadan 2026', href: '/ramadan', Icon: Star,      desc: 'Complete guide & timetable'      },
+      { label: 'Daily Duas',   href: '/blog/morning-evening-adhkar', Icon: BookOpen, desc: 'Morning & evening supplications' },
+      { label: 'Blog',         href: '/blog',    Icon: PenLine,   desc: 'Islamic articles & knowledge'    },
+      { label: 'Scholar AI',   href: '/scholar', Icon: Sparkles,  desc: 'Ask any Islamic question'        },
+    ],
+  },
+  {
+    title: 'Explore',
+    color: '#0a2540',
+    items: [
+      { label: 'Hajj Guide',   href: '/hajj',   Icon: MapPin,      desc: 'Pilgrimage essentials'           },
+      { label: 'Store',        href: '/store',  Icon: ShoppingBag, desc: 'Premium Islamic products'        },
+      { label: 'About',        href: '/about',  Icon: Heart,       desc: 'Our mission'                     },
+    ],
+  },
 ];
 
 const LANGS = [
-  { code: 'en', native: 'English',  sub: 'English'   },
-  { code: 'ar', native: 'العربية',  sub: 'Arabic'    },
-  { code: 'fr', native: 'Français', sub: 'French'    },
-  { code: 'es', native: 'Español',  sub: 'Spanish'   },
+  { code: 'en', native: 'English',  sub: 'English'  },
+  { code: 'ar', native: 'العربية',  sub: 'Arabic'   },
+  { code: 'fr', native: 'Français', sub: 'French'   },
+  { code: 'es', native: 'Español',  sub: 'Spanish'  },
 ];
 
 const DARK_PATHS = ['/', '/qibla', '/quran', '/zakat', '/hajj', '/ramadan', '/blog', '/scholar', '/store', '/about', '/halal-money'];
@@ -35,17 +55,15 @@ export function Navbar() {
   const [langOpen, setLangOpen] = useState(false);
   const [dark,     setDark]     = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);   // ← real JS check, not CSS
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
 
   const { i18n } = useTranslation();
   const location = useLocation();
   const menuRef  = useRef<HTMLDivElement>(null);
   const langRef  = useRef<HTMLDivElement>(null);
 
-  /* Detect mobile width with JS — no CSS dependency */
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
-    check();
     window.addEventListener('resize', check, { passive: true });
     return () => window.removeEventListener('resize', check);
   }, []);
@@ -104,11 +122,10 @@ export function Navbar() {
         transition: 'background 0.3s, border-color 0.3s',
       }}>
 
-        {/* ── Logo ── */}
+        {/* Logo */}
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <div style={{
-            width: isMobile ? 28 : 32, height: isMobile ? 28 : 32,
-            borderRadius: 7, flexShrink: 0,
+            width: isMobile ? 28 : 32, height: isMobile ? 28 : 32, borderRadius: 7, flexShrink: 0,
             background: glass ? 'rgba(212,175,55,0.15)' : '#0a2540',
             border: glass ? '1px solid rgba(212,175,55,0.3)' : 'none',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -119,37 +136,23 @@ export function Navbar() {
           <span style={{
             fontFamily: "'Playfair Display',serif", fontWeight: 900,
             fontSize: isMobile ? '0.86rem' : '0.95rem',
-            color: textC, letterSpacing: '-0.015em',
-            whiteSpace: 'nowrap', transition: 'color 0.3s',
+            color: textC, letterSpacing: '-0.015em', whiteSpace: 'nowrap', transition: 'color 0.3s',
           }}>
             Al Ummah <span style={{ color: '#D4AF37' }}>AI</span>
           </span>
         </Link>
 
-        {/* ── Right side ─────────────────────────────────────
-            MOBILE:  [🌐 globe] [🌙 dark] [☰ menu]   — 3 items only
-            DESKTOP: [🌐 globe] [🌙 dark] [Prayer Times CTA] [☰ menu]
-        ───────────────────────────────────────────────────── */}
+        {/* Right — mobile: globe + dark + burger | desktop: globe + dark + CTA + burger */}
         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 8 }}>
 
-          {/* Globe / Language */}
+          {/* Globe */}
           <div ref={langRef} style={{ position: 'relative' }}>
             <button
               onClick={() => { setLangOpen(o => !o); setMenuOpen(false); }}
-              aria-label="Select language"
-              style={{
-                ...iconBtn(langOpen),
-                width: 'auto', padding: '0 10px', gap: 5,
-                fontFamily: "'DM Sans',sans-serif",
-                fontSize: '0.65rem', fontWeight: 800,
-              }}>
+              aria-label="Language"
+              style={{ ...iconBtn(langOpen), width: 'auto', padding: '0 10px', gap: 5, fontFamily: "'DM Sans',sans-serif", fontSize: '0.65rem', fontWeight: 800 }}>
               <Globe size={14} strokeWidth={1.8} />
-              {/* On mobile just show globe icon, no code label */}
-              {!isMobile && (
-                <span style={{ letterSpacing: '0.04em' }}>
-                  {curLang.code.toUpperCase()}
-                </span>
-              )}
+              {!isMobile && <span>{curLang.code.toUpperCase()}</span>}
             </button>
 
             <AnimatePresence>
@@ -158,7 +161,7 @@ export function Navbar() {
                   initial={{ opacity: 0, y: -6, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.97 }}
-                  transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.15 }}
                   style={{
                     position: 'absolute', top: 'calc(100% + 8px)', right: 0,
                     background: '#ffffff', borderRadius: 14,
@@ -166,36 +169,19 @@ export function Navbar() {
                     boxShadow: '0 16px 48px rgba(10,37,64,0.13)',
                     overflow: 'hidden', minWidth: 190, zIndex: 500,
                   }}>
-                  <div style={{
-                    padding: '10px 14px 8px',
-                    borderBottom: '1px solid rgba(10,37,64,0.07)',
-                    display: 'flex', alignItems: 'center', gap: 6,
-                    fontFamily: "'DM Sans',sans-serif", fontSize: '0.5rem',
-                    fontWeight: 900, color: 'rgba(10,37,64,0.3)',
-                    textTransform: 'uppercase', letterSpacing: '0.22em',
-                  }}>
+                  <div style={{ padding: '10px 14px 8px', borderBottom: '1px solid rgba(10,37,64,0.07)', display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'DM Sans',sans-serif", fontSize: '0.5rem', fontWeight: 900, color: 'rgba(10,37,64,0.3)', textTransform: 'uppercase', letterSpacing: '0.22em' }}>
                     <Globe size={10} strokeWidth={2} /> Language
                   </div>
                   {LANGS.map(l => {
                     const active = i18n.language?.startsWith(l.code);
                     return (
-                      <button key={l.code}
-                        onClick={() => { i18n.changeLanguage(l.code); setLangOpen(false); }}
-                        style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                          width: '100%', padding: '10px 14px',
-                          border: 'none', cursor: 'pointer', transition: 'background 0.13s',
-                          background: active ? 'rgba(212,175,55,0.06)' : 'transparent',
-                        }}
+                      <button key={l.code} onClick={() => { i18n.changeLanguage(l.code); setLangOpen(false); }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 14px', border: 'none', cursor: 'pointer', transition: 'background 0.13s', background: active ? 'rgba(212,175,55,0.06)' : 'transparent' }}
                         onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(10,37,64,0.03)'; }}
-                        onMouseLeave={e => { if (!active) e.currentTarget.style.background = active ? 'rgba(212,175,55,0.06)' : 'transparent'; }}>
+                        onMouseLeave={e => { e.currentTarget.style.background = active ? 'rgba(212,175,55,0.06)' : 'transparent'; }}>
                         <div>
-                          <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.82rem', fontWeight: active ? 800 : 600, color: '#0a2540', lineHeight: 1.2 }}>
-                            {l.native}
-                          </div>
-                          <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.57rem', color: 'rgba(10,37,64,0.38)', marginTop: 1 }}>
-                            {l.sub}
-                          </div>
+                          <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.82rem', fontWeight: active ? 800 : 600, color: '#0a2540' }}>{l.native}</div>
+                          <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.57rem', color: 'rgba(10,37,64,0.38)', marginTop: 1 }}>{l.sub}</div>
                         </div>
                         {active && <Check size={13} strokeWidth={2.5} style={{ color: '#D4AF37', flexShrink: 0 }} />}
                       </button>
@@ -211,7 +197,7 @@ export function Navbar() {
             {dark ? <Sun size={14} strokeWidth={2} /> : <Moon size={14} strokeWidth={2} />}
           </button>
 
-          {/* Prayer Times CTA — desktop ONLY, not rendered on mobile */}
+          {/* CTA — desktop only, JS-controlled */}
           {!isMobile && (
             <Link to="/" style={{
               display: 'flex', alignItems: 'center', gap: 6,
@@ -228,25 +214,21 @@ export function Navbar() {
             </Link>
           )}
 
-          {/* Hamburger — always last, always visible */}
-          <button
-            onClick={() => { setMenuOpen(o => !o); setLangOpen(false); }}
-            style={iconBtn(menuOpen)}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}>
+          {/* Hamburger — always visible, always last */}
+          <button onClick={() => { setMenuOpen(o => !o); setLangOpen(false); }} style={iconBtn(menuOpen)} aria-label="Menu" aria-expanded={menuOpen}>
             {menuOpen ? <X size={15} strokeWidth={2} /> : <Menu size={15} strokeWidth={2} />}
           </button>
         </div>
       </nav>
 
-      {/* ══════════════════════════════════ MENU — vertical list */}
+      {/* ════════════════════════ MENU PANEL — dark navy, grouped list */}
       <AnimatePresence>
         {menuOpen && (
           <>
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.18 }}
-              style={{ position: 'fixed', inset: 0, zIndex: 398, background: 'rgba(10,37,64,0.25)', backdropFilter: 'blur(4px)' }}
+              style={{ position: 'fixed', inset: 0, zIndex: 398, background: 'rgba(10,37,64,0.35)', backdropFilter: 'blur(4px)' }}
               onClick={() => setMenuOpen(false)} />
 
             <motion.div ref={menuRef}
@@ -259,66 +241,89 @@ export function Navbar() {
                 top: isMobile ? 62 : 70,
                 right: isMobile ? 10 : 'clamp(12px,5vw,40px)',
                 left: isMobile ? 10 : 'auto',
-                width: isMobile ? 'auto' : 380,
+                width: isMobile ? 'auto' : 340,
                 zIndex: 399,
-                background: '#ffffff',
+                /* Dark navy background as requested */
+                background: 'linear-gradient(160deg, #0d2a45 0%, #0a2540 100%)',
                 borderRadius: 18,
-                border: '1px solid rgba(10,37,64,0.09)',
-                boxShadow: '0 20px 64px rgba(10,37,64,0.14), 0 4px 16px rgba(10,37,64,0.06)',
+                border: '1px solid rgba(255,255,255,0.07)',
+                boxShadow: '0 24px 72px rgba(0,0,0,0.35), 0 4px 16px rgba(0,0,0,0.2)',
                 overflow: 'hidden',
               }}>
 
-              {/* Vertical list */}
-              <div style={{ padding: '8px' }}>
-                {MENU_ITEMS.map((item, i) => (
-                  <React.Fragment key={item.label}>
-                    {/* Section dividers */}
-                    {(i === 4 || i === 7) && (
-                      <div style={{ margin: '4px 6px', borderTop: '1px solid rgba(10,37,64,0.06)' }} />
-                    )}
-                    <Link to={item.href}
-                      onClick={() => setMenuOpen(false)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 11,
-                        padding: '8px 9px', borderRadius: 10,
-                        textDecoration: 'none', transition: 'background 0.13s',
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(10,37,64,0.04)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                      <div style={{
-                        width: 34, height: 34, borderRadius: 9, flexShrink: 0,
-                        background: 'rgba(10,37,64,0.05)',
-                        border: '1px solid rgba(10,37,64,0.06)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+              {/* Grouped sections */}
+              <div style={{ padding: '10px 10px 6px' }}>
+                {SECTIONS.map((section, si) => (
+                  <div key={section.title}>
+                    {/* Section header */}
+                    <div style={{
+                      padding: '8px 10px 5px',
+                      marginTop: si > 0 ? 4 : 0,
+                    }}>
+                      <span style={{
+                        fontFamily: "'DM Sans',sans-serif",
+                        fontSize: '0.5rem', fontWeight: 900,
+                        color: 'rgba(255,255,255,0.3)',
+                        textTransform: 'uppercase', letterSpacing: '0.24em',
                       }}>
-                        <item.Icon size={15} strokeWidth={1.75} style={{ color: '#0a2540' }} />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.81rem', fontWeight: 700, color: '#0a2540', lineHeight: 1.25 }}>
-                          {item.label}
+                        {section.title}
+                      </span>
+                    </div>
+
+                    {/* Items */}
+                    {section.items.map(item => (
+                      <Link key={item.label} to={item.href}
+                        onClick={() => setMenuOpen(false)}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 11,
+                          padding: '8px 10px', borderRadius: 10,
+                          textDecoration: 'none', transition: 'background 0.13s',
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                        {/* Icon — gold tinted */}
+                        <div style={{
+                          width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                          background: 'rgba(212,175,55,0.12)',
+                          border: '1px solid rgba(212,175,55,0.2)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <item.Icon size={14} strokeWidth={1.75} style={{ color: '#D4AF37' }} />
                         </div>
-                        <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.61rem', color: 'rgba(10,37,64,0.4)', marginTop: 1 }}>
-                          {item.desc}
+                        {/* Text */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.8rem', fontWeight: 700, color: '#ffffff', lineHeight: 1.25 }}>
+                            {item.label}
+                          </div>
+                          <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.6rem', color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>
+                            {item.desc}
+                          </div>
                         </div>
-                      </div>
-                      <ChevronRight size={13} strokeWidth={2} style={{ color: 'rgba(10,37,64,0.2)', flexShrink: 0 }} />
-                    </Link>
-                  </React.Fragment>
+                        <ChevronRight size={12} strokeWidth={2} style={{ color: 'rgba(255,255,255,0.2)', flexShrink: 0 }} />
+                      </Link>
+                    ))}
+
+                    {/* Divider between sections */}
+                    {si < SECTIONS.length - 1 && (
+                      <div style={{ margin: '6px 10px', borderTop: '1px solid rgba(255,255,255,0.06)' }} />
+                    )}
+                  </div>
                 ))}
               </div>
 
               {/* Footer */}
               <div style={{
-                padding: '10px 16px', background: '#f8f9fa',
-                borderTop: '1px solid rgba(10,37,64,0.07)',
+                padding: '10px 16px',
+                background: 'rgba(0,0,0,0.2)',
+                borderTop: '1px solid rgba(255,255,255,0.06)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
               }}>
-                <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.6rem', color: 'rgba(10,37,64,0.35)', fontWeight: 500 }}>
+                <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.6rem', color: 'rgba(255,255,255,0.25)', fontWeight: 500 }}>
                   Free for 1.8 billion Muslims
                 </span>
                 <Link to="/" onClick={() => setMenuOpen(false)} style={{
                   display: 'flex', alignItems: 'center', gap: 6,
-                  background: '#0a2540', color: '#ffffff',
+                  background: '#D4AF37', color: '#0a2540',
                   padding: '7px 13px', borderRadius: 8,
                   fontFamily: "'DM Sans',sans-serif", fontSize: '0.63rem', fontWeight: 800,
                   textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em',
