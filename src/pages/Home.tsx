@@ -3,10 +3,7 @@ import { PrayerWidget } from '@/src/components/PrayerWidget';
 import { SEO } from '@/src/components/SEO';
 import { BookOpen, MapPin, ArrowRight, Search, ChevronRight, Shield, Globe, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { motion, useInView, useMotionValue, useSpring, animate } from 'motion/react';
-import { useTranslation } from 'react-i18next';
-
-const GOLD = '#D4AF37';
+import { motion, useInView } from 'motion/react';
 
 /* ── Data ─────────────────────────────────────────────────── */
 const PHRASES = [
@@ -161,36 +158,12 @@ export function Home() {
 
         {/* Grid dots */}
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(212,175,55,0.1) 1px, transparent 1px)', backgroundSize: '38px 38px', opacity: 0.55, pointerEvents: 'none' }} />
-        {/* Center glow */}
-        <div style={{ position: 'absolute', top: '48%', left: '50%', transform: 'translate(-50%,-50%)', width: 'min(700px,88vw)', height: 'min(700px,88vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,175,55,0.07) 0%, transparent 65%)', pointerEvents: 'none' }} />
+        {/* Center glow — breathing animation */}
+        <motion.div animate={{ opacity: [0.6, 1, 0.6], scale: [0.97, 1.02, 0.97] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }} style={{ position: 'absolute', top: '48%', left: '50%', transform: 'translate(-50%,-50%)', width: 'min(700px,88vw)', height: 'min(700px,88vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,175,55,0.07) 0%, transparent 65%)', pointerEvents: 'none' }} />
         {/* Rings */}
         {[520, 760].map(s => (
           <div key={s} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: `min(${s}px,85vw)`, height: `min(${s}px,85vw)`, borderRadius: '50%', border: '1px solid rgba(212,175,55,0.05)', pointerEvents: 'none' }} />
         ))}
-        {/* ── Floating particles ── */}
-        {[...Array(18)].map((_, i) => {
-          const size  = 2 + (i % 3);
-          const delay = i * 0.3;
-          const x     = 8 + (i * 5.2) % 84;
-          const y     = 5 + (i * 7.1) % 85;
-          return (
-            <motion.div key={i}
-              style={{ position: 'absolute', top: `${y}%`, left: `${x}%`, width: size, height: size, borderRadius: '50%', background: `rgba(212,175,55,${0.12 + (i % 4) * 0.06})`, pointerEvents: 'none', zIndex: 0 }}
-              animate={{ y: [0, -14 - (i % 8) * 3, 0], opacity: [0.3, 0.8, 0.3] }}
-              transition={{ duration: 4 + (i % 5), delay, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          );
-        })}
-
-        {/* ── Animated crescent ── */}
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
-          style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 'min(900px,110vw)', height: 'min(900px,110vw)', borderRadius: '50%', border: '1px solid rgba(212,175,55,0.025)', pointerEvents: 'none', zIndex: 0 }}>
-          {/* Orbiting dot */}
-          <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translate(-50%,-50%)', width: 6, height: 6, borderRadius: '50%', background: GOLD, boxShadow: '0 0 12px rgba(212,175,55,0.5)', opacity: 0.5 }} />
-        </motion.div>
-
         {/* City dots */}
         {[
           { n: 'London',  t: '22%', l: '44%' },
