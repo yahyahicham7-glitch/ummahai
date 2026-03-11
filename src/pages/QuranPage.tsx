@@ -1,272 +1,352 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Book, Play, Pause, ChevronLeft, ChevronRight, Loader2, Globe, Languages } from 'lucide-react';
-import { cn } from '@/src/utils/cn';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Search, ChevronLeft, ChevronRight, Loader2, Languages, Highlighter, X } from 'lucide-react';
 import { SEO } from '@/src/components/SEO';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 
-interface Surah {
-  number: number;
-  name: string;
-  englishName: string;
-  englishNameTranslation: string;
-  numberOfAyahs: number;
-  revelationType: string;
-}
+/* ─── Types ───────────────────────────────────────────────── */
+interface Surah { number: number; name: string; englishName: string; englishNameTranslation: string; numberOfAyahs: number; revelationType: string; }
+interface Ayah  { number: number; text: string; numberInSurah: number; juz: number; translation?: string; }
 
-interface Ayah {
-  number: number;
-  text: string;
-  numberInSurah: number;
-  juz: number;
-  translation?: string;
-}
+/* ─── API edition per language ────────────────────────────── */
+const EDITIONS: Record<string, string> = { en: 'en.sahih', ar: 'ar.jalalayn', fr: 'fr.hamidullah', es: 'es.cortes' };
 
-const translations: Record<string, string> = {
-  en: 'en.sahih',
-  ar: 'ar.jalalayn',
-  fr: 'fr.hamidullah',
-  es: 'es.cortes'
+/* ─── UI copy per language ────────────────────────────────── */
+const UI: Record<string, { title: string; subtitle: string; search: string; back: string; edition: string; ayahs: string; prev: string; next: string; highlight: string; clearHL: string; meccan: string; medinan: string; }> = {
+  en: { title: 'The Holy Quran', subtitle: 'Sacred Revelations for Mankind', search: 'Search Surah by name or number…', back: 'Back to Surahs', edition: 'Translation', ayahs: 'Ayahs', prev: 'Previous Surah', next: 'Next Surah', highlight: 'Highlight', clearHL: 'Clear', meccan: 'Meccan', medinan: 'Medinan' },
+  ar: { title: 'القرآن الكريم', subtitle: 'الوحي المقدس للبشرية', search: 'ابحث عن سورة بالاسم أو الرقم…', back: 'العودة إلى السور', edition: 'الترجمة', ayahs: 'آيات', prev: 'السورة السابقة', next: 'السورة التالية', highlight: 'تمييز', clearHL: 'مسح', meccan: 'مكية', medinan: 'مدنية' },
+  fr: { title: 'Le Saint Coran', subtitle: 'Révélations Sacrées pour l\'Humanité', search: 'Rechercher une sourate par nom ou numéro…', back: 'Retour aux Sourates', edition: 'Traduction', ayahs: 'Versets', prev: 'Sourate Précédente', next: 'Sourate Suivante', highlight: 'Surligner', clearHL: 'Effacer', meccan: 'Mecquoise', medinan: 'Médinoise' },
+  es: { title: 'El Santo Corán', subtitle: 'Revelaciones Sagradas para la Humanidad', search: 'Buscar Sura por nombre o número…', back: 'Volver a las Suras', edition: 'Traducción', ayahs: 'Aleyas', prev: 'Sura Anterior', next: 'Sura Siguiente', highlight: 'Subrayar', clearHL: 'Borrar', meccan: 'Mequeña', medinan: 'Medinense' },
 };
 
-export function QuranPage() {
-  const { i18n, t } = useTranslation();
-  const [surahs, setSurahs] = useState<Surah[]>([]);
-  const [selectedSurah, setSelectedSurah] = useState<Surah | null>(null);
-  const [ayahs, setAyahs] = useState<Ayah[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentEdition, setCurrentEdition] = useState(translations[i18n.language] || 'en.sahih');
+const NAVY = '#0a2540';
+const NAVY2 = '#071a2e';
+const GOLD = '#D4AF37';
 
+/* ─── Component ───────────────────────────────────────────── */
+export function QuranPage() {
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.slice(0, 2) || 'en';
+  const L = UI[lang] || UI.en;
+  const isRTL = lang === 'ar';
+
+  const [surahs,       setSurahs]       = useState<Surah[]>([]);
+  const [selected,     setSelected]     = useState<Surah | null>(null);
+  const [ayahs,        setAyahs]        = useState<Ayah[]>([]);
+  const [loading,      setLoading]      = useState(true);
+  const [loadingAyahs, setLoadingAyahs] = useState(false);
+  const [search,       setSearch]       = useState('');
+  const [highlighted,  setHighlighted]  = useState<Set<number>>(new Set());
+  const [hlMode,       setHlMode]       = useState(false);
+  const readerRef = useRef<HTMLDivElement>(null);
+
+  /* Load surah list */
   useEffect(() => {
     fetch('https://api.alquran.cloud/v1/surah')
-      .then(res => res.json())
-      .then(data => {
-        setSurahs(data.data);
-        setLoading(false);
-      });
+      .then(r => r.json())
+      .then(d => { setSurahs(d.data); setLoading(false); });
   }, []);
 
-  useEffect(() => {
-    if (selectedSurah) {
-      loadSurah(selectedSurah);
-    }
-  }, [i18n.language]);
+  /* Reload translation when language changes */
+  useEffect(() => { if (selected) loadSurah(selected); }, [lang]);
 
-  const loadSurah = async (surah: Surah) => {
-    setLoading(true);
-    setSelectedSurah(surah);
-    const edition = translations[i18n.language] || 'en.sahih';
-    setCurrentEdition(edition);
-
+  const loadSurah = useCallback(async (surah: Surah) => {
+    setLoadingAyahs(true);
+    setSelected(surah);
+    setHighlighted(new Set());
+    const edition = EDITIONS[lang] || EDITIONS.en;
     try {
-      // Fetch Arabic text
-      const arRes = await fetch(`https://api.alquran.cloud/v1/surah/${surah.number}`);
-      const arData = await arRes.json();
-      
-      // Fetch Translation
-      const trRes = await fetch(`https://api.alquran.cloud/v1/surah/${surah.number}/${edition}`);
-      const trData = await trRes.json();
+      const [arRes, trRes] = await Promise.all([
+        fetch(`https://api.alquran.cloud/v1/surah/${surah.number}`),
+        fetch(`https://api.alquran.cloud/v1/surah/${surah.number}/${edition}`),
+      ]);
+      const [arData, trData] = await Promise.all([arRes.json(), trRes.json()]);
+      setAyahs(arData.data.ayahs.map((a: Ayah, i: number) => ({
+        ...a, translation: trData.data.ayahs[i]?.text,
+      })));
+    } catch (e) { console.error(e); }
+    finally { setLoadingAyahs(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  }, [lang]);
 
-      const combinedAyahs = arData.data.ayahs.map((ayah: any, index: number) => ({
-        ...ayah,
-        translation: trData.data.ayahs[index].text
-      }));
-
-      setAyahs(combinedAyahs);
-    } catch (error) {
-      console.error("Error loading Quran data:", error);
-    } finally {
-      setLoading(false);
-      window.scrollTo(0, 0);
-    }
+  const toggleHL = (n: number) => {
+    if (!hlMode) return;
+    setHighlighted(prev => {
+      const next = new Set(prev);
+      next.has(n) ? next.delete(n) : next.add(n);
+      return next;
+    });
   };
 
-  const filteredSurahs = React.useMemo(() => {
-    return surahs.filter(s => 
-      s.englishName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.number.toString().includes(searchQuery)
-    );
-  }, [surahs, searchQuery]);
+  const filtered = React.useMemo(() =>
+    surahs.filter(s =>
+      s.englishName.toLowerCase().includes(search.toLowerCase()) ||
+      s.name.includes(search) ||
+      s.number.toString().includes(search)
+    ), [surahs, search]);
 
-  const quranSchema = {
-    "@context": "https://schema.org",
-    "@type": "Book",
-    "name": "The Holy Quran",
-    "author": "Allah (SWT)",
-    "about": "The central religious text of Islam, which Muslims believe to be a revelation from God.",
-    "genre": "Religious Text"
-  };
+  const quranSchema = { '@context': 'https://schema.org', '@type': 'Book', name: 'The Holy Quran', genre: 'Religious Text' };
 
-  if (loading && surahs.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-glamour-blue">
-        <motion.div 
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-        >
-          <Loader2 className="w-16 h-16 text-gold" />
-        </motion.div>
-      </div>
-    );
-  }
+  /* ── Loading screen ── */
+  if (loading) return (
+    <div style={{ background: NAVY, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Loader2 size={40} style={{ color: GOLD, animation: 'spin 1.2s linear infinite' }} />
+      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+    </div>
+  );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-24">
-      <SEO 
-        title={selectedSurah ? `Surah ${selectedSurah.englishName}` : t('quran.title')} 
-        description={selectedSurah ? `Read Surah ${selectedSurah.englishName} with translation and audio.` : t('quran.read_listen')}
-        keywords={selectedSurah ? `surah ${selectedSurah.englishName}, quran ${selectedSurah.number}` : t('quran.online_translation')}
+    <div dir={isRTL ? 'rtl' : 'ltr'} style={{ background: NAVY, minHeight: '100vh', color: '#ffffff' }}>
+      <SEO
+        title={selected ? `Surah ${selected.englishName} — ${L.title}` : `${L.title} | Al Ummah AI`}
+        description={selected ? `Read Surah ${selected.englishName} in Arabic with ${L.edition} and highlighting.` : L.subtitle}
+        keywords="quran online, read quran, surah, quran translation, holy quran"
         schema={quranSchema}
+        canonical="https://www.alummahai.com/quran"
+        lang={lang}
       />
 
-      <AnimatePresence mode="wait">
-        {selectedSurah ? (
-          <motion.div 
-            key="surah-view"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-16"
-          >
-            <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-              <button 
-                onClick={() => setSelectedSurah(null)}
-                className="flex items-center text-gold font-black tracking-[0.3em] uppercase text-[10px] hover:text-cream transition-all group"
-              >
-                <ChevronLeft className="w-5 h-5 mr-3 group-hover:-translate-x-2 transition-transform" /> {t('quran.back_to_surahs')}
-              </button>
-              
-              <div className="flex items-center space-x-4 bg-glamour-blue-light/50 px-6 py-3 rounded-2xl border border-gold/20">
-                <Languages className="w-4 h-4 text-gold" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-cream/60">{t('quran.edition')}: {currentEdition}</span>
-              </div>
+      {/* ══════════════════════ HERO — Quran photo */}
+      {!selected && (
+        <div style={{ position: 'relative', minHeight: 'clamp(280px,40vh,420px)', display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
+          <img
+            src="https://images.unsplash.com/photo-1609599006353-e629aaabfeae?w=1600&q=80&auto=format&fit=crop"
+            alt="Holy Quran"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 40%' }}
+          />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom,rgba(10,37,64,0.5) 0%,rgba(10,37,64,0.3) 30%,rgba(10,37,64,0.95) 100%)' }} />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
+            style={{ position: 'relative', zIndex: 1, width: '100%', textAlign: 'center', padding: 'clamp(80px,12vw,120px) 20px clamp(36px,5vw,56px)' }}>
+            <div style={{ display: 'inline-block', padding: '4px 16px', background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.3)', borderRadius: 99, fontFamily: "'DM Sans',sans-serif", fontSize: '0.55rem', fontWeight: 900, color: GOLD, textTransform: 'uppercase', letterSpacing: '0.28em', marginBottom: 18, backdropFilter: 'blur(8px)' }}>
+              ✦ {L.subtitle}
             </div>
+            <h1 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(2.2rem,7vw,5rem)', color: '#ffffff', letterSpacing: '-0.02em', textShadow: '0 2px 24px rgba(0,0,0,0.4)', marginBottom: 8 }}>
+              {L.title}
+            </h1>
+            <p style={{ fontFamily: "'Amiri',serif", fontSize: 'clamp(1rem,3vw,1.6rem)', color: 'rgba(212,175,55,0.8)', marginTop: 10, textShadow: '0 1px 8px rgba(0,0,0,0.3)' }}>
+              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+            </p>
+          </motion.div>
+        </div>
+      )}
 
-            <div className="text-center space-y-8 relative">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gold/5 rounded-full blur-3xl -z-10"></div>
-              <h1 className="text-6xl md:text-9xl font-display font-black text-cream tracking-tighter">{selectedSurah.name}</h1>
-              <p className="text-3xl font-display text-gold tracking-[0.2em]">{selectedSurah.englishName}</p>
-              <div className="flex items-center justify-center space-x-8 text-[11px] text-gold/40 uppercase tracking-[0.4em] font-black">
-                <span className="bg-white/5 px-6 py-2 rounded-full border border-gold/10">{selectedSurah.revelationType}</span>
-                <span className="bg-white/5 px-6 py-2 rounded-full border border-gold/10">{selectedSurah.numberOfAyahs} {t('quran.ayahs')}</span>
+      <div style={{ maxWidth: selected ? 820 : 1200, margin: '0 auto', padding: 'clamp(28px,5vw,56px) 20px 80px' }}>
+
+        <AnimatePresence mode="wait">
+
+          {/* ══════════════════════ SURAH LIST */}
+          {!selected && (
+            <motion.div key="list" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
+
+              {/* Search */}
+              <div style={{ position: 'relative', marginBottom: 36 }}>
+                <Search size={18} style={{ position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)', color: 'rgba(212,175,55,0.5)', pointerEvents: 'none' }} />
+                <input
+                  value={search} onChange={e => setSearch(e.target.value)}
+                  placeholder={L.search}
+                  style={{
+                    width: '100%', boxSizing: 'border-box',
+                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(212,175,55,0.2)',
+                    borderRadius: 14, padding: '14px 18px 14px 50px',
+                    fontFamily: "'DM Sans',sans-serif", fontSize: '0.9rem',
+                    color: '#ffffff', outline: 'none', transition: 'border-color 0.2s',
+                  }}
+                  onFocus={e => (e.target.style.borderColor = 'rgba(212,175,55,0.5)')}
+                  onBlur={e => (e.target.style.borderColor = 'rgba(212,175,55,0.2)')}
+                />
               </div>
-            </div>
 
-            {selectedSurah.number !== 1 && selectedSurah.number !== 9 && (
-              <div className="glass-card p-16 md:p-24 text-center border-gold/30 shadow-[0_0_100px_rgba(212,175,55,0.1)] relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold/30 to-transparent"></div>
-                <p className="text-5xl md:text-8xl font-arabic text-gold leading-loose text-shadow-gold">
-                  بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-                </p>
+              {/* Grid of surahs */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 12 }}>
+                {filtered.map(surah => (
+                  <motion.button key={surah.number}
+                    whileHover={{ y: -3 }}
+                    onClick={() => loadSurah(surah)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 14,
+                      background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)',
+                      borderRadius: 14, padding: '14px 16px', cursor: 'pointer',
+                      textAlign: isRTL ? 'right' : 'left', transition: 'all 0.18s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.35)'; e.currentTarget.style.background = 'rgba(212,175,55,0.05)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}>
+
+                    {/* Number badge */}
+                    <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: "'DM Sans',sans-serif", fontWeight: 900, fontSize: '0.75rem', color: GOLD }}>
+                      {surah.number}
+                    </div>
+
+                    {/* Name */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: '0.88rem', color: '#ffffff', marginBottom: 2 }}>{surah.englishName}</div>
+                      <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.58rem', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{surah.englishNameTranslation} · {surah.numberOfAyahs} {L.ayahs}</div>
+                    </div>
+
+                    {/* Arabic name */}
+                    <div style={{ fontFamily: "'Amiri',serif", fontSize: '1.05rem', color: GOLD, flexShrink: 0 }}>{surah.name}</div>
+                  </motion.button>
+                ))}
               </div>
-            )}
+            </motion.div>
+          )}
 
-            <div className="grid grid-cols-1 gap-12 max-w-5xl mx-auto">
-              {ayahs.map((ayah) => (
-                <motion.div 
-                  key={ayah.number} 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  className="glass-card p-10 md:p-16 space-y-12 hover:border-gold transition-all group relative border-gold/10 bg-glamour-blue-light/30"
-                >
-                  <div className="flex justify-between items-center">
-                    <div className="w-12 h-12 rounded-xl border border-gold/20 flex items-center justify-center text-xs font-black text-gold group-hover:bg-gold group-hover:text-glamour-blue transition-all shadow-xl">
-                      {ayah.numberInSurah}
-                    </div>
-                    <div className="flex space-x-4">
-                      <button className="p-3 bg-white/5 rounded-xl text-gold/40 hover:text-gold hover:bg-gold/10 transition-all border border-transparent hover:border-gold/20">
-                        <Play className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-12">
-                    <p className="text-4xl md:text-6xl font-arabic text-cream text-right leading-[2.5] dir-rtl tracking-wide font-medium">
-                      {ayah.text}
-                    </p>
-                    <div className="pt-12 border-t border-gold/10">
-                      <p className="text-xl md:text-2xl font-serif text-cream/70 leading-relaxed font-light italic text-left">
-                        {ayah.translation}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+          {/* ══════════════════════ READER — libro */}
+          {selected && (
+            <motion.div key="reader" ref={readerRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
 
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-8 pt-24 border-t border-gold/10">
-              {selectedSurah.number > 1 ? (
-                <button 
-                  onClick={() => loadSurah(surahs[selectedSurah.number - 2])}
-                  className="flex items-center text-gold font-black uppercase tracking-[0.3em] text-[10px] hover:text-cream transition-all group"
-                >
-                  <ChevronLeft className="w-6 h-6 mr-4 group-hover:-translate-x-2 transition-transform" /> {t('quran.previous_surah')}
+              {/* ── Top bar ── */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 32 }}>
+                <button onClick={() => setSelected(null)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'transparent', border: '1px solid rgba(212,175,55,0.25)', borderRadius: 8, padding: '7px 13px', color: GOLD, fontFamily: "'DM Sans',sans-serif", fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', transition: 'all 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(212,175,55,0.08)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <ChevronLeft size={14} /> {L.back}
                 </button>
-              ) : <div />}
-              
-              {selectedSurah.number < 114 && (
-                <button 
-                  onClick={() => loadSurah(surahs[selectedSurah.number])}
-                  className="flex items-center text-gold font-black uppercase tracking-[0.3em] text-[10px] hover:text-cream transition-all group"
-                >
-                  {t('quran.next_surah')} <ChevronRight className="w-6 h-6 ml-4 group-hover:translate-x-2 transition-transform" />
-                </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {/* Edition badge */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '6px 12px' }}>
+                    <Languages size={13} style={{ color: 'rgba(212,175,55,0.6)' }} />
+                    <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.62rem', fontWeight: 700, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{L.edition}: {EDITIONS[lang] || EDITIONS.en}</span>
+                  </div>
+
+                  {/* Highlight toggle */}
+                  <button
+                    onClick={() => setHlMode(h => !h)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, background: hlMode ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${hlMode ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 8, padding: '6px 12px', color: hlMode ? GOLD : 'rgba(255,255,255,0.45)', fontFamily: "'DM Sans',sans-serif", fontSize: '0.62rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', transition: 'all 0.15s' }}>
+                    <Highlighter size={13} /> {hlMode ? L.clearHL : L.highlight}
+                  </button>
+
+                  {highlighted.size > 0 && (
+                    <button onClick={() => setHighlighted(new Set())}
+                      style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', fontFamily: "'DM Sans',sans-serif", fontSize: '0.62rem', cursor: 'pointer', padding: '6px 8px' }}>
+                      <X size={11} /> {highlighted.size}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* ── Surah title ── */}
+              <div style={{ textAlign: 'center', marginBottom: 40, padding: '32px 20px', background: 'linear-gradient(135deg,rgba(212,175,55,0.07),rgba(212,175,55,0.03))', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 20 }}>
+                <h1 style={{ fontFamily: "'Amiri',serif", fontSize: 'clamp(2rem,6vw,3.5rem)', color: GOLD, marginBottom: 10, lineHeight: 1.2 }}>{selected.name}</h1>
+                <p style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 'clamp(1rem,3vw,1.5rem)', color: '#ffffff', marginBottom: 12 }}>{selected.englishName}</p>
+                <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', marginBottom: 12 }}>{selected.englishNameTranslation}</p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  {[selected.revelationType === 'Meccan' ? L.meccan : L.medinan, `${selected.numberOfAyahs} ${L.ayahs}`, `Surah ${selected.number}`].map(tag => (
+                    <span key={tag} style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.58rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'rgba(212,175,55,0.55)', background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 99, padding: '3px 10px' }}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── Bismillah ── */}
+              {selected.number !== 1 && selected.number !== 9 && (
+                <div style={{ textAlign: 'center', marginBottom: 36, padding: '24px 20px', borderBottom: '1px solid rgba(212,175,55,0.1)' }}>
+                  <p style={{ fontFamily: "'Amiri',serif", fontSize: 'clamp(1.4rem,4vw,2.2rem)', color: GOLD, lineHeight: 2, direction: 'rtl' }}>
+                    بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                  </p>
+                </div>
               )}
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div 
-            key="surah-list"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-20"
-          >
-            <div className="text-center space-y-8">
-              <h1 className="text-6xl md:text-9xl font-display font-black text-cream tracking-tighter">{t('quran.title')}</h1>
-              <p className="text-gold/60 text-sm font-black uppercase tracking-[0.5em]">{t('quran.subtitle')}</p>
-            </div>
 
-            <div className="max-w-4xl mx-auto relative group">
-              <div className="absolute -inset-1 bg-gold/20 rounded-[2rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity"></div>
-              <input
-                type="text"
-                placeholder={t('quran.search_placeholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-glamour-blue-light/50 backdrop-blur-2xl border border-gold/20 rounded-[2rem] py-8 px-20 text-2xl focus:outline-none focus:border-gold shadow-2xl transition-all placeholder:text-cream/10 relative z-10"
-              />
-              <Search className="absolute left-8 top-8 w-8 h-8 text-gold group-focus-within:scale-110 transition-transform z-10" />
-            </div>
+              {/* ── Ayahs — libro style ── */}
+              {loadingAyahs ? (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
+                  <Loader2 size={32} style={{ color: GOLD, animation: 'spin 1.2s linear infinite' }} />
+                  <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {ayahs.map(ayah => {
+                    const isHL = highlighted.has(ayah.numberInSurah);
+                    return (
+                      <motion.div key={ayah.number}
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: '-60px' }}
+                        onClick={() => toggleHL(ayah.numberInSurah)}
+                        style={{
+                          background: isHL ? 'rgba(212,175,55,0.1)' : 'transparent',
+                          border: isHL ? '1px solid rgba(212,175,55,0.28)' : '1px solid transparent',
+                          borderRadius: 14,
+                          padding: 'clamp(18px,3vw,28px) clamp(16px,3vw,28px)',
+                          cursor: hlMode ? 'pointer' : 'default',
+                          transition: 'all 0.18s',
+                          position: 'relative',
+                        }}
+                        onMouseEnter={e => { if (hlMode) e.currentTarget.style.background = isHL ? 'rgba(212,175,55,0.12)' : 'rgba(255,255,255,0.03)'; }}
+                        onMouseLeave={e => { if (!isHL) e.currentTarget.style.background = 'transparent'; }}>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-              {filteredSurahs.map((surah) => (
-                <motion.button
-                  key={surah.number}
-                  whileHover={{ y: -15, scale: 1.02 }}
-                  onClick={() => loadSurah(surah)}
-                  className="glass-card p-10 flex items-center space-x-10 hover:border-gold hover:shadow-[0_20px_50px_rgba(212,175,55,0.15)] transition-all text-left group relative overflow-hidden"
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-gold/10 transition-all"></div>
-                  <div className="w-16 h-16 bg-glamour-blue-light rounded-2xl flex items-center justify-center font-display font-black text-gold group-hover:bg-gold group-hover:text-glamour-blue transition-all border border-gold/20 shadow-xl relative z-10">
-                    {surah.number}
-                  </div>
-                  <div className="flex-1 relative z-10">
-                    <h3 className="text-2xl font-display font-black text-cream group-hover:text-gold transition-colors">{surah.englishName}</h3>
-                    <p className="text-[10px] text-cream/40 uppercase tracking-[0.3em] font-black">{surah.englishNameTranslation}</p>
-                  </div>
-                  <div className="text-right relative z-10">
-                    <p className="text-3xl font-arabic text-gold">{surah.name}</p>
-                    <p className="text-[10px] text-gold/60 font-black uppercase tracking-tighter">{surah.numberOfAyahs} {t('quran.ayahs')}</p>
-                  </div>
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
+                        {/* Ayah number pill */}
+                        <div style={{ display: 'flex', justifyContent: isRTL ? 'flex-start' : 'flex-end', marginBottom: 14 }}>
+                          <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.6rem', fontWeight: 900, color: isHL ? GOLD : 'rgba(212,175,55,0.45)', background: isHL ? 'rgba(212,175,55,0.15)' : 'rgba(212,175,55,0.07)', border: `1px solid ${isHL ? 'rgba(212,175,55,0.35)' : 'rgba(212,175,55,0.12)'}`, borderRadius: 99, padding: '3px 10px', transition: 'all 0.18s' }}>
+                            {ayah.numberInSurah}
+                          </span>
+                        </div>
+
+                        {/* Arabic text — right aligned, large, beautiful */}
+                        <p style={{
+                          fontFamily: "'Amiri',serif",
+                          fontSize: 'clamp(1.3rem,3.5vw,2rem)',
+                          color: '#ffffff', lineHeight: 2.2,
+                          direction: 'rtl', textAlign: 'right',
+                          marginBottom: 20,
+                          paddingBottom: 20,
+                          borderBottom: '1px solid rgba(212,175,55,0.08)',
+                        }}>
+                          {ayah.text}
+                        </p>
+
+                        {/* Translation — below, in reading language */}
+                        {ayah.translation && (
+                          <p style={{
+                            fontFamily: lang === 'ar' ? "'Amiri',serif" : "'DM Sans',sans-serif",
+                            fontSize: 'clamp(0.82rem,1.8vw,0.96rem)',
+                            fontWeight: 300,
+                            color: 'rgba(255,255,255,0.52)',
+                            lineHeight: 1.9,
+                            direction: isRTL ? 'rtl' : 'ltr',
+                            textAlign: isRTL ? 'right' : 'left',
+                            fontStyle: lang !== 'ar' ? 'italic' : 'normal',
+                          }}>
+                            {ayah.translation}
+                          </p>
+                        )}
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* ── Prev / Next ── */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 48, paddingTop: 28, borderTop: '1px solid rgba(212,175,55,0.12)', flexWrap: 'wrap', gap: 12 }}>
+                {selected.number > 1 ? (
+                  <button onClick={() => loadSurah(surahs[selected.number - 2])}
+                    style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9, padding: '9px 16px', color: 'rgba(255,255,255,0.6)', fontFamily: "'DM Sans',sans-serif", fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', transition: 'all 0.15s' }}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(212,175,55,0.35)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}>
+                    <ChevronLeft size={14} /> {L.prev}
+                  </button>
+                ) : <div />}
+                {selected.number < 114 && (
+                  <button onClick={() => loadSurah(surahs[selected.number])}
+                    style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.25)', borderRadius: 9, padding: '9px 16px', color: GOLD, fontFamily: "'DM Sans',sans-serif", fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', transition: 'all 0.15s' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(212,175,55,0.18)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(212,175,55,0.1)')}>
+                    {L.next} <ChevronRight size={14} />
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Highlight tip */}
+        {selected && hlMode && (
+          <div style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', background: 'rgba(10,37,64,0.95)', border: '1px solid rgba(212,175,55,0.3)', borderRadius: 99, padding: '9px 20px', fontFamily: "'DM Sans',sans-serif", fontSize: '0.65rem', fontWeight: 700, color: GOLD, backdropFilter: 'blur(12px)', zIndex: 100, whiteSpace: 'nowrap', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
+            <Highlighter size={12} style={{ display: 'inline', marginRight: 6 }} />
+            {lang === 'ar' ? 'انقر على أي آية لتمييزها' : lang === 'fr' ? 'Cliquez sur un verset pour le surligner' : lang === 'es' ? 'Haz clic en un versículo para subrayarlo' : 'Click any verse to highlight it'}
+          </div>
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 }
