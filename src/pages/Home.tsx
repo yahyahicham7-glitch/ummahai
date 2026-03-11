@@ -3,78 +3,12 @@ import { PrayerWidget } from '@/src/components/PrayerWidget';
 import { SEO } from '@/src/components/SEO';
 import { BookOpen, MapPin, ArrowRight, Search, ChevronRight, Shield, Globe, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { motion, useInView } from 'motion/react';
+import { motion, useInView, useMotionValue, useSpring, animate } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 
-/* ──────────────────────────────────────────────────────────
-   Per-language UI copy
-   Rules for copy:
-   - CTA labels: max 14 chars (must fit 2 side-by-side on 320px)
-   - H1: max 44 chars (must fit on 2 lines at 1.55rem on 320px)
-   - sub: max 80 chars (3 lines max at 0.84rem)
-────────────────────────────────────────────────────────── */
-const COPY: Record<string, {
-  h1: string; sub: string;
-  cta1: string; cta2: string;
-  seoTitle: string; seoDesc: string;
-  prayerH: string; prayerSub: string;
-  toolsH: string; learnH: string; whyH: string;
-  quranCta: string; blogCta: string;
-}> = {
-  en: {
-    h1:       'Prayer Times, Qibla & Quran',
-    sub:      'GPS prayer times, Qibla, Quran, Zakat and more — free.',
-    cta1:     'My Location', cta2: 'Search City',
-    seoTitle: 'Al Ummah AI — Prayer Times, Qibla & Quran | Free Islamic Platform',
-    seoDesc:  'Al Ummah AI: accurate GPS prayer times for Fajr, Dhuhr, Asr, Maghrib & Isha. Qibla finder, Quran, Zakat 2026, Ramadan guide and Scholar AI. Free for 1.8 billion Muslims.',
-    prayerH:  'Prayer Times Near You',
-    prayerSub:'Auto-detected by GPS. Search any city worldwide.',
-    toolsH:   'Islamic Tools',
-    learnH:   'Learn & Grow',
-    whyH:     'Why Al Ummah AI?',
-    quranCta: 'Read Quran', blogCta: 'Explore Blog',
-  },
-  fr: {
-    h1:       'Prière, Qibla & Coran',
-    sub:      'Horaires GPS, Qibla, Coran et Zakat — gratuit.',
-    cta1:     'Ma position', cta2: 'Rechercher',
-    seoTitle: 'Al Ummah AI — Horaires de Prière, Qibla & Coran | Plateforme Islamique Gratuite',
-    seoDesc:  'Al Ummah AI : horaires GPS pour Fajr, Dhuhr, Asr, Maghrib et Isha. Boussole Qibla, Coran complet, Zakat 2026 et Scholar AI. Gratuit pour 1,8 milliard de musulmans.',
-    prayerH:  'Heures de prière',
-    prayerSub:'Détecté automatiquement. Cherchez n\'importe quelle ville.',
-    toolsH:   'Outils islamiques',
-    learnH:   'Apprendre',
-    whyH:     'Pourquoi Al Ummah AI ?',
-    quranCta: 'Lire le Coran', blogCta: 'Le blog',
-  },
-  es: {
-    h1:       'Oración, Qibla y Corán',
-    sub:      'Horarios GPS, Qibla, Corán y Zakat — gratuito.',
-    cta1:     'Mi ubicación', cta2: 'Buscar ciudad',
-    seoTitle: 'Al Ummah AI — Horarios de Oración, Qibla y Corán | Plataforma Islámica Gratuita',
-    seoDesc:  'Al Ummah AI: horarios GPS para Fajr, Dhuhr, Asr, Maghrib e Isha. Brújula Qibla, Corán completo, Zakat 2026 y Scholar AI. Gratis para 1800 millones de musulmanes.',
-    prayerH:  'Horarios de oración',
-    prayerSub:'Detección GPS automática. Busca cualquier ciudad.',
-    toolsH:   'Herramientas islámicas',
-    learnH:   'Aprender',
-    whyH:     '¿Por qué Al Ummah AI?',
-    quranCta: 'Leer Corán', blogCta: 'Ver blog',
-  },
-  ar: {
-    h1:       'الصلاة والقبلة والقرآن',
-    sub:      'أوقات الصلاة بـGPS والقبلة والقرآن والزكاة — مجاناً.',
-    cta1:     'موقعي', cta2: 'ابحث',
-    seoTitle: 'Al Ummah AI — أوقات الصلاة والقبلة والقرآن | منصة إسلامية مجانية',
-    seoDesc:  'Al Ummah AI: أوقات صلاة دقيقة بـGPS للفجر والظهر والعصر والمغرب والعشاء. اتجاه القبلة، القرآن الكامل، حاسبة الزكاة 2026 والعالم AI. مجاني لـ1.8 مليار مسلم.',
-    prayerH:  'أوقات الصلاة',
-    prayerSub:'تحديد تلقائي بـ GPS. ابحث عن أي مدينة.',
-    toolsH:   'الأدوات الإسلامية',
-    learnH:   'تعلّم',
-    whyH:     'لماذا Al Ummah AI؟',
-    quranCta: 'القرآن', blogCta: 'المدونة',
-  },
-};
+const GOLD = '#D4AF37';
 
+/* ── Data ─────────────────────────────────────────────────── */
 const PHRASES = [
   { ar: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', en: 'In the name of Allah, the Most Gracious' },
   { ar: 'اللَّهُ أَكْبَرُ',                        en: 'Allah is the Greatest' },
@@ -82,465 +16,607 @@ const PHRASES = [
   { ar: 'لَا إِلَٰهَ إِلَّا اللَّهُ',             en: 'There is no god but Allah' },
 ];
 
-const TOOLS = [
-  { e:'🕐', t:'Prayer Times',  b:'Live', d:'Fajr, Dhuhr, Asr, Maghrib & Isha.', l:'/'       },
-  { e:'🧭', t:'Qibla Finder',  b:'GPS',  d:'Compass toward the Kaaba.',           l:'/qibla'  },
-  { e:'📖', t:'Quran',         b:'Full', d:'Complete Quran & translations.',       l:'/quran'  },
-  { e:'💛', t:'Zakat',         b:'2026', d:'Calculator — 2026 Nisab rates.',       l:'/zakat'  },
+const CORE_TOOLS = [
+  {
+    emoji: '🕐', label: 'Prayer Times', badge: 'Live',
+    desc: 'GPS-accurate Fajr, Dhuhr, Asr, Maghrib & Isha for any city worldwide.',
+    link: '/',
+  },
+  {
+    emoji: '🧭', label: 'Qibla Finder', badge: 'GPS',
+    desc: 'Real-time compass direction toward the Holy Kaaba in Mecca.',
+    link: '/qibla',
+  },
+  {
+    emoji: '📖', label: 'Quran', badge: 'Audio',
+    desc: 'Complete Quran with audio recitations, translations and verse search.',
+    link: '/quran',
+  },
+  {
+    emoji: '💛', label: 'Zakat Calculator', badge: '2026',
+    desc: 'Calculate your annual Zakat obligation based on 2026 Nisab rates.',
+    link: '/zakat',
+  },
 ];
 
-const LEARN = [
-  { e:'🌙', t:'Ramadan 2026', h:'/ramadan',                     d:'Full guide & timetable' },
-  { e:'🤲', t:'Daily Duas',   h:'/blog/morning-evening-adhkar', d:'Morning & evening duas' },
-  { e:'✍️', t:'Blog',         h:'/blog',                        d:'Islamic knowledge' },
-  { e:'✨', t:'Scholar AI',   h:'/scholar',                     d:'Ask any question' },
+const GUIDANCE = [
+  { emoji: '🌙', label: 'Ramadan 2026',  href: '/ramadan',                     desc: 'Full prayer timetable & spiritual guide for Ramadan' },
+  { emoji: '🤲', label: 'Daily Duas',    href: '/blog/morning-evening-adhkar', desc: 'Morning, evening and essential Islamic supplications' },
+  { emoji: '✍️', label: 'Articles',      href: '/blog',                        desc: 'Islamic knowledge, history and practical life guides' },
+  { emoji: '✨', label: 'Scholar AI',    href: '/scholar',                     desc: 'Ask any Islamic question — answered from Quran & Sunnah' },
+];
+
+const SHOP = [
+  { emoji: '🕌', label: 'Prayer Mats',        desc: 'Premium quality' },
+  { emoji: '📿', label: 'Tasbih',             desc: 'Hand-crafted' },
+  { emoji: '📖', label: 'Qurans',             desc: 'Various editions' },
+  { emoji: '🌙', label: 'Ramadan Essentials', desc: 'Complete sets' },
 ];
 
 const PILLS = [
-  ['Ramadan 2026', '/blog/ramadan-2026-prayer-timetable'],
-  ['Fajr Time',    '/blog/fajr-time-today'],
-  ['Zakat 2026',   '/blog/calculate-zakat-2026'],
-  ['How to Pray',  '/blog/how-to-pray-salah-beginners'],
-  ['Surah Kahf',   '/blog/surah-al-kahf-friday'],
-  ['Hajj 2026',    '/blog/hajj-packages-uk-2026'],
+  ['Ramadan 2026',    '/blog/ramadan-2026-prayer-timetable'],
+  ['Fajr Time Today', '/blog/fajr-time-today'],
+  ['Zakat 2026',      '/blog/calculate-zakat-2026'],
+  ['Hajj Packages',   '/blog/hajj-packages-uk-2026'],
+  ['Surah Al-Kahf',   '/blog/surah-al-kahf-friday'],
+  ['How to Pray',     '/blog/how-to-pray-salah-beginners'],
+  ['Islamic History', '/blog/islamic-history-golden-age'],
+  ['Halal Investing', '/blog/best-halal-investment-apps-2026'],
 ];
 
-/* ── Reveal animation ──────────────────────────────────── */
-function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
-  const r = useRef<HTMLDivElement>(null);
-  const v = useInView(r, { once: true, margin: '-40px' });
+const WHY = [
+  { icon: <Shield size={20} />, title: 'Scholar Verified',  desc: 'All content reviewed by qualified Islamic scholars for accuracy and authenticity.' },
+  { icon: <MapPin  size={20} />, title: 'GPS Precision',    desc: 'Prayer times calculated from your exact GPS coordinates — never miss a prayer.' },
+  { icon: <Globe   size={20} />, title: '5 Languages',      desc: 'English, Arabic, French, Spanish and Indonesian — for the global Ummah.' },
+  { icon: <Zap     size={20} />, title: 'Always Free',      desc: 'Every tool on Al Ummah AI is 100% free, forever. No subscription, no login.' },
+];
+
+/* ── Utils ─────────────────────────────────────────────────── */
+function useCountdown(target: string) {
+  const [days, setDays] = useState(0);
+  useEffect(() => {
+    const d = Math.ceil((new Date(target).getTime() - Date.now()) / 86400000);
+    setDays(d > 0 ? d : 0);
+  }, [target]);
+  return days;
+}
+
+function Reveal({ children, delay = 0, y = 22 }: { children: React.ReactNode; delay?: number; y?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-40px' });
   return (
-    <motion.div ref={r}
-      initial={{ opacity: 0, y: 14 }}
-      animate={v ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-      transition={{ duration: 0.55, delay, ease: [0.16, 1, 0.3, 1] }}>
+    <motion.div ref={ref}
+      initial={{ opacity: 0, y }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y }}
+      transition={{ duration: 0.65, delay, ease: [0.16, 1, 0.3, 1] }}>
       {children}
     </motion.div>
   );
 }
 
-/* ── Small badge ───────────────────────────────────────── */
-const SBadge = ({ t }: { t: string }) => (
-  <div style={{
-    display: 'inline-block', padding: '3px 11px', marginBottom: 8,
-    background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.2)',
-    borderRadius: 99, fontFamily: "'DM Sans',sans-serif",
-    fontSize: '0.55rem', fontWeight: 800, letterSpacing: '0.26em',
-    textTransform: 'uppercase' as const, color: '#b8941e',
-  }}>✦ {t}</div>
-);
+/* ── Reusable section badge ───────────────────────────────── */
+function SBadge({ t, dark = false }: { t: string; dark?: boolean }) {
+  return (
+    <span style={{
+      display: 'inline-block', padding: '4px 14px', marginBottom: 14,
+      background: dark ? 'rgba(212,175,55,0.12)' : 'rgba(212,175,55,0.09)',
+      border: `1px solid ${dark ? 'rgba(212,175,55,0.24)' : 'rgba(212,175,55,0.22)'}`,
+      borderRadius: 99, fontFamily: "'DM Sans',sans-serif",
+      fontSize: '0.59rem', fontWeight: 800, letterSpacing: '0.28em',
+      textTransform: 'uppercase' as const,
+      color: dark ? '#D4AF37' : '#b8941e',
+    }}>{t}</span>
+  );
+}
 
-/* ── Main ──────────────────────────────────────────────── */
+/* ── MAIN ─────────────────────────────────────────────────── */
 export function Home() {
-  const { i18n } = useTranslation();
-  const lang  = i18n.language?.slice(0, 2) || 'en';
-  const L     = COPY[lang] || COPY.en;
-  const isRTL = lang === 'ar';
-
-  const [pi,   setPi]   = useState(0);
-  const [vis,  setVis]  = useState(true);
-  const [days, setDays] = useState(0);
+  const daysToRamadan = useCountdown('2026-02-17');
+  const [phraseIdx, setPhraseIdx] = useState(0);
+  const [phraseVis, setPhraseVis] = useState(true);
 
   useEffect(() => {
-    const d = Math.ceil((new Date('2026-02-17').getTime() - Date.now()) / 86400000);
-    setDays(d > 0 ? d : 0);
     const iv = setInterval(() => {
-      setVis(false);
-      setTimeout(() => { setPi(i => (i + 1) % PHRASES.length); setVis(true); }, 380);
+      setPhraseVis(false);
+      setTimeout(() => { setPhraseIdx(i => (i + 1) % PHRASES.length); setPhraseVis(true); }, 380);
     }, 4200);
     return () => clearInterval(iv);
   }, []);
 
-  const P = PHRASES[pi];
+  const phrase = PHRASES[phraseIdx];
+
+  /* Schema.org */
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Al Ummah AI',
+    url: 'https://www.alummahai.com',
+    description: 'Free Islamic platform for accurate prayer times, Qibla direction, Quran audio, Zakat calculator and daily Islamic guidance.',
+    potentialAction: { '@type': 'SearchAction', target: 'https://www.alummahai.com/quran?q={q}', 'query-input': 'required name=q' },
+  };
+
+  /* Shared section padding */
+  const sp = { padding: 'clamp(60px,8vw,96px) clamp(16px,5vw,48px)' };
 
   return (
-    <div
-      dir={isRTL ? 'rtl' : 'ltr'}
-      style={{ background: '#ffffff', color: '#0a2540', overflowX: 'hidden' }}>
-
+    <div style={{ background: '#ffffff', color: '#0a2540', overflowX: 'hidden' }}>
       <SEO
-        title={L.seoTitle}
-        description={L.seoDesc}
-        keywords="al ummah ai, prayer times today, fajr time, qibla finder, quran, zakat 2026, ramadan 2026"
+        title="Prayer Times Near Me Today — Free Islamic Tools | Al Ummah AI"
+        description="Accurate GPS prayer times for Fajr, Dhuhr, Asr, Maghrib & Isha. Real-time Qibla finder, full Quran with audio, Zakat calculator and Ramadan 2026 guide. Free for 1.8 billion Muslims."
+        keywords="prayer times near me, fajr time today, qibla finder, quran with audio, zakat calculator 2026, ramadan 2026, islamic platform free"
         canonical="https://www.alummahai.com"
-        lang={lang}
+        schema={schema}
       />
 
-      {/* ════════════════════════════════════════════ HERO
-          Mobile-first design:
-          • pt = 56px (nav) + 24px breathing = 80px
-          • No giant min-height — content-driven
-          • Compact on small screens, taller on large ones
-      ════════════════════════════════════════════════════ */}
+      {/* ════════════════════════════
+          HERO
+      ════════════════════════════ */}
       <section style={{
-        background: 'linear-gradient(165deg,#0a2540 0%,#0d2e4d 55%,#071a2e 100%)',
-        minHeight: '88vh',
-        display: 'flex', flexDirection: 'column',
+        background: 'linear-gradient(165deg,#0a2540 0%,#0d2e4d 52%,#071a2e 100%)',
+        minHeight: '100vh', display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        padding: '80px 20px 52px',
-        position: 'relative', overflow: 'hidden', textAlign: 'center',
+        padding: 'clamp(100px,13vh,150px) clamp(16px,5vw,48px) clamp(64px,9vh,100px)',
+        position: 'relative', overflow: 'hidden',
       }}>
-        {/* Subtle dot grid */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(212,175,55,0.08) 1px,transparent 1px)', backgroundSize: '34px 34px', pointerEvents: 'none' }} />
+
+        {/* Grid dots */}
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(212,175,55,0.1) 1px, transparent 1px)', backgroundSize: '38px 38px', opacity: 0.55, pointerEvents: 'none' }} />
         {/* Center glow */}
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 'min(480px,78vw)', height: 'min(480px,78vw)', borderRadius: '50%', background: 'radial-gradient(circle,rgba(212,175,55,0.055),transparent 65%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '48%', left: '50%', transform: 'translate(-50%,-50%)', width: 'min(700px,88vw)', height: 'min(700px,88vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,175,55,0.07) 0%, transparent 65%)', pointerEvents: 'none' }} />
+        {/* Rings */}
+        {[520, 760].map(s => (
+          <div key={s} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: `min(${s}px,85vw)`, height: `min(${s}px,85vw)`, borderRadius: '50%', border: '1px solid rgba(212,175,55,0.05)', pointerEvents: 'none' }} />
+        ))}
+        {/* ── Floating particles ── */}
+        {[...Array(18)].map((_, i) => {
+          const size  = 2 + (i % 3);
+          const delay = i * 0.3;
+          const x     = 8 + (i * 5.2) % 84;
+          const y     = 5 + (i * 7.1) % 85;
+          return (
+            <motion.div key={i}
+              style={{ position: 'absolute', top: `${y}%`, left: `${x}%`, width: size, height: size, borderRadius: '50%', background: `rgba(212,175,55,${0.12 + (i % 4) * 0.06})`, pointerEvents: 'none', zIndex: 0 }}
+              animate={{ y: [0, -14 - (i % 8) * 3, 0], opacity: [0.3, 0.8, 0.3] }}
+              transition={{ duration: 4 + (i % 5), delay, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          );
+        })}
 
-        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 580 }}>
+        {/* ── Animated crescent ── */}
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
+          style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 'min(900px,110vw)', height: 'min(900px,110vw)', borderRadius: '50%', border: '1px solid rgba(212,175,55,0.025)', pointerEvents: 'none', zIndex: 0 }}>
+          {/* Orbiting dot */}
+          <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translate(-50%,-50%)', width: 6, height: 6, borderRadius: '50%', background: GOLD, boxShadow: '0 0 12px rgba(212,175,55,0.5)', opacity: 0.5 }} />
+        </motion.div>
 
-          {/* ── Arabic phrase ── */}
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}
-            style={{ marginBottom: 18, minHeight: 44 }}>
-            <div style={{
-              fontFamily: "'Amiri',serif",
-              /*
-               * RESPONSIVE: 0.9rem on 320px → 1.8rem on 768px+
-               * FR/ES labels under the phrase never overflow
-               */
-              fontSize: 'clamp(0.88rem,2.4vw,1.75rem)',
-              color: '#D4AF37', direction: 'rtl',
-              opacity: vis ? 1 : 0,
-              transform: vis ? 'translateY(0)' : 'translateY(-4px)',
-              transition: 'all 0.38s cubic-bezier(0.16,1,0.3,1)',
-              textShadow: '0 0 22px rgba(212,175,55,0.18)',
-            }}>{P.ar}</div>
-            <div style={{
-              fontFamily: "'DM Sans',sans-serif",
-              fontSize: 'clamp(0.48rem,1.1vw,0.58rem)',
-              color: 'rgba(212,175,55,0.4)', letterSpacing: '0.12em',
-              marginTop: 3, fontStyle: 'italic',
-              opacity: vis ? 1 : 0, transition: 'opacity 0.38s ease 0.1s',
-              /* Ensure long English phrases don't push layout */
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              maxWidth: '90%', margin: '3px auto 0',
-            }}>{P.en}</div>
+        {/* City dots */}
+        {[
+          { n: 'London',  t: '22%', l: '44%' },
+          { n: 'Riyadh',  t: '36%', l: '57%' },
+          { n: 'Jakarta', t: '52%', l: '77%' },
+          { n: 'Madrid',  t: '26%', l: '41%' },
+          { n: 'Dubai',   t: '37%', l: '60%' },
+        ].map(c => (
+          <div key={c.n} style={{ position: 'absolute', top: c.t, left: c.l, pointerEvents: 'none', zIndex: 0 }}>
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(212,175,55,0.3)', boxShadow: '0 0 7px rgba(212,175,55,0.22)' }} />
+            <div style={{ position: 'absolute', top: -18, left: '50%', transform: 'translateX(-50%)', fontSize: '0.47rem', fontFamily: "'DM Sans',sans-serif", fontWeight: 700, color: 'rgba(212,175,55,0.28)', whiteSpace: 'nowrap', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{c.n}</div>
+          </div>
+        ))}
+
+        {/* Content */}
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: 740, textAlign: 'center', width: '100%' }}>
+
+          {/* Rotating Arabic phrase */}
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
+            style={{ marginBottom: 30, minHeight: 64 }}>
+            <div style={{ fontFamily: "'Amiri',serif", fontSize: 'clamp(1.35rem,4.2vw,2.6rem)', color: '#D4AF37', direction: 'rtl', lineHeight: 1.3, opacity: phraseVis ? 1 : 0, transform: phraseVis ? 'translateY(0)' : 'translateY(-6px)', transition: 'all 0.38s cubic-bezier(0.16,1,0.3,1)', textShadow: '0 0 36px rgba(212,175,55,0.2)' }}>
+              {phrase.ar}
+            </div>
+            <div style={{ fontSize: '0.66rem', color: 'rgba(212,175,55,0.44)', letterSpacing: '2px', marginTop: 6, fontStyle: 'italic', opacity: phraseVis ? 1 : 0, transition: 'opacity 0.38s ease 0.1s', fontFamily: "'DM Sans',sans-serif" }}>
+              {phrase.en}
+            </div>
           </motion.div>
 
-          {/* ── H1 ── */}
-          <motion.h1
-            initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.11, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              fontFamily: "'Playfair Display',serif", fontWeight: 900,
-              /*
-               * KEY SIZES:
-               * 320px → 1.5rem  (AR ~1.4rem because it's shorter)
-               * 480px → 1.8rem
-               * 768px → 2.4rem
-               * The clamp handles ALL languages safely
-               */
-              fontSize: 'clamp(1.45rem,3.6vw,2.5rem)',
-              color: '#ffffff', lineHeight: 1.18,
-              letterSpacing: '-0.02em', marginBottom: 9,
-            }}>
-            {L.h1}
+          {/* H1 — SEO optimized */}
+          <motion.h1 initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14, duration: 0.72, ease: [0.16,1,0.3,1] }}
+            style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(2.1rem,6.5vw,4.6rem)', color: '#ffffff', lineHeight: 1.06, letterSpacing: '-0.025em', marginBottom: 18 }}>
+            Free Islamic Tools —{' '}
+            <span style={{ color: '#D4AF37', textShadow: '0 0 26px rgba(212,175,55,0.22)' }}>Prayer Times,</span>
+            {' '}Qibla & Quran
           </motion.h1>
 
-          {/* Brand identity line — SEO signal */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.19 }}
-            style={{
-              fontFamily: "'DM Sans',sans-serif", fontWeight: 700,
-              fontSize: 'clamp(0.56rem,1.2vw,0.66rem)',
-              color: 'rgba(212,175,55,0.48)', letterSpacing: '0.2em',
-              textTransform: 'uppercase', marginBottom: 14,
-            }}>
-            Al Ummah AI &mdash; {lang === 'ar' ? 'منصة إسلامية مجانية' : lang === 'fr' ? 'Plateforme islamique gratuite' : lang === 'es' ? 'Plataforma islámica gratuita' : 'Free Islamic Platform'}
-          </motion.div>
-
           {/* Subtitle */}
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.26 }}
-            style={{
-              fontFamily: "'DM Sans',sans-serif", fontWeight: 300,
-              fontSize: 'clamp(0.82rem,1.6vw,0.96rem)',
-              color: 'rgba(255,255,255,0.44)',
-              maxWidth: 340, margin: '0 auto',
-              lineHeight: 1.82, marginBottom: 'clamp(20px,3.5vh,28px)',
-            }}>
-            {L.sub}
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+            style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, fontSize: 'clamp(0.98rem,2.2vw,1.16rem)', color: 'rgba(255,255,255,0.5)', maxWidth: 480, margin: '0 auto 38px', lineHeight: 1.8 }}>
+            The complete Islamic platform — accurate, intelligent and free for 1.8 billion Muslims worldwide.
           </motion.p>
 
-          {/* ── CTAs ── Always side by side, compact padding ── */}
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.33 }}
-            style={{
-              display: 'flex', gap: 9, justifyContent: 'center',
-              flexWrap: 'wrap',  /* fallback for extreme cases */
-              marginBottom: 'clamp(20px,3.5vh,30px)',
-            }}>
-            <Link to="/" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#D4AF37', color: '#0a2540',
-              /*
-               * PADDING: vertical comfortable touch target (44px min),
-               * horizontal compact enough for FR ("Ma position") on 320px
-               */
-              padding: '11px 16px',
-              borderRadius: 10, fontFamily: "'DM Sans',sans-serif", fontWeight: 800,
-              /* Font scales: 0.7rem on 320px, 0.78rem on 480px+ */
-              fontSize: 'clamp(0.7rem,1.5vw,0.78rem)',
-              textTransform: 'uppercase', letterSpacing: '0.08em',
-              textDecoration: 'none', whiteSpace: 'nowrap',
-              boxShadow: '0 6px 22px rgba(212,175,55,0.32)', transition: 'all 0.2s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(212,175,55,0.42)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 22px rgba(212,175,55,0.32)'; }}>
-              <MapPin size={12} /> {L.cta1}
+          {/* CTAs */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+            style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 44 }}>
+            <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, background: '#D4AF37', color: '#0a2540', padding: '14px 28px', borderRadius: 12, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.12em', textDecoration: 'none', boxShadow: '0 8px 28px rgba(212,175,55,0.34)', transition: 'all 0.22s' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 36px rgba(212,175,55,0.42)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(212,175,55,0.34)'; }}>
+              <MapPin size={16} /> Use my location
             </Link>
-
-            <Link to="/" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.16)',
-              color: '#ffffff', padding: '11px 16px',
-              borderRadius: 10, fontFamily: "'DM Sans',sans-serif", fontWeight: 800,
-              fontSize: 'clamp(0.7rem,1.5vw,0.78rem)',
-              textTransform: 'uppercase', letterSpacing: '0.08em',
-              textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.2s',
-            }}
+            <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)', color: '#ffffff', padding: '14px 28px', borderRadius: 12, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.12em', textDecoration: 'none', transition: 'all 0.22s' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.4)'; e.currentTarget.style.color = '#D4AF37'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.16)'; e.currentTarget.style.color = '#ffffff'; }}>
-              <Search size={11} /> {L.cta2}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)'; e.currentTarget.style.color = '#ffffff'; }}>
+              <Search size={15} /> Search city
             </Link>
           </motion.div>
 
-          {/* ── Stats strip — 4 in a row, font scales ── */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.48 }}
-            style={{
-              display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
-              gap: 8,
-              paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.07)',
-            }}>
-            {[['1.8B+','Muslims'],['150+','Cities'],['5','Languages'],['100%','Free']].map(([n, l]) => (
-              <div key={l} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(0.9rem,2vw,1.5rem)', color: '#D4AF37', lineHeight: 1 }}>{n}</div>
-                <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 'clamp(0.4rem,0.85vw,0.52rem)', color: 'rgba(255,255,255,0.26)', textTransform: 'uppercase', letterSpacing: '0.13em', marginTop: 3 }}>{l}</div>
+          {/* Product preview */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.52 }}
+            style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 44 }}>
+            {[
+              { emoji: '🕐', label: 'Prayer Times', sub: 'Live · GPS' },
+              { emoji: '🧭', label: 'Qibla',        sub: 'Real-time' },
+              { emoji: '📖', label: 'Quran Audio',  sub: '114 Surahs' },
+            ].map(item => (
+              <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 9, background: 'rgba(255,255,255,0.055)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 11, padding: '10px 15px', backdropFilter: 'blur(10px)' }}>
+                <span style={{ fontSize: '1.15rem' }}>{item.emoji}</span>
+                <div>
+                  <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.79rem', fontWeight: 700, color: '#ffffff', lineHeight: 1.2 }}>{item.label}</div>
+                  <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.58rem', color: 'rgba(212,175,55,0.65)', fontWeight: 700, letterSpacing: '0.1em', marginTop: 1 }}>{item.sub}</div>
+                </div>
               </div>
             ))}
           </motion.div>
 
-          {/* Ramadan countdown */}
-          {days > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.62 }} style={{ marginTop: 14 }}>
-              <Link to="/ramadan" style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '5px 13px', borderRadius: 99,
-                border: '1px solid rgba(212,175,55,0.22)', background: 'rgba(212,175,55,0.07)',
-                color: '#D4AF37', fontFamily: "'DM Sans',sans-serif",
-                fontSize: 'clamp(0.6rem,1.2vw,0.7rem)', fontWeight: 700, textDecoration: 'none',
-              }}>
-                🌙 {days} days until Ramadan 2026 →
-              </Link>
-            </motion.div>
-          )}
+          {/* Stats */}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.68 }}
+            style={{ display: 'flex', gap: 'clamp(18px,4vw,44px)', flexWrap: 'wrap', justifyContent: 'center', paddingTop: 28, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            {[['1.8B+','Muslims'],['150+','Cities'],['5','Languages'],['100%','Free']].map(([n,l]) => (
+              <div key={l} style={{ textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.45rem,3vw,1.85rem)', color: '#D4AF37', lineHeight: 1 }}>{n}</div>
+                <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: '0.6rem', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.18em', marginTop: 5 }}>{l}</div>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Ramadan pill — in progress or countdown */}
+          {(() => {
+            const now = Date.now();
+            const start = new Date('2026-02-17').getTime();
+            const end   = new Date('2026-03-19').getTime();
+            const inRamadan = now >= start && now < end;
+            const daysLeft  = Math.max(Math.ceil((end - now) / 86400000), 0);
+            if (!inRamadan && daysToRamadan === 0) return null;
+            return (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.82 }} style={{ marginTop: 26 }}>
+                <Link to="/ramadan" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '8px 18px', borderRadius: 99, border: `1px solid ${inRamadan ? 'rgba(34,197,94,0.35)' : 'rgba(212,175,55,0.24)'}`, background: inRamadan ? 'rgba(34,197,94,0.08)' : 'rgba(212,175,55,0.08)', color: inRamadan ? '#22c55e' : '#D4AF37', fontFamily: "'DM Sans',sans-serif", fontSize: '0.77rem', fontWeight: 700, textDecoration: 'none', transition: 'background 0.2s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = inRamadan ? 'rgba(34,197,94,0.14)' : 'rgba(212,175,55,0.14)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = inRamadan ? 'rgba(34,197,94,0.08)' : 'rgba(212,175,55,0.08)')}>
+                  {inRamadan ? (
+                    <>
+                      <motion.span animate={{ scale:[1,1.5,1], opacity:[0.5,1,0.5] }} transition={{ duration: 1.6, repeat: Infinity }} style={{ width:7, height:7, borderRadius:'50%', background:'#22c55e', display:'inline-block', boxShadow:'0 0 8px rgba(34,197,94,0.6)' }} />
+                      🌙 Ramadan 2026 — {daysLeft} days remaining →
+                    </>
+                  ) : (
+                    <>🌙 {daysToRamadan} days until Ramadan 2026 →</>
+                  )}
+                </Link>
+              </motion.div>
+            );
+          })()}
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════ TRUST BAR */}
-      <div style={{
-        background: '#f7f8fa', borderBottom: '1px solid rgba(10,37,64,0.07)',
-        padding: '9px 20px', overflowX: 'auto',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'nowrap', gap: 0, minWidth: 'max-content', margin: '0 auto' }}>
-          {[['📍','GPS prayer times'],['🧭','Live Qibla'],['📖','Full Quran'],['🛡️','Scholar verified']].map(([ic, tx], i, a) => (
-            <div key={String(tx)} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '2px 14px', borderRight: i < a.length - 1 ? '1px solid rgba(10,37,64,0.07)' : 'none', whiteSpace: 'nowrap' }}>
-              <span style={{ fontSize: '0.78rem' }}>{ic}</span>
-              <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 600, fontSize: 'clamp(0.58rem,1.3vw,0.68rem)', color: 'rgba(10,37,64,0.52)' }}>{tx}</span>
+      {/* ════════════════════════════
+          TRUST BAR
+      ════════════════════════════ */}
+      <div style={{ background: '#f7f8fa', borderBottom: '1px solid rgba(10,37,64,0.07)', padding: '13px clamp(16px,5vw,48px)', overflowX: 'auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', maxWidth: 920, margin: '0 auto' }}>
+          {[
+            { icon: '📍', text: 'GPS-accurate prayer times' },
+            { icon: '🧭', text: 'Real-time Qibla direction' },
+            { icon: '📖', text: 'Quran with audio' },
+            { icon: '🛡️', text: 'Scholar verified' },
+          ].map(({ icon, text }, i, arr) => (
+            <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '4px clamp(10px,2.5vw,22px)', borderRight: i < arr.length - 1 ? '1px solid rgba(10,37,64,0.07)' : 'none', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '0.86rem' }}>{icon}</span>
+              <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 600, fontSize: 'clamp(0.69rem,1.5vw,0.76rem)', color: 'rgba(10,37,64,0.56)' }}>{text}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ════════════════════════════════ PRAYER TIMES */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(40px,6vw,72px) 20px' }}>
+      {/* ════════════════════════════
+          PRAYER TIMES
+      ════════════════════════════ */}
+      <section style={{ maxWidth: 1100, margin: '0 auto', ...sp }}>
         <Reveal>
-          <div style={{ textAlign: 'center', marginBottom: 'clamp(22px,4vh,36px)' }}>
-            <SBadge t="Live · GPS Accurate" />
-            <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.3rem,3.5vw,2.3rem)', color: '#0a2540', marginBottom: 7 }}>
-              {L.prayerH}
+          <div style={{ textAlign: 'center', marginBottom: 50 }}>
+            <SBadge t="✦ Live · GPS Accurate" />
+            <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.85rem,4.5vw,3.1rem)', color: '#0a2540', marginBottom: 11, letterSpacing: '-0.015em', display: 'block' }}>
+              Prayer Times Near You
             </h2>
-            <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.48)', maxWidth: 270, margin: '0 auto', lineHeight: 1.8, fontSize: 'clamp(0.8rem,1.6vw,0.9rem)' }}>
-              {L.prayerSub}
+            <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.5)', maxWidth: 380, margin: '0 auto', lineHeight: 1.8, fontSize: 'clamp(0.88rem,2vw,0.98rem)' }}>
+              Auto-detected from your GPS. Search any city worldwide.
             </p>
           </div>
         </Reveal>
-        <Reveal delay={0.07}><PrayerWidget /></Reveal>
+        <Reveal delay={0.08}><PrayerWidget /></Reveal>
       </section>
 
-      {/* ════════════════════════════════════════ TOOLS */}
-      <section style={{ background: 'linear-gradient(160deg,#0a2540 0%,#071a2e 100%)', padding: 'clamp(40px,6vw,72px) 20px' }}>
+      {/* ════════════════════════════
+          FOUR CORE TOOLS
+      ════════════════════════════ */}
+      <section style={{ background: 'linear-gradient(160deg,#0a2540 0%,#071a2e 100%)', ...sp }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <Reveal>
-            <div style={{ textAlign: 'center', marginBottom: 'clamp(20px,4vh,34px)' }}>
-              <SBadge t="Sacred Tools" />
-              <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.3rem,3.5vw,2.3rem)', color: '#ffffff' }}>{L.toolsH}</h2>
+            <div style={{ textAlign: 'center', marginBottom: 50 }}>
+              <SBadge t="✦ Sacred Tools" dark />
+              <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.85rem,4.5vw,3.1rem)', color: '#ffffff', letterSpacing: '-0.015em', display: 'block' }}>
+                Everything You Need
+              </h2>
             </div>
           </Reveal>
 
-          {/* 2-col mobile → 4-col desktop */}
-          <div className="home__tools-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10, marginBottom: 10 }}>
-            {TOOLS.map((tool, i) => (
-              <Reveal key={tool.t} delay={i * 0.06}>
-                <Link to={tool.l} style={{ display: 'block', textDecoration: 'none', height: '100%' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: 'clamp(14px,2.5vw,20px) clamp(12px,2vw,16px)', height: '100%', position: 'relative', transition: 'all 0.26s cubic-bezier(0.16,1,0.3,1)' }}
-                    onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = 'rgba(212,175,55,0.35)'; el.style.background = 'rgba(255,255,255,0.07)'; el.style.transform = 'translateY(-3px)'; }}
-                    onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = 'rgba(255,255,255,0.08)'; el.style.background = 'rgba(255,255,255,0.04)'; el.style.transform = 'translateY(0)'; }}>
-                    <span style={{ position: 'absolute', top: 10, right: 10, fontSize: '0.46rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#D4AF37', background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.2)', padding: '2px 6px', borderRadius: 99, fontFamily: "'DM Sans',sans-serif" }}>{tool.b}</span>
-                    <div style={{ fontSize: 'clamp(1.4rem,3.5vw,1.75rem)', marginBottom: 9 }}>{tool.e}</div>
-                    <h3 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 'clamp(0.85rem,2vw,1rem)', color: '#ffffff', marginBottom: 4 }}>{tool.t}</h3>
-                    <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(255,255,255,0.36)', fontSize: 'clamp(0.7rem,1.5vw,0.78rem)', lineHeight: 1.6 }}>{tool.d}</p>
-                    <div style={{ marginTop: 12, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.57rem', color: 'rgba(212,175,55,0.5)', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: 3 }}>Open <ChevronRight size={9} /></div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(215px,1fr))', gap: 14, marginBottom: 12 }}>
+            {CORE_TOOLS.map((tool, i) => (
+              <Reveal key={tool.label} delay={i * 0.07}>
+                <Link to={tool.link} style={{ display: 'block', textDecoration: 'none', height: '100%' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: '24px 20px', height: '100%', position: 'relative', transition: 'all 0.28s cubic-bezier(0.16,1,0.3,1)' }}
+                    onMouseEnter={e => { const t = e.currentTarget; t.style.borderColor = 'rgba(212,175,55,0.35)'; t.style.background = 'rgba(255,255,255,0.07)'; t.style.transform = 'translateY(-4px)'; }}
+                    onMouseLeave={e => { const t = e.currentTarget; t.style.borderColor = 'rgba(255,255,255,0.08)'; t.style.background = 'rgba(255,255,255,0.04)'; t.style.transform = 'translateY(0)'; }}>
+                    <span style={{ position: 'absolute', top: 15, right: 15, fontSize: '0.52rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#D4AF37', background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.2)', padding: '2px 7px', borderRadius: 99, fontFamily: "'DM Sans',sans-serif" }}>{tool.badge}</span>
+                    <div style={{ fontSize: '2rem', marginBottom: 14 }}>{tool.emoji}</div>
+                    <h3 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: '1.08rem', color: '#ffffff', marginBottom: 7 }}>{tool.label}</h3>
+                    <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(255,255,255,0.4)', fontSize: '0.82rem', lineHeight: 1.65 }}>{tool.desc}</p>
+                    <div style={{ marginTop: 18, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.66rem', color: 'rgba(212,175,55,0.55)', textTransform: 'uppercase', letterSpacing: '0.15em', display: 'flex', alignItems: 'center', gap: 3 }}>
+                      Open <ChevronRight size={10} />
+                    </div>
                   </div>
                 </Link>
               </Reveal>
             ))}
           </div>
 
-          <div className="home__secondary-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 7 }}>
-            {[{l:'Hajj Guide',to:'/hajj',e:'🕋'},{l:'Ramadan',to:'/ramadan',e:'🌙'},{l:'Scholar AI',to:'/scholar',e:'✨'},{l:'Store',to:'/store',e:'🛍️'}].map(x => (
-              <Link key={x.l} to={x.to} style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px 12px', textDecoration: 'none', fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 'clamp(0.7rem,1.5vw,0.78rem)', color: 'rgba(255,255,255,0.42)', transition: 'all 0.18s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.28)'; e.currentTarget.style.color = '#D4AF37'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = 'rgba(255,255,255,0.42)'; }}>
-                <span style={{ fontSize: '0.95rem' }}>{x.e}</span>{x.l}
+          {/* Secondary row */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 9 }}>
+            {[{ l:'Hajj Guide',link:'/hajj',e:'🕋' },{ l:'Ramadan',link:'/ramadan',e:'🌙' },{ l:'Scholar AI',link:'/scholar',e:'✨' },{ l:'Store',link:'/store',e:'🛍️' }].map(({ l, link, e }) => (
+              <Link key={l} to={link} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 11, padding: '12px 14px', textDecoration: 'none', fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: '0.81rem', color: 'rgba(255,255,255,0.46)', transition: 'all 0.2s' }}
+                onMouseEnter={e2 => { e2.currentTarget.style.borderColor = 'rgba(212,175,55,0.28)'; e2.currentTarget.style.color = '#D4AF37'; }}
+                onMouseLeave={e2 => { e2.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e2.currentTarget.style.color = 'rgba(255,255,255,0.46)'; }}>
+                <span style={{ fontSize: '1.05rem' }}>{e}</span> {l}
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════ LEARN */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(40px,6vw,72px) 20px' }}>
-        <Reveal>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 'clamp(20px,4vh,30px)', flexWrap: 'wrap', gap: 12 }}>
-            <div>
-              <SBadge t="Islamic Knowledge" />
-              <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.3rem,3.5vw,2.3rem)', color: '#0a2540', marginBottom: 4 }}>{L.learnH}</h2>
+      {/* ════════════════════════════
+          SEO CONTENT — 500+ words
+      ════════════════════════════ */}
+      <section style={{ background: '#f7f8fa', borderTop: '1px solid rgba(10,37,64,0.06)', ...sp }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <Reveal>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 56, alignItems: 'start' }}>
+
+              {/* Left: what we offer */}
+              <div>
+                <SBadge t="✦ What We Offer" />
+                <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.7rem,3.5vw,2.6rem)', color: '#0a2540', marginBottom: 18, letterSpacing: '-0.015em', lineHeight: 1.15 }}>
+                  Your Complete Islamic Companion
+                </h2>
+                <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.6)', lineHeight: 1.85, fontSize: '0.97rem', marginBottom: 20 }}>
+                  Al Ummah AI brings together the essential Islamic tools every Muslim needs in their daily life — all in one clean, fast and free platform available in 5 languages.
+                </p>
+                <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.6)', lineHeight: 1.85, fontSize: '0.97rem', marginBottom: 20 }}>
+                  Our <strong style={{ fontWeight: 700, color: '#0a2540' }}>prayer times</strong> use your exact GPS coordinates to calculate accurate Fajr, Dhuhr, Asr, Maghrib and Isha times for any city worldwide. No approximations — real calculation from your position.
+                </p>
+                <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.6)', lineHeight: 1.85, fontSize: '0.97rem', marginBottom: 24 }}>
+                  The <strong style={{ fontWeight: 700, color: '#0a2540' }}>Qibla Finder</strong> uses your device compass and GPS to point precisely toward the Holy Kaaba in Mecca. The <strong style={{ fontWeight: 700, color: '#0a2540' }}>Quran</strong> is available with full audio recitations, multiple translations and verse-by-verse search. Our <strong style={{ fontWeight: 700, color: '#0a2540' }}>Zakat Calculator</strong> uses the latest 2026 Nisab thresholds to help you calculate your annual obligation correctly.
+                </p>
+
+                {/* Benefit list */}
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {[
+                    'GPS prayer times for 150+ countries and any city worldwide',
+                    'Real-time Qibla compass with live device orientation',
+                    'Full Quran in Arabic with audio recitations and translations',
+                    'Zakat calculator updated for 2026 gold & silver Nisab rates',
+                    'Complete Ramadan 2026 guide with prayer timetable',
+                    'Daily duas for morning, evening and all occasions',
+                    'Islamic articles, history and practical life guides',
+                    'Scholar AI — ask any Islamic question in your language',
+                  ].map(item => (
+                    <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <span style={{ color: '#D4AF37', fontSize: '0.8rem', marginTop: 2, flexShrink: 0 }}>✦</span>
+                      <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.88rem', color: 'rgba(10,37,64,0.65)', lineHeight: 1.6 }}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Right: why section */}
+              <div>
+                <SBadge t="✦ Why Al Ummah AI" />
+                <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.7rem,3.5vw,2.6rem)', color: '#0a2540', marginBottom: 18, letterSpacing: '-0.015em', lineHeight: 1.15 }}>
+                  Built for the Global Ummah
+                </h2>
+                <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.6)', lineHeight: 1.85, fontSize: '0.97rem', marginBottom: 28 }}>
+                  Unlike generic prayer apps, Al Ummah AI is designed as a full spiritual platform — combining modern technology with verified Islamic knowledge to serve Muslims in every corner of the world.
+                </p>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 14 }}>
+                  {WHY.map((item, i) => (
+                    <Reveal key={item.title} delay={i * 0.07}>
+                      <div style={{ background: '#ffffff', border: '1px solid rgba(10,37,64,0.08)', borderRadius: 14, padding: '18px 16px', transition: 'all 0.24s cubic-bezier(0.16,1,0.3,1)' }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.35)'; e.currentTarget.style.boxShadow = '0 6px 22px rgba(212,175,55,0.08)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(10,37,64,0.08)'; e.currentTarget.style.boxShadow = 'none'; }}>
+                        <div style={{ color: '#D4AF37', marginBottom: 10 }}>{item.icon}</div>
+                        <h3 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: '0.95rem', color: '#0a2540', marginBottom: 6 }}>{item.title}</h3>
+                        <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'rgba(10,37,64,0.5)', lineHeight: 1.65 }}>{item.desc}</p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+
+                <div style={{ marginTop: 28, padding: '20px 22px', background: 'linear-gradient(120deg,#0a2540 0%,#0d2e4d 100%)', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+                  <div>
+                    <div style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: '1rem', color: '#ffffff', marginBottom: 4 }}>Start using Al Ummah AI now</div>
+                    <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'rgba(255,255,255,0.42)' }}>Free forever · No signup required</div>
+                  </div>
+                  <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#D4AF37', color: '#0a2540', padding: '10px 18px', borderRadius: 9, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.72rem', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.1em', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    Get Started <ArrowRight size={12} />
+                  </Link>
+                </div>
+              </div>
+
             </div>
-            <Link to="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, border: '1px solid rgba(212,175,55,0.28)', color: '#b8941e', padding: '7px 13px', borderRadius: 99, textDecoration: 'none', fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.67rem', textTransform: 'uppercase', letterSpacing: '0.1em', transition: 'all 0.18s', whiteSpace: 'nowrap' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(212,175,55,0.06)')}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ════════════════════════════
+          GUIDANCE
+      ════════════════════════════ */}
+      <section style={{ maxWidth: 1100, margin: '0 auto', ...sp }}>
+        <Reveal>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 44, flexWrap: 'wrap', gap: 16 }}>
+            <div>
+              <SBadge t="✦ Daily Guidance" />
+              <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.75rem,4vw,2.9rem)', color: '#0a2540', marginBottom: 7, letterSpacing: '-0.015em', display: 'block' }}>
+                Learn & Grow Daily
+              </h2>
+              <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.5)', lineHeight: 1.78, maxWidth: 360, fontSize: 'clamp(0.87rem,2vw,0.96rem)' }}>
+                Ramadan guides, daily duas, Islamic articles and AI-powered scholar.
+              </p>
+            </div>
+            <Link to="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, border: '1px solid rgba(212,175,55,0.32)', color: '#b8941e', padding: '9px 18px', borderRadius: 99, textDecoration: 'none', fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.71rem', textTransform: 'uppercase', letterSpacing: '0.1em', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(212,175,55,0.07)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              All Articles <ArrowRight size={11} />
+              All Articles <ArrowRight size={12} />
             </Link>
           </div>
         </Reveal>
 
-        <div className="home__learn-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10, marginBottom: 18 }}>
-          {LEARN.map((item, i) => (
-            <Reveal key={item.t} delay={i * 0.06}>
-              <Link to={item.h} style={{ display: 'block', textDecoration: 'none', height: '100%' }}>
-                <div style={{ background: '#ffffff', border: '1px solid rgba(10,37,64,0.09)', borderRadius: 13, padding: 'clamp(14px,2.5vw,18px) clamp(12px,2vw,15px)', height: '100%', transition: 'all 0.22s cubic-bezier(0.16,1,0.3,1)' }}
-                  onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = 'rgba(212,175,55,0.32)'; el.style.boxShadow = '0 6px 20px rgba(212,175,55,0.07)'; el.style.transform = 'translateY(-3px)'; }}
-                  onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = 'rgba(10,37,64,0.09)'; el.style.boxShadow = 'none'; el.style.transform = 'translateY(0)'; }}>
-                  <div style={{ fontSize: 'clamp(1.3rem,3.5vw,1.65rem)', marginBottom: 8 }}>{item.e}</div>
-                  <h3 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 'clamp(0.83rem,2vw,0.95rem)', color: '#0a2540', marginBottom: 3 }}>{item.t}</h3>
-                  <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.44)', fontSize: 'clamp(0.7rem,1.5vw,0.78rem)', lineHeight: 1.6 }}>{item.d}</p>
-                  <div style={{ marginTop: 9, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.57rem', color: 'rgba(212,175,55,0.55)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Explore →</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(215px,1fr))', gap: 13, marginBottom: 26 }}>
+          {GUIDANCE.map((item, i) => (
+            <Reveal key={item.label} delay={i * 0.07}>
+              <Link to={item.href} style={{ display: 'block', textDecoration: 'none', height: '100%' }}>
+                <div style={{ background: '#ffffff', border: '1px solid rgba(10,37,64,0.09)', borderRadius: 16, padding: '22px 18px', height: '100%', transition: 'all 0.26s cubic-bezier(0.16,1,0.3,1)' }}
+                  onMouseEnter={e => { const t = e.currentTarget; t.style.borderColor = 'rgba(212,175,55,0.35)'; t.style.boxShadow = '0 7px 28px rgba(212,175,55,0.08)'; t.style.transform = 'translateY(-3px)'; }}
+                  onMouseLeave={e => { const t = e.currentTarget; t.style.borderColor = 'rgba(10,37,64,0.09)'; t.style.boxShadow = 'none'; t.style.transform = 'translateY(0)'; }}>
+                  <div style={{ fontSize: '1.85rem', marginBottom: 12 }}>{item.emoji}</div>
+                  <h3 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: '1rem', color: '#0a2540', marginBottom: 5 }}>{item.label}</h3>
+                  <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.46)', fontSize: '0.82rem', lineHeight: 1.65 }}>{item.desc}</p>
+                  <div style={{ marginTop: 15, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.65rem', color: 'rgba(212,175,55,0.6)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Explore →</div>
                 </div>
               </Link>
             </Reveal>
           ))}
         </div>
 
-        {/* Pills */}
-        <Reveal delay={0.04}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>
-            {PILLS.map(([l, h]) => (
-              <Link key={l} to={h} style={{ padding: '5px 11px', background: 'rgba(10,37,64,0.04)', border: '1px solid rgba(10,37,64,0.09)', borderRadius: 99, fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 'clamp(0.62rem,1.3vw,0.7rem)', color: 'rgba(10,37,64,0.52)', textDecoration: 'none', transition: 'all 0.16s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.35)'; e.currentTarget.style.color = '#b8941e'; e.currentTarget.style.background = 'rgba(212,175,55,0.04)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(10,37,64,0.09)'; e.currentTarget.style.color = 'rgba(10,37,64,0.52)'; e.currentTarget.style.background = 'rgba(10,37,64,0.04)'; }}>
-                {l}
+        {/* Topic pills */}
+        <Reveal delay={0.1}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 30 }}>
+            {PILLS.map(([label, link]) => (
+              <Link key={label} to={link} style={{ padding: '7px 14px', background: 'rgba(10,37,64,0.04)', border: '1px solid rgba(10,37,64,0.09)', borderRadius: 99, fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: '0.75rem', color: 'rgba(10,37,64,0.56)', textDecoration: 'none', transition: 'all 0.18s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.36)'; e.currentTarget.style.color = '#b8941e'; e.currentTarget.style.background = 'rgba(212,175,55,0.05)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(10,37,64,0.09)'; e.currentTarget.style.color = 'rgba(10,37,64,0.56)'; e.currentTarget.style.background = 'rgba(10,37,64,0.04)'; }}>
+                {label}
               </Link>
             ))}
           </div>
         </Reveal>
 
-        {/* Scholar AI */}
+        {/* Scholar AI banner */}
         <Reveal>
           <Link to="/scholar" style={{ display: 'block', textDecoration: 'none' }}>
-            <div style={{ background: 'linear-gradient(120deg,#0a2540,#0d2e4d)', borderRadius: 16, padding: 'clamp(18px,3.5vw,28px) 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, border: '1px solid rgba(255,255,255,0.05)', transition: 'transform 0.22s' }}
+            <div style={{ background: 'linear-gradient(120deg,#0a2540 0%,#0d2e4d 100%)', borderRadius: 18, padding: 'clamp(24px,3.5vw,36px) clamp(20px,3.5vw,36px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20, border: '1px solid rgba(255,255,255,0.05)', transition: 'transform 0.24s cubic-bezier(0.16,1,0.3,1)' }}
               onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-2px)')}
               onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}>
               <div>
-                <div style={{ fontSize: 'clamp(1.3rem,3.5vw,1.7rem)', marginBottom: 6 }}>✨</div>
-                <h3 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 'clamp(0.96rem,2.5vw,1.35rem)', color: '#ffffff', marginBottom: 4 }}>Ask Scholar AI</h3>
-                <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(255,255,255,0.4)', fontSize: 'clamp(0.76rem,1.6vw,0.84rem)', maxWidth: 300, lineHeight: 1.75 }}>Islamic questions answered from Quran and Sunnah.</p>
+                <div style={{ fontSize: '1.9rem', marginBottom: 9 }}>✨</div>
+                <h3 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 'clamp(1.15rem,3vw,1.55rem)', color: '#ffffff', marginBottom: 5 }}>Ask Scholar AI</h3>
+                <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(255,255,255,0.42)', fontSize: '0.88rem', maxWidth: 370, lineHeight: 1.78 }}>
+                  Ask any Islamic question — answers grounded in Quran and Sunnah, in your language.
+                </p>
               </div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#D4AF37', color: '#0a2540', padding: '10px 16px', borderRadius: 9, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 'clamp(0.66rem,1.5vw,0.73rem)', textTransform: 'uppercase', letterSpacing: '0.09em', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                Ask a Question <ArrowRight size={12} />
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#D4AF37', color: '#0a2540', padding: '12px 22px', borderRadius: 11, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', whiteSpace: 'nowrap', boxShadow: '0 5px 20px rgba(212,175,55,0.26)', flexShrink: 0 }}>
+                Ask a Question <ArrowRight size={13} />
               </div>
             </div>
           </Link>
         </Reveal>
       </section>
 
-      {/* ════════════════════════════════════ WHY SECTION */}
-      <section style={{ background: '#f7f8fa', borderTop: '1px solid rgba(10,37,64,0.06)', padding: 'clamp(40px,6vw,72px) 20px' }}>
+      {/* ════════════════════════════
+          SHOP PREVIEW
+      ════════════════════════════ */}
+      <section style={{ background: '#f7f8fa', borderTop: '1px solid rgba(10,37,64,0.06)', ...sp }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <Reveal>
-            <div style={{ textAlign: 'center', marginBottom: 'clamp(24px,4vh,38px)' }}>
-              <SBadge t={L.whyH} />
-              <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.3rem,3.5vw,2.3rem)', color: '#0a2540', marginBottom: 8 }}>Built for the Global Ummah</h2>
-              <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.48)', maxWidth: 340, margin: '0 auto', lineHeight: 1.8, fontSize: 'clamp(0.8rem,1.6vw,0.9rem)' }}>
-                Accurate technology + verified Islamic knowledge. Free forever.
-              </p>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 38, flexWrap: 'wrap', gap: 14 }}>
+              <div>
+                <SBadge t="✦ Islamic Store" />
+                <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.75rem,4vw,2.9rem)', color: '#0a2540', marginBottom: 5, letterSpacing: '-0.015em', display: 'block' }}>
+                  Islamic Essentials
+                </h2>
+                <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.5)', fontSize: 'clamp(0.87rem,2vw,0.96rem)' }}>
+                  Handpicked products for your spiritual life.
+                </p>
+              </div>
+              <Link to="/store" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#D4AF37', color: '#0a2540', padding: '10px 20px', borderRadius: 99, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.71rem', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.1em', boxShadow: '0 4px 16px rgba(212,175,55,0.2)', transition: 'transform 0.18s', whiteSpace: 'nowrap', flexShrink: 0 }}
+                onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
+                onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}>
+                Visit Shop <ArrowRight size={12} />
+              </Link>
             </div>
           </Reveal>
 
-          <div className="home__why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 12 }}>
-            {[
-              { i: <Shield size={17} />, t: 'Scholar Verified', d: 'All content reviewed by qualified Islamic scholars.' },
-              { i: <MapPin  size={17} />, t: 'GPS Precision',   d: 'Exact prayer times from your coordinates.' },
-              { i: <Globe   size={17} />, t: '5 Languages',     d: 'EN, AR, FR, ES and Indonesian.' },
-              { i: <Zap     size={17} />, t: 'Always Free',     d: '100% free, forever. No account needed.' },
-            ].map(item => (
-              <Reveal key={item.t}>
-                <div style={{ background: '#ffffff', border: '1px solid rgba(10,37,64,0.08)', borderRadius: 13, padding: 'clamp(15px,2.5vw,20px) clamp(13px,2vw,17px)', transition: 'all 0.22s' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.3)'; e.currentTarget.style.boxShadow = '0 5px 18px rgba(212,175,55,0.07)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(10,37,64,0.08)'; e.currentTarget.style.boxShadow = 'none'; }}>
-                  <div style={{ color: '#D4AF37', marginBottom: 9 }}>{item.i}</div>
-                  <h3 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 'clamp(0.84rem,1.8vw,0.95rem)', color: '#0a2540', marginBottom: 5 }}>{item.t}</h3>
-                  <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, fontSize: 'clamp(0.7rem,1.5vw,0.78rem)', color: 'rgba(10,37,64,0.5)', lineHeight: 1.7 }}>{item.d}</p>
-                </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(195px,1fr))', gap: 13 }}>
+            {SHOP.map((item, i) => (
+              <Reveal key={item.label} delay={i * 0.06}>
+                <Link to="/store" style={{ display: 'block', textDecoration: 'none' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid rgba(10,37,64,0.08)', borderRadius: 15, padding: '28px 16px', textAlign: 'center', transition: 'all 0.26s cubic-bezier(0.16,1,0.3,1)' }}
+                    onMouseEnter={e => { const t = e.currentTarget; t.style.borderColor = 'rgba(212,175,55,0.35)'; t.style.boxShadow = '0 7px 24px rgba(212,175,55,0.08)'; t.style.transform = 'translateY(-3px)'; }}
+                    onMouseLeave={e => { const t = e.currentTarget; t.style.borderColor = 'rgba(10,37,64,0.08)'; t.style.boxShadow = 'none'; t.style.transform = 'translateY(0)'; }}>
+                    <div style={{ fontSize: '2.4rem', marginBottom: 11 }}>{item.emoji}</div>
+                    <h3 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, color: '#0a2540', fontSize: '0.93rem', marginBottom: 4 }}>{item.label}</h3>
+                    <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(10,37,64,0.36)', fontSize: '0.74rem' }}>{item.desc}</p>
+                  </div>
+                </Link>
               </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════ FINAL CTA */}
-      <section style={{ background: 'linear-gradient(160deg,#0a2540 0%,#071a2e 100%)', padding: 'clamp(44px,7vw,80px) 20px', textAlign: 'center' }}>
+      {/* ════════════════════════════
+          FINAL CTA
+      ════════════════════════════ */}
+      <section style={{ background: 'linear-gradient(160deg,#0a2540 0%,#071a2e 100%)', ...sp, textAlign: 'center' }}>
         <Reveal>
-          <div style={{ maxWidth: 420, margin: '0 auto' }}>
-            <div style={{ fontSize: 'clamp(1.8rem,4vw,2.2rem)', marginBottom: 12 }}>🌙</div>
-            <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.4rem,4vw,2.5rem)', color: '#ffffff', lineHeight: 1.12, letterSpacing: '-0.02em', marginBottom: 10 }}>
-              Start your journey <span style={{ color: '#D4AF37' }}>today</span>
+          <div style={{ maxWidth: 580, margin: '0 auto' }}>
+            <div style={{ fontSize: '2.8rem', marginBottom: 18 }}>🌙</div>
+            <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.9rem,5vw,3.6rem)', color: '#ffffff', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: 14 }}>
+              Start your spiritual journey <span style={{ color: '#D4AF37' }}>today</span>
             </h2>
-            <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(255,255,255,0.42)', fontSize: 'clamp(0.82rem,1.7vw,0.95rem)', maxWidth: 290, margin: '0 auto 24px', lineHeight: 1.8 }}>
-              Al Ummah AI — prayer times, Quran, Qibla, Zakat. Free forever.
+            <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, color: 'rgba(255,255,255,0.44)', fontSize: 'clamp(0.94rem,2.2vw,1.06rem)', maxWidth: 400, margin: '0 auto 36px', lineHeight: 1.8 }}>
+              Prayer times, Quran, Qibla, Zakat — everything you need, free forever.
             </p>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Link to="/quran" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#D4AF37', color: '#0a2540', padding: '11px 18px', borderRadius: 9, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 'clamp(0.68rem,1.5vw,0.75rem)', textTransform: 'uppercase', letterSpacing: '0.1em', textDecoration: 'none', boxShadow: '0 5px 22px rgba(212,175,55,0.28)', transition: 'transform 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-2px)')}
-                onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}>
-                <BookOpen size={13} /> {L.quranCta}
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Link to="/quran" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, background: '#D4AF37', color: '#0a2540', padding: '13px 26px', borderRadius: 11, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.12em', textDecoration: 'none', boxShadow: '0 7px 26px rgba(212,175,55,0.3)', transition: 'all 0.22s' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 11px 32px rgba(212,175,55,0.38)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 7px 26px rgba(212,175,55,0.3)'; }}>
+                <BookOpen size={15} /> Read Quran
               </Link>
-              <Link to="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.13)', color: '#ffffff', padding: '11px 18px', borderRadius: 9, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 'clamp(0.68rem,1.5vw,0.75rem)', textTransform: 'uppercase', letterSpacing: '0.1em', textDecoration: 'none', transition: 'all 0.2s' }}
+              <Link to="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.13)', color: '#ffffff', padding: '13px 26px', borderRadius: 11, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.12em', textDecoration: 'none', transition: 'all 0.22s' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.35)'; e.currentTarget.style.color = '#D4AF37'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.13)'; e.currentTarget.style.color = '#ffffff'; }}>
-                {L.blogCta}
+                Explore Articles
               </Link>
             </div>
           </div>
         </Reveal>
       </section>
-
-      {/* ── Desktop breakpoints for all grids ── */}
-      <style>{`
-        @media (min-width: 640px) {
-          .home__tools-grid,
-          .home__secondary-grid,
-          .home__learn-grid,
-          .home__why-grid {
-            grid-template-columns: repeat(4, 1fr) !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
