@@ -4,6 +4,115 @@ import { SEO } from '@/src/components/SEO';
 import { BookOpen, MapPin, ArrowRight, Search, ChevronRight, Shield, Globe, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'motion/react';
+import { useTranslation } from 'react-i18next';
+
+/* ── Home copy per language ───────────────────────────────── */
+const HOME_COPY: Record<string, any> = {
+  en: {
+    heroBadge: 'The Future of Islamic Technology',
+    heroTitle: 'Prayer Times, Qibla,',
+    heroTitleGold: 'Quran & More',
+    heroSub: 'The world\'s most complete free Islamic platform. Accurate prayer times, GPS Qibla, full Quran, Zakat calculator, and daily duas — for 1.8 billion Muslims.',
+    ctaPrimary: 'Get Prayer Times',
+    ctaSecondary: 'Read Quran',
+    tools: ['Prayer Times', 'Qibla Finder', 'Quran', 'Zakat Calculator'],
+    toolDescs: ['GPS-accurate Fajr, Dhuhr, Asr, Maghrib & Isha worldwide.','Real-time compass toward the Holy Kaaba in Mecca.','Complete Quran with audio recitations and translations.','Calculate your annual Zakat obligation for 2026.'],
+    toolBadges: ['Live','GPS','Audio','2026'],
+    guidance: ['Ramadan 2026','Daily Duas','Articles','Scholar AI'],
+    guidanceDescs: ['Full prayer timetable & spiritual guide for Ramadan','Morning, evening and essential Islamic supplications','Islamic knowledge, history and practical life guides','Ask any Islamic question — answered from Quran & Sunnah'],
+    whyTitle: 'Why Al Ummah AI?',
+    whySub: 'Combining centuries of tradition with tomorrow\'s technology',
+    why: ['Scholar Verified','GPS Precision','5 Languages','Always Free'],
+    whyDescs: ['All content reviewed by qualified Islamic scholars.','Prayer times from your exact GPS coordinates.','English, Arabic, French, Spanish and more.','Every tool is 100% free, forever.'],
+    ctaTitle: 'Ready to deepen your faith?',
+    ctaSub: 'Millions of Muslims worldwide use Al Ummah AI daily.',
+    ramadanBadge: 'Ramadan 2026 Guide',
+    ramadanTitle: 'Ramadan 2026',
+    storeTitle: 'Islamic Store',
+    storeSub: 'Premium Islamic products — prayer mats, tasbih, Qurans',
+    exploreTitle: 'Explore All Tools',
+    tasbih: 'Tasbih Counter',
+    tasbihDesc: 'Digital tasbeeh for dhikr — SubhanAllah, Alhamdulillah',
+  },
+  ar: {
+    heroBadge: 'مستقبل التكنولوجيا الإسلامية',
+    heroTitle: 'أوقات الصلاة، القبلة،',
+    heroTitleGold: 'القرآن والمزيد',
+    heroSub: 'المنصة الإسلامية المجانية الأكثر اكتمالاً في العالم. أوقات صلاة دقيقة وقبلة بـ GPS وقرآن كامل وحاسبة زكاة وأدعية يومية.',
+    ctaPrimary: 'أوقات الصلاة',
+    ctaSecondary: 'اقرأ القرآن',
+    tools: ['أوقات الصلاة','اتجاه القبلة','القرآن','حاسبة الزكاة'],
+    toolDescs: ['أوقات الفجر والظهر والعصر والمغرب والعشاء لأي مدينة.','اتجاه بوصلة الوقت الفعلي نحو الكعبة المشرفة.','القرآن الكريم كاملاً مع التلاوة والترجمة.','احسب زكاتك السنوية لعام 2026.'],
+    toolBadges: ['مباشر','GPS','صوت','2026'],
+    guidance: ['رمضان 2026','الأدعية اليومية','المقالات','عالم الذكاء الاصطناعي'],
+    guidanceDescs: ['الجدول الكامل لأوقات الصلاة ودليل روحي لرمضان','أذكار الصباح والمساء والأدعية الأساسية','المعرفة الإسلامية والتاريخ والأدلة العملية','اسأل أي سؤال إسلامي — من القرآن والسنة'],
+    whyTitle: 'لماذا Al Ummah AI؟',
+    whySub: 'الجمع بين قرون من التقاليد وتكنولوجيا الغد',
+    why: ['موثّق من العلماء','دقة GPS','5 لغات','دائماً مجاني'],
+    whyDescs: ['جميع المحتويات مراجعة من علماء مؤهلين.','أوقات الصلاة من إحداثياتك الدقيقة.','العربية والإنجليزية والفرنسية والإسبانية وأكثر.','كل الأدوات مجانية 100% للأبد.'],
+    ctaTitle: 'هل أنت مستعد لتعميق إيمانك؟',
+    ctaSub: 'ملايين المسلمين حول العالم يستخدمون Al Ummah AI يومياً.',
+    ramadanBadge: 'دليل رمضان 2026',
+    ramadanTitle: 'رمضان 2026',
+    storeTitle: 'المتجر الإسلامي',
+    storeSub: 'منتجات إسلامية فاخرة — سجادات الصلاة، المسابح، المصاحف',
+    exploreTitle: 'استكشف جميع الأدوات',
+    tasbih: 'عداد التسبيح',
+    tasbihDesc: 'سبحة رقمية للذكر — سبحان الله والحمد لله',
+  },
+  fr: {
+    heroBadge: "L'avenir de la technologie islamique",
+    heroTitle: 'Heures de prière, Qibla,',
+    heroTitleGold: 'Coran & Plus',
+    heroSub: 'La plateforme islamique gratuite la plus complète au monde. Heures de prière précises, Qibla GPS, Coran complet, calculateur de Zakat et douaas quotidiennes.',
+    ctaPrimary: 'Heures de Prière',
+    ctaSecondary: 'Lire le Coran',
+    tools: ['Heures de Prière','Direction Qibla','Coran','Calculateur Zakat'],
+    toolDescs: ['Heures précises pour Fajr, Dhohr, Asr, Maghrib et Icha.','Boussole en temps réel vers la Kaaba à La Mecque.','Coran complet avec récitations audio et traductions.','Calculez votre Zakat annuelle pour 2026.'],
+    toolBadges: ['Live','GPS','Audio','2026'],
+    guidance: ['Ramadan 2026','Douaas du Jour','Articles','Scholar AI'],
+    guidanceDescs: ['Calendrier de prière complet et guide spirituel du Ramadan','Invocations du matin, du soir et supplications essentielles','Connaissance islamique, histoire et guides pratiques','Posez toute question islamique — du Coran et de la Sunna'],
+    whyTitle: 'Pourquoi Al Ummah AI ?',
+    whySub: 'Allier des siècles de tradition à la technologie de demain',
+    why: ['Vérifié par des savants','Précision GPS','5 langues','Toujours gratuit'],
+    whyDescs: ['Tout le contenu est vérifié par des savants qualifiés.','Heures de prière selon vos coordonnées GPS exactes.','Anglais, arabe, français, espagnol et plus.','Tous les outils sont 100% gratuits, pour toujours.'],
+    ctaTitle: 'Prêt à approfondir votre foi ?',
+    ctaSub: "Des millions de musulmans dans le monde utilisent Al Ummah AI chaque jour.",
+    ramadanBadge: 'Guide Ramadan 2026',
+    ramadanTitle: 'Ramadan 2026',
+    storeTitle: 'Boutique Islamique',
+    storeSub: 'Produits islamiques premium — tapis de prière, tasbih, Corans',
+    exploreTitle: 'Explorer Tous les Outils',
+    tasbih: 'Compteur Tasbih',
+    tasbihDesc: 'Tasbih numérique pour le dhikr — SubhanAllah, Alhamdulillah',
+  },
+  es: {
+    heroBadge: 'El futuro de la tecnología islámica',
+    heroTitle: 'Horarios de Oración, Qibla,',
+    heroTitleGold: 'Corán y Más',
+    heroSub: 'La plataforma islámica gratuita más completa del mundo. Horarios de oración precisos, Qibla GPS, Corán completo, calculadora de Zakat y duas diarias.',
+    ctaPrimary: 'Horarios de Oración',
+    ctaSecondary: 'Leer Corán',
+    tools: ['Horarios de Oración','Buscador de Qibla','Corán','Calculadora Zakat'],
+    toolDescs: ['Horarios precisos de Fajr, Dhuhr, Asr, Maghrib e Isha.','Brújula en tiempo real hacia la Kaaba en La Meca.','Corán completo con recitaciones de audio y traducciones.','Calcula tu Zakat anual para 2026.'],
+    toolBadges: ['En vivo','GPS','Audio','2026'],
+    guidance: ['Ramadán 2026','Duas Diarias','Artículos','Scholar AI'],
+    guidanceDescs: ['Calendario de oración completo y guía espiritual del Ramadán','Súplicas de mañana, tarde y esenciales del Islam','Conocimiento islámico, historia y guías prácticas','Haz cualquier pregunta islámica — del Corán y la Sunnah'],
+    whyTitle: '¿Por qué Al Ummah AI?',
+    whySub: 'Combinando siglos de tradición con la tecnología del mañana',
+    why: ['Verificado por Eruditos','Precisión GPS','5 Idiomas','Siempre Gratis'],
+    whyDescs: ['Todo el contenido revisado por eruditos cualificados.','Horarios de oración de tus coordenadas GPS exactas.','Inglés, árabe, francés, español y más.','Todas las herramientas son 100% gratuitas, para siempre.'],
+    ctaTitle: '¿Listo para profundizar tu fe?',
+    ctaSub: 'Millones de musulmanes en todo el mundo usan Al Ummah AI a diario.',
+    ramadanBadge: 'Guía Ramadán 2026',
+    ramadanTitle: 'Ramadán 2026',
+    storeTitle: 'Tienda Islámica',
+    storeSub: 'Productos islámicos premium — alfombras de oración, tasbih, Coranes',
+    exploreTitle: 'Explorar Todas las Herramientas',
+    tasbih: 'Contador Tasbih',
+    tasbihDesc: 'Tasbih digital para el dhikr — SubhanAllah, Alhamdulillah',
+  },
+};
 
 /* ── Data ─────────────────────────────────────────────────── */
 const PHRASES = [
@@ -108,6 +217,11 @@ function SBadge({ t, dark = false }: { t: string; dark?: boolean }) {
 
 /* ── MAIN ─────────────────────────────────────────────────── */
 export function Home() {
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.slice(0, 2) || 'en';
+  const C = HOME_COPY[lang] || HOME_COPY.en;
+  const isRTL = lang === 'ar';
+
   const daysToRamadan = useCountdown('2026-02-17');
   const [phraseIdx, setPhraseIdx] = useState(0);
   const [phraseVis, setPhraseVis] = useState(true);
