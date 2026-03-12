@@ -24,6 +24,7 @@ const SECTIONS = [
     title: 'Learn & Grow',
     items: [
       { label: 'Ramadan 2026', href: '/ramadan', Icon: Star      },
+      { label: 'Daily Duas',   href: '/duas',    Icon: BookOpen  },
       { label: 'Blog',         href: '/blog',    Icon: PenLine   },
       { label: 'Scholar AI',   href: '/scholar', Icon: Sparkles  },
     ],
