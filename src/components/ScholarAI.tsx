@@ -1,139 +1,249 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, MessageSquare, Sparkles, ShieldCheck } from 'lucide-react';
+import { Send, Loader2, Sparkles, ShieldCheck, RotateCcw } from 'lucide-react';
 import { askScholar } from '@/src/services/geminiService';
-import { cn } from '@/src/utils/cn';
 import ReactMarkdown from 'react-markdown';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
+const NAVY  = '#0a2540';
+const NAVY2 = '#0d2e4d';
+const GOLD  = '#D4AF37';
+
+interface Message { role: 'user' | 'assistant'; content: string; }
+
+const SUGGESTIONS: Record<string, string[]> = {
+  en: [
+    'What are the 5 pillars of Islam?',
+    'How do I calculate Zakat on my savings?',
+    'What time should I pray Fajr today?',
+    'What is the significance of Laylatul Qadr?',
+    'Is cryptocurrency halal in Islam?',
+    'How many rakats are in each prayer?',
+  ],
+  ar: [
+    'ما هي أركان الإسلام الخمسة؟',
+    'كيف أحسب زكاة مدخراتي؟',
+    'ما الوقت الصحيح لصلاة الفجر؟',
+    'ما أهمية ليلة القدر؟',
+    'هل العملة المشفرة حلال في الإسلام؟',
+    'كم عدد ركعات كل صلاة؟',
+  ],
+  fr: [
+    'Quels sont les 5 piliers de l\'Islam ?',
+    'Comment calculer ma Zakat sur mes économies ?',
+    'À quelle heure prier Fajr aujourd\'hui ?',
+    'Quelle est la signification de Laylatul Qadr ?',
+    'La cryptomonnaie est-elle halal ?',
+    'Combien de raka\'at dans chaque prière ?',
+  ],
+  es: [
+    '¿Cuáles son los 5 pilares del Islam?',
+    '¿Cómo calculo el Zakat sobre mis ahorros?',
+    '¿A qué hora rezo Fajr hoy?',
+    '¿Cuál es el significado de Laylatul Qadr?',
+    '¿Es la criptomoneda halal en el Islam?',
+    '¿Cuántos rakats tiene cada oración?',
+  ],
+};
+
+const UI: Record<string, any> = {
+  en: { title: 'Scholar AI', subtitle: 'Islamic Knowledge Assistant', online: 'Online', greeting: 'Assalamu Alaikum wa Rahmatullahi wa Barakatuh 🌙\n\nI am your Islamic Scholar AI. Ask me anything about Islam, Quran, Hadith, Fiqh, prayer times, Zakat, Hajj or any spiritual matter — I will do my best to give you authentic, sourced guidance.\n\nHow can I help you today?', placeholder: 'Ask about Islam, Quran, Sunnah...', consulting: 'Consulting sources...', suggestLabel: 'Suggested questions', clearBtn: 'New conversation', disclaimer: 'This AI provides general Islamic guidance. For legal rulings (fatwa), always consult a qualified Islamic scholar.' },
+  ar: { title: 'عالم الذكاء الاصطناعي', subtitle: 'مساعد المعرفة الإسلامية', online: 'متصل', greeting: 'السلام عليكم ورحمة الله وبركاته 🌙\n\nأنا مساعدك الإسلامي بالذكاء الاصطناعي. اسألني عن أي شيء يتعلق بالإسلام والقرآن والحديث والفقه وأوقات الصلاة والزكاة والحج أو أي أمر روحي — وسأبذل قصارى جهدي لتقديم إرشادات أصيلة ومستندة.\n\nكيف يمكنني مساعدتك اليوم؟', placeholder: 'اسأل عن الإسلام والقرآن والسنة...', consulting: 'استشارة المصادر...', suggestLabel: 'أسئلة مقترحة', clearBtn: 'محادثة جديدة', disclaimer: 'يقدم هذا الذكاء الاصطناعي إرشادات إسلامية عامة. للفتاوى الشرعية، استشر دائماً عالماً مؤهلاً.' },
+  fr: { title: 'Scholar AI', subtitle: 'Assistant de Connaissance Islamique', online: 'En ligne', greeting: 'Assalamu Alaikum wa Rahmatullahi wa Barakatuh 🌙\n\nJe suis votre assistant IA islamique. Posez-moi toutes vos questions sur l\'Islam, le Coran, le Hadith, le Fiqh, les horaires de prière, la Zakat, le Hajj ou tout sujet spirituel.\n\nComment puis-je vous aider aujourd\'hui ?', placeholder: 'Posez une question sur l\'Islam...', consulting: 'Consultation des sources...', suggestLabel: 'Questions suggérées', clearBtn: 'Nouvelle conversation', disclaimer: 'Cette IA fournit des conseils islamiques généraux. Pour les avis juridiques (fatwa), consultez toujours un savant qualifié.' },
+  es: { title: 'Scholar AI', subtitle: 'Asistente de Conocimiento Islámico', online: 'En línea', greeting: 'Assalamu Alaikum wa Rahmatullahi wa Barakatuh 🌙\n\nSoy tu asistente islámico de IA. Pregúntame sobre Islam, Corán, Hadith, Fiqh, horarios de oración, Zakat, Hajj o cualquier asunto espiritual — haré mi mejor esfuerzo para darte orientación auténtica.\n\n¿En qué puedo ayudarte hoy?', placeholder: 'Pregunta sobre el Islam, Corán, Sunnah...', consulting: 'Consultando fuentes...', suggestLabel: 'Preguntas sugeridas', clearBtn: 'Nueva conversación', disclaimer: 'Esta IA proporciona orientación islámica general. Para dictámenes legales (fatwa), consulta siempre a un estudioso islámico calificado.' },
+};
+
+/* ── Animated bot avatar ───────────────────────────────────── */
+function BotAvatar({ thinking }: { thinking?: boolean }) {
+  return (
+    <div style={{ position: 'relative', width: 44, height: 44, flexShrink: 0 }}>
+      {/* Outer pulse ring */}
+      <motion.div animate={{ scale: [1, 1.35, 1], opacity: [0.4, 0, 0.4] }} transition={{ duration: 2.2, repeat: Infinity }}
+        style={{ position: 'absolute', inset: -4, borderRadius: '50%', background: 'rgba(212,175,55,0.2)' }} />
+      {/* Bot circle */}
+      <div style={{ width: 44, height: 44, borderRadius: '50%', background: `linear-gradient(135deg, ${GOLD}, #f1d279)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', boxShadow: '0 4px 20px rgba(212,175,55,0.4)' }}>
+        {/* Crescent moon face */}
+        <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>☽</span>
+      </div>
+      {/* Online green dot */}
+      {!thinking && (
+        <motion.div animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }} transition={{ duration: 1.8, repeat: Infinity }}
+          style={{ position: 'absolute', bottom: 1, right: 1, width: 11, height: 11, borderRadius: '50%', background: '#22c55e', border: `2px solid ${NAVY}`, boxShadow: '0 0 6px rgba(34,197,94,0.6)' }} />
+      )}
+      {thinking && (
+        <div style={{ position: 'absolute', bottom: 1, right: 1, width: 11, height: 11, borderRadius: '50%', background: GOLD, border: `2px solid ${NAVY}` }}>
+          <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            style={{ width: '100%', height: '100%', borderRadius: '50%', borderTop: '2px solid transparent', borderRight: '2px solid rgba(10,37,64,0.8)' }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Typing dots ───────────────────────────────────────────── */
+function TypingDots() {
+  return (
+    <div style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '4px 0' }}>
+      {[0,1,2].map(i => (
+        <motion.div key={i} animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
+          style={{ width: 6, height: 6, borderRadius: '50%', background: GOLD }} />
+      ))}
+    </div>
+  );
 }
 
 export function ScholarAI() {
-  const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Assalamu Alaikum! I am your Scholar AI assistant. How can I help you today with questions about Islam, Quran, or Sunnah?' }
-  ]);
+  const { i18n } = useTranslation();
+  const lang = (i18n.language?.slice(0,2) || 'en') as string;
+  const L = UI[lang] || UI.en;
+  const suggs = SUGGESTIONS[lang] || SUGGESTIONS.en;
+  const isRTL = lang === 'ar';
+
+  const initMsg: Message = { role: 'assistant', content: L.greeting };
+  const [messages, setMessages] = useState<Message[]>([initMsg]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+  // Reset when language changes
+  useEffect(() => {
+    setMessages([{ role: 'assistant', content: UI[lang]?.greeting || UI.en.greeting }]);
+  }, [lang]);
 
-    const userMessage = input.trim();
+  const send = async (text: string) => {
+    if (!text.trim() || isLoading) return;
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setMessages(prev => [...prev, { role: 'user', content: text }]);
     setIsLoading(true);
-
-    const response = await askScholar(userMessage);
-    setMessages(prev => [...prev, { role: 'assistant', content: response || "I'm sorry, I couldn't process that." }]);
+    const response = await askScholar(text);
+    setMessages(prev => [...prev, { role: 'assistant', content: response || "I'm sorry, I couldn't process that request. Please try again." }]);
     setIsLoading(false);
   };
 
+  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); send(input); };
+  const clear = () => setMessages([{ role: 'assistant', content: L.greeting }]);
+
   return (
-    <div className="glass-card flex flex-col h-[700px] overflow-hidden border-gold/30 shadow-[0_20px_60px_rgba(0,0,0,0.4)] relative">
-      <div className="absolute inset-0 bg-glamour-blue/20 pointer-events-none"></div>
-      
-      {/* Header */}
-      <div className="bg-glamour-blue-light/80 backdrop-blur-md p-8 border-b border-gold/20 flex items-center justify-between relative z-10">
-        <div className="flex items-center space-x-5">
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gold rounded-full blur opacity-30 animate-pulse"></div>
-            <div className="relative w-14 h-14 bg-gradient-to-br from-gold to-gold-light rounded-full flex items-center justify-center shadow-2xl border border-white/20">
-              <Sparkles className="text-glamour-blue w-8 h-8" />
+    <div dir={isRTL ? 'rtl' : 'ltr'} style={{ background: NAVY, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Page header */}
+      <div style={{ background: `linear-gradient(160deg,#071a2e 0%,${NAVY} 60%,${NAVY2} 100%)`, borderBottom: '1px solid rgba(212,175,55,0.14)', padding: 'clamp(70px,10vw,100px) 20px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(212,175,55,0.06) 1px,transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 10 }}>
+            <BotAvatar />
+            <div style={{ textAlign: 'left' }}>
+              <h1 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(1.4rem,4vw,2.2rem)', color: '#fff', lineHeight: 1 }}>{L.title}</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                <ShieldCheck size={11} style={{ color: GOLD }} />
+                <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.52rem', fontWeight: 900, color: 'rgba(212,175,55,0.6)', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{L.subtitle}</span>
+                <motion.div animate={{ opacity: [1,0.4,1] }} transition={{ duration: 1.8, repeat: Infinity }}
+                  style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px rgba(34,197,94,0.6)' }} />
+                <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.5rem', fontWeight: 700, color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.16em' }}>{L.online}</span>
+              </div>
             </div>
           </div>
-          <div>
-            <h2 className="text-2xl font-display font-black text-cream tracking-tight">Scholar AI</h2>
-            <div className="flex items-center space-x-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-gold" />
-              <p className="text-[10px] text-gold font-black tracking-[0.2em] uppercase">Verified Knowledge Base</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center space-x-3">
-          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-cream/40">Real-time Guidance</span>
         </div>
       </div>
 
-      {/* Messages */}
-      <div 
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto p-8 space-y-8 bg-glamour-blue/40 no-scrollbar relative z-10"
-      >
-        <AnimatePresence>
-          {messages.map((m, i) => (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              key={i} 
-              className={cn(
-                "flex w-full",
-                m.role === 'user' ? "justify-end" : "justify-start"
-              )}
-            >
-              <div className={cn(
-                "max-w-[80%] p-6 rounded-3xl text-sm leading-relaxed shadow-2xl border transition-all duration-500",
-                m.role === 'user' 
-                  ? "bg-gold text-glamour-blue rounded-tr-none border-white/20 font-bold" 
-                  : "bg-glamour-blue-light/80 backdrop-blur-md border-gold/20 text-cream rounded-tl-none"
-              )}>
-                <div className={cn(
-                  "prose prose-sm max-w-none",
-                  m.role === 'user' ? "prose-invert" : "prose-gold text-cream/90 font-light"
-                )}>
-                  <ReactMarkdown>{m.content}</ReactMarkdown>
+      {/* Chat area */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', maxWidth: 820, width: '100%', margin: '0 auto', padding: '0 16px 16px', gap: 0 }}>
+
+        {/* Messages */}
+        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '20px 0', display: 'flex', flexDirection: 'column', gap: 16, minHeight: 'calc(100vh - 340px)', maxHeight: 'calc(100vh - 280px)' }}>
+          <AnimatePresence>
+            {messages.map((m, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', gap: 10, alignItems: 'flex-end' }}>
+                {m.role === 'assistant' && <BotAvatar />}
+                <div style={{
+                  maxWidth: '76%',
+                  padding: '14px 18px',
+                  borderRadius: m.role === 'user' ? '18px 18px 4px 18px' : '4px 18px 18px 18px',
+                  background: m.role === 'user' ? GOLD : 'rgba(255,255,255,0.05)',
+                  border: m.role === 'user' ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                  fontFamily: "'DM Sans',sans-serif",
+                  fontSize: '0.87rem',
+                  lineHeight: 1.75,
+                  color: m.role === 'user' ? NAVY : 'rgba(255,255,255,0.82)',
+                  fontWeight: m.role === 'user' ? 700 : 300,
+                  direction: isRTL ? 'rtl' : 'ltr',
+                  boxShadow: m.role === 'user' ? '0 4px 16px rgba(212,175,55,0.3)' : 'none',
+                }}>
+                  <div className="prose prose-sm max-w-none" style={{ color: 'inherit' }}>
+                    <ReactMarkdown>{m.content}</ReactMarkdown>
+                  </div>
+                </div>
+                {m.role === 'user' && (
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontSize: '0.9rem' }}>👤</span>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {isLoading && (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+              style={{ display: 'flex', alignItems: 'flex-end', gap: 10 }}>
+              <BotAvatar thinking />
+              <div style={{ padding: '14px 18px', borderRadius: '4px 18px 18px 18px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <TypingDots />
+                  <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.62rem', fontWeight: 700, color: 'rgba(212,175,55,0.5)', textTransform: 'uppercase', letterSpacing: '0.14em' }}>{L.consulting}</span>
                 </div>
               </div>
             </motion.div>
-          ))}
-        </AnimatePresence>
-        
-        {isLoading && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex justify-start"
-          >
-            <div className="bg-glamour-blue-light/50 border border-gold/20 p-5 rounded-3xl rounded-tl-none flex items-center space-x-4">
-              <Loader2 className="w-5 h-5 text-gold animate-spin" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-gold/60">Consulting Sources...</span>
-            </div>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Input */}
-      <form onSubmit={handleSubmit} className="p-6 bg-glamour-blue-light/90 backdrop-blur-md border-t border-gold/20 flex items-center space-x-4 relative z-10">
-        <div className="relative flex-1 group">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask a question about Islam, Quran, or Sunnah..."
-            className="w-full bg-glamour-blue/50 border border-gold/10 rounded-2xl py-5 px-8 text-sm focus:outline-none focus:border-gold transition-all text-cream placeholder:text-cream/20 font-light"
-          />
-          <div className="absolute right-4 top-4 text-gold/20 group-focus-within:text-gold/60 transition-colors">
-            <MessageSquare className="w-5 h-5" />
-          </div>
+          )}
         </div>
-        <button 
-          type="submit"
-          disabled={isLoading}
-          className="bg-gold text-glamour-blue p-5 rounded-2xl hover:bg-gold-light transition-all disabled:opacity-50 shadow-2xl border border-white/20 group"
-        >
-          <Send className="w-6 h-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-        </button>
-      </form>
+
+        {/* Suggestions (show only when 1 message) */}
+        {messages.length === 1 && !isLoading && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.54rem', fontWeight: 900, color: 'rgba(212,175,55,0.45)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: 10 }}>
+              {L.suggestLabel}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {suggs.map(s => (
+                <button key={s} onClick={() => send(s)}
+                  style={{ padding: '7px 13px', background: 'rgba(212,175,55,0.07)', border: '1px solid rgba(212,175,55,0.18)', borderRadius: 99, fontFamily: "'DM Sans',sans-serif", fontSize: '0.68rem', fontWeight: 600, color: 'rgba(255,255,255,0.65)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'left' }}
+                  onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor='rgba(212,175,55,0.45)'; el.style.color='#fff'; el.style.background='rgba(212,175,55,0.12)'; }}
+                  onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor='rgba(212,175,55,0.18)'; el.style.color='rgba(255,255,255,0.65)'; el.style.background='rgba(212,175,55,0.07)'; }}>
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Input */}
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: '10px 10px 10px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex', gap: 8 }}>
+            <input value={input} onChange={e => setInput(e.target.value)}
+              placeholder={L.placeholder}
+              dir={isRTL ? 'rtl' : 'ltr'}
+              style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: "'DM Sans',sans-serif", fontSize: '0.88rem', fontWeight: 300, color: '#ffffff', padding: '6px 0' }} />
+            <button type="submit" disabled={isLoading || !input.trim()}
+              style={{ width: 40, height: 40, borderRadius: 12, background: input.trim() ? GOLD : 'rgba(212,175,55,0.2)', border: 'none', cursor: input.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.18s', boxShadow: input.trim() ? '0 4px 14px rgba(212,175,55,0.35)' : 'none' }}>
+              {isLoading ? <Loader2 size={16} style={{ color: NAVY, animation: 'spin 1s linear infinite' }} /> : <Send size={16} style={{ color: NAVY }} />}
+            </button>
+          </form>
+          <button onClick={clear} title={L.clearBtn}
+            style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor='rgba(212,175,55,0.4)')}
+            onMouseLeave={e => (e.currentTarget.style.borderColor='rgba(255,255,255,0.1)')}>
+            <RotateCcw size={13} style={{ color: 'rgba(255,255,255,0.35)' }} />
+          </button>
+        </div>
+
+        {/* Disclaimer */}
+        <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.58rem', color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: 10, lineHeight: 1.6, padding: '0 8px' }}>
+          {L.disclaimer}
+        </p>
+      </div>
     </div>
   );
 }
