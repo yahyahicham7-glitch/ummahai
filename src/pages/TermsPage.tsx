@@ -1,43 +1,88 @@
 import React from 'react';
 import { SEO } from '@/src/components/SEO';
+import { useTranslation } from 'react-i18next';
+
+const NAVY = '#0a2540';
+const GOLD = '#D4AF37';
+
+const T: Record<string, any> = {
+  en: {
+    title: 'Terms of Service',
+    updated: 'Last Updated: March 2026',
+    sections: [
+      { h:'1. Acceptance', t:'By using Al Ummah AI, you agree to these Terms. If you disagree, please discontinue use.' },
+      { h:'2. Use of Services', t:'You may use Al Ummah AI for personal, non-commercial purposes. You agree not to misuse, disrupt or attempt to access services in unauthorized ways.' },
+      { h:'3. Content Accuracy', t:'Prayer times are sourced from the Aladhan API and are as accurate as possible. Always verify critical timings locally. Quranic text is from the standard Uthmani script.' },
+      { h:'4. Intellectual Property', t:'All content, design and code belongs to Al Ummah AI unless otherwise stated. You may not reproduce or redistribute content without permission.' },
+      { h:'5. Third-Party Links', t:'We link to external sites (affiliate partners, Islamic finance providers). We are not responsible for external content or privacy practices.' },
+      { h:'6. Limitation of Liability', t:'Al Ummah AI is provided "as is." We are not liable for inaccuracies in prayer times, religious guidance, or any damages from use of the platform.' },
+      { h:'7. Changes', t:'We may update these Terms at any time. Continued use after changes constitutes acceptance.' },
+      { h:'8. Contact', t:'Questions: support@alummahai.com' },
+    ],
+  },
+  ar: {
+    title: 'شروط الخدمة',
+    updated: 'آخر تحديث: مارس 2026',
+    sections: [
+      { h:'1. القبول', t:'باستخدامك الأمة AI، فأنت توافق على هذه الشروط. إذا كنت لا توافق، يرجى التوقف عن الاستخدام.' },
+      { h:'2. استخدام الخدمات', t:'يجوز لك استخدام الأمة AI لأغراض شخصية غير تجارية. توافق على عدم إساءة الاستخدام أو الوصول غير المصرح به.' },
+      { h:'3. دقة المحتوى', t:'أوقات الصلاة مأخوذة من Aladhan API وهي بأكبر قدر من الدقة الممكنة. تحقق دائماً من التوقيتات الحرجة محلياً.' },
+      { h:'4. الملكية الفكرية', t:'جميع المحتوى والتصميم والكود ملك للأمة AI. لا يجوز استنساخ المحتوى أو إعادة توزيعه دون إذن.' },
+      { h:'5. روابط الطرف الثالث', t:'نرتبط بمواقع خارجية (شركاء تابعون). نحن غير مسؤولين عن المحتوى الخارجي أو ممارسات الخصوصية.' },
+      { h:'6. تحديد المسؤولية', t:'الأمة AI مقدم "كما هو". لسنا مسؤولين عن أي أضرار ناجمة عن استخدام المنصة.' },
+      { h:'7. التغييرات', t:'قد نحدّث هذه الشروط في أي وقت. الاستمرار في الاستخدام بعد التغييرات يعني القبول.' },
+      { h:'8. التواصل', t:'للاستفسارات: support@alummahai.com' },
+    ],
+  },
+  fr: {
+    title: 'Conditions d\'Utilisation',
+    updated: 'Dernière mise à jour : Mars 2026',
+    sections: [
+      { h:'1. Acceptation', t:'En utilisant Al Ummah AI, vous acceptez ces Conditions. Si vous n\'êtes pas d\'accord, veuillez cesser d\'utiliser le service.' },
+      { h:'2. Utilisation des Services', t:'Vous pouvez utiliser Al Ummah AI à des fins personnelles et non commerciales. Vous acceptez de ne pas utiliser les services de manière abusive.' },
+      { h:'3. Exactitude du Contenu', t:'Les horaires de prière proviennent de l\'API Aladhan. Vérifiez toujours les horaires critiques localement.' },
+      { h:'4. Propriété Intellectuelle', t:'Tout le contenu appartient à Al Ummah AI sauf indication contraire. Vous ne pouvez pas reproduire le contenu sans permission.' },
+      { h:'5. Liens Tiers', t:'Nous relions à des sites externes. Nous ne sommes pas responsables du contenu externe.' },
+      { h:'6. Limitation de Responsabilité', t:'Al Ummah AI est fourni "tel quel." Nous ne sommes pas responsables des inexactitudes ou dommages.' },
+      { h:'7. Modifications', t:'Nous pouvons mettre à jour ces Conditions à tout moment. L\'utilisation continue constitue une acceptation.' },
+      { h:'8. Contact', t:'Questions : support@alummahai.com' },
+    ],
+  },
+  es: {
+    title: 'Términos de Servicio',
+    updated: 'Última actualización: Marzo 2026',
+    sections: [
+      { h:'1. Aceptación', t:'Al usar Al Ummah AI, aceptas estos Términos. Si no estás de acuerdo, por favor deja de usar el servicio.' },
+      { h:'2. Uso de Servicios', t:'Puedes usar Al Ummah AI para fines personales y no comerciales. Aceptas no hacer un uso indebido del servicio.' },
+      { h:'3. Precisión del Contenido', t:'Los horarios de oración provienen de la API Aladhan. Siempre verifica los horarios críticos localmente.' },
+      { h:'4. Propiedad Intelectual', t:'Todo el contenido pertenece a Al Ummah AI a menos que se indique lo contrario. No puedes reproducir el contenido sin permiso.' },
+      { h:'5. Enlaces de Terceros', t:'Enlazamos a sitios externos. No somos responsables del contenido externo.' },
+      { h:'6. Limitación de Responsabilidad', t:'Al Ummah AI se proporciona "tal cual." No somos responsables de inexactitudes ni daños.' },
+      { h:'7. Cambios', t:'Podemos actualizar estos Términos en cualquier momento. El uso continuado constituye aceptación.' },
+      { h:'8. Contacto', t:'Preguntas: support@alummahai.com' },
+    ],
+  },
+};
 
 export function TermsPage() {
+  const { i18n } = useTranslation();
+  const lang = (i18n.language?.slice(0,2) || 'en') as keyof typeof T;
+  const L = T[lang] || T.en;
+  const isRTL = lang === 'ar';
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-24 space-y-12 text-cream/80">
-      <SEO title="Terms of Service" description="Terms of Service for Ummah AI platform. Read our rules and guidelines for using the platform." />
-      
-      <h1 className="text-5xl font-display font-black text-cream">Terms of Service</h1>
-      <p className="text-sm text-gold/60 uppercase tracking-widest font-black">Last Updated: March 2026</p>
-      
-      <section className="space-y-6">
-        <h2 className="text-2xl font-display font-bold text-gold">1. Acceptance of Terms</h2>
-        <p>By accessing or using Ummah AI, you agree to comply with and be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.</p>
-      </section>
-
-      <section className="space-y-6">
-        <h2 className="text-2xl font-display font-bold text-gold">2. Use of Services</h2>
-        <p>You agree to use Ummah AI only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the website.</p>
-      </section>
-
-      <section className="space-y-6">
-        <h2 className="text-2xl font-display font-bold text-gold">3. Intellectual Property</h2>
-        <p>The content, layout, design, data, databases and graphics on this website are protected by intellectual property laws. You may not reproduce, download, transmit or retransmit any part of this website without our prior written consent.</p>
-      </section>
-
-      <section className="space-y-6">
-        <h2 className="text-2xl font-display font-bold text-gold">4. Limitation of Liability</h2>
-        <p>Ummah AI will not be liable for any damages of any kind arising from the use of this site, including, but not limited to direct, indirect, incidental, punitive, and consequential damages.</p>
-      </section>
-
-      <section className="space-y-6">
-        <h2 className="text-2xl font-display font-bold text-gold">5. Changes to Terms</h2>
-        <p>We reserve the right to modify these terms at any time. Your continued use of the site after any such changes constitutes your acceptance of the new Terms of Service.</p>
-      </section>
-
-      <section className="space-y-6">
-        <h2 className="text-2xl font-display font-bold text-gold">6. Governing Law</h2>
-        <p>These terms are governed by and construed in accordance with the laws of the jurisdiction in which we operate.</p>
-      </section>
+    <div dir={isRTL ? 'rtl' : 'ltr'} style={{ background: NAVY, minHeight:'100vh', color:'#fff' }}>
+      <SEO title={`${L.title} — Al Ummah AI`} description="Terms of Service for Al Ummah AI." canonical="https://www.alummahai.com/terms" lang={lang} />
+      <div style={{ maxWidth:760, margin:'0 auto', padding:'clamp(80px,10vw,110px) 24px clamp(48px,6vw,64px)' }}>
+        <h1 style={{ fontFamily:"'Playfair Display',serif", fontWeight:900, fontSize:'clamp(1.8rem,5vw,3rem)', color:'#fff', marginBottom:8 }}>{L.title}</h1>
+        <p style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:700, fontSize:'0.62rem', color:'rgba(212,175,55,0.5)', textTransform:'uppercase', letterSpacing:'0.22em', marginBottom:40 }}>{L.updated}</p>
+        {L.sections.map(({ h, t }: any) => (
+          <div key={h} style={{ marginBottom:32 }}>
+            <h2 style={{ fontFamily:"'Playfair Display',serif", fontWeight:800, fontSize:'clamp(0.95rem,2vw,1.15rem)', color:GOLD, marginBottom:10 }}>{h}</h2>
+            <p style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:300, fontSize:'0.84rem', color:'rgba(255,255,255,0.5)', lineHeight:1.85 }}>{t}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
