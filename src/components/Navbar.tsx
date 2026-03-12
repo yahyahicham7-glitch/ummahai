@@ -14,7 +14,7 @@ const SECTIONS = [
   {
     title: 'Prayer & Worship',
     items: [
-      { label: 'Prayer Times', href: '/',       Icon: Clock      },
+      { label: 'Prayer Times', href: '/prayer-times', Icon: Clock },
       { label: 'Qibla Finder', href: '/qibla',  Icon: Compass    },
       { label: 'Quran',        href: '/quran',  Icon: BookOpen   },
       { label: 'Zakat',        href: '/zakat',  Icon: Wallet     },
@@ -213,7 +213,7 @@ export function Navbar() {
 
           {/* Prayer Times CTA — desktop only, JS-gated */}
           {!isMobile && (
-            <Link to="/" style={{
+            <Link to="/prayer-times" style={{
               display: 'flex', alignItems: 'center', gap: 6,
               background: '#D4AF37', color: '#0a2540',
               padding: '7px 14px', borderRadius: 8,
@@ -301,7 +301,7 @@ export function Navbar() {
                 <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.6rem', color: 'rgba(255,255,255,0.25)', fontWeight: 500 }}>
                   Free for 1.8 billion Muslims
                 </span>
-                <Link to="/" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#D4AF37', color: '#0a2540', padding: '7px 13px', borderRadius: 8, fontFamily: "'DM Sans',sans-serif", fontSize: '0.63rem', fontWeight: 800, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                <Link to="/prayer-times" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#D4AF37', color: '#0a2540', padding: '7px 13px', borderRadius: 8, fontFamily: "'DM Sans',sans-serif", fontSize: '0.63rem', fontWeight: 800, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', flexShrink: 0 }}>
                   <Clock size={11} strokeWidth={2} /> Prayer Times
                 </Link>
               </div>
