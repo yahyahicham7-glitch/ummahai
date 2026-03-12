@@ -50,6 +50,8 @@ const T: Record<string, any> = {
       { Icon: Clock,     t: 'Pray Taraweeh',         d: 'Night prayers after Isha are a Sunnah. Even 2 rakats at home earn great reward.' },
     ],
     daysLeft: 'days left in Ramadan',
+    progressLabel: 'Ramadan Progress',
+    readGuide: 'Read',
     inProgress: 'In Progress',
     eidCountdown: 'days until Eid al-Fitr',
   },
@@ -84,6 +86,8 @@ const T: Record<string, any> = {
       { Icon: Clock,     t: 'صل التراويح',         d: 'صلاة الليل بعد العشاء سنة. حتى ركعتان في البيت لهما أجر عظيم.' },
     ],
     daysLeft: 'أيام متبقية من رمضان',
+    progressLabel: 'تقدم رمضان',
+    readGuide: 'اقرأ',
     inProgress: 'جارٍ الآن',
     eidCountdown: 'يوم حتى عيد الفطر',
   },
@@ -118,6 +122,8 @@ const T: Record<string, any> = {
       { Icon: Clock,     t: 'Priez Taraweeh',         d: 'La prière nocturne après Isha est une Sunna. Même 2 rakats à domicile ont une grande récompense.' },
     ],
     daysLeft: 'jours restants en Ramadan',
+    progressLabel: 'Progression du Ramadan',
+    readGuide: 'Lire',
     inProgress: 'En cours',
     eidCountdown: 'jours jusqu\'à l\'Aïd al-Fitr',
   },
@@ -152,6 +158,8 @@ const T: Record<string, any> = {
       { Icon: Clock,     t: 'Reza Taraweeh',         d: 'La oración nocturna tras Isha es Sunna. Incluso 2 rakats en casa tienen gran recompensa.' },
     ],
     daysLeft: 'días restantes en Ramadán',
+    progressLabel: 'Progreso del Ramadán',
+    readGuide: 'Leer',
     inProgress: 'En curso',
     eidCountdown: 'días hasta el Eid al-Fitr',
   },
@@ -252,7 +260,7 @@ export function RamadanPage() {
             style={{ maxWidth: 340, margin: '0 auto', textAlign: isRTL ? 'right' : 'left' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.58rem', fontWeight: 700, color: 'rgba(212,175,55,0.6)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
-                Ramadan Progress
+                {L.progressLabel}
               </span>
               <span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: '0.82rem', color: GOLD }}>
                 {Math.round(progress)}%
@@ -328,7 +336,7 @@ export function RamadanPage() {
                   <h3 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: '0.93rem', color: '#ffffff', marginBottom: 8, lineHeight: 1.35 }}>{item.title}</h3>
                   <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, fontSize: '0.73rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.72, marginBottom: 12 }}>{item.desc}</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'DM Sans',sans-serif", fontSize: '0.58rem', fontWeight: 800, color: 'rgba(212,175,55,0.55)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                    Read <ChevronRight size={10} />
+                    {L.readGuide} <ChevronRight size={10} />
                   </div>
                 </div>
               </Link>
