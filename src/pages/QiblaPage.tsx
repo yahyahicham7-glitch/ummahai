@@ -253,7 +253,13 @@ export function QiblaPage() {
             ) : (
               <div style={{background:'rgba(212,175,55,0.05)',border:'1px solid rgba(212,175,55,0.16)',borderRadius:11,padding:'12px 14px',display:'flex',gap:9}}>
                 <Navigation size={13} style={{color:'#D4AF37',flexShrink:0,marginTop:2}}/>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.8rem',color:'rgba(10,37,64,0.62)',lineHeight:1.7}}>Align the 🕋 arrow with <strong style={{color:'#0a2540'}}>{Math.round(qibla)}° {cardinal(qibla)}</strong> on a physical compass.</p>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.8rem',color:'rgba(10,37,64,0.62)',lineHeight:1.7}}>
+                  The Qibla direction from your location is <strong style={{color:'#0a2540'}}>{Math.round(qibla)}° {cardinal(qibla)}</strong>.<br/>
+                  <span style={{fontSize:'0.75rem',opacity:0.7}}>
+                    📱 On mobile: enable the compass for live guidance.<br/>
+                    💻 On desktop: use a compass app or phone and face <strong>{Math.round(qibla)}° {cardinal(qibla)}</strong>.
+                  </span>
+                </p>
               </div>
             )}
           </motion.div>
