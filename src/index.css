@@ -48,3 +48,30 @@
 @keyframes spin      { from{ transform:rotate(0deg)   } to{ transform:rotate(360deg)   } }
 @keyframes fadein    { from{ opacity:0;transform:translateY(8px) } to{ opacity:1;transform:translateY(0) } }
 @keyframes pulseGold { 0%,100%{ opacity:1 } 50%{ opacity:.4 } }
+
+/* ── Missing Tailwind custom class polyfills ────────────── */
+.text-cream         { color: #ffffff; }
+.text-gold          { color: #D4AF37; }
+.font-display       { font-family: "Playfair Display", serif; }
+.bg-glamour-blue    { background-color: #060f1e; }
+.glass-card         { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }
+.text-cream\/80     { color: rgba(255,255,255,0.80); }
+.text-cream\/60     { color: rgba(255,255,255,0.60); }
+.text-cream\/50     { color: rgba(255,255,255,0.50); }
+.text-cream\/40     { color: rgba(255,255,255,0.40); }
+.text-cream\/30     { color: rgba(255,255,255,0.30); }
+.text-cream\/20     { color: rgba(255,255,255,0.20); }
+.text-gold\/60      { color: rgba(212,175,55,0.60); }
+.text-gold\/40      { color: rgba(212,175,55,0.40); }
+.text-gold\/20      { color: rgba(212,175,55,0.20); }
+.bg-gold\/10        { background-color: rgba(212,175,55,0.10); }
+.bg-gold\/5         { background-color: rgba(212,175,55,0.05); }
+.border-gold\/20    { border-color: rgba(212,175,55,0.20); }
+.border-gold\/10    { border-color: rgba(212,175,55,0.10); }
+.text-glamour-blue  { color: #0a2540; }
+.hover\:text-cream:hover  { color: #ffffff; }
+.hover\:text-gold:hover   { color: #D4AF37; }
+.hover\:bg-gold\/10:hover { background-color: rgba(212,175,55,0.10); }
+.hover\:border-gold:hover { border-color: #D4AF37; }
+.hover\:border-gold\/20:hover { border-color: rgba(212,175,55,0.20); }
+.prose-gold a       { color: #D4AF37; }
