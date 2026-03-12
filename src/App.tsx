@@ -20,6 +20,7 @@ const TermsPage = lazy(() => import('./pages/TermsPage').then(m => ({ default: m
 const AboutPage = lazy(() => import('./pages/AboutPage').then(m => ({ default: m.AboutPage })));
 const HalalMoneyPage = lazy(() => import('./pages/HalalMoneyPage').then(m => ({ default: m.HalalMoneyPage })));
 const ScholarAI = lazy(() => import('./components/ScholarAI').then(m => ({ default: m.ScholarAI })));
+const DailyDuasPage = lazy(() => import('./pages/DailyDuasPage').then(m => ({ default: m.DailyDuasPage })));
 
 const LoadingFallback = () => (
   <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
@@ -51,6 +52,7 @@ export default function App() {
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/prayer-times/:city" element={<DetailedSchedulePage />} />
+                <Route path="/duas" element={<DailyDuasPage />} />
                 <Route path="/scholar" element={
                   <div className="max-w-4xl mx-auto px-4 py-16"><ScholarAI /></div>
                 } />
