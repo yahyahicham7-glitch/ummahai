@@ -114,29 +114,28 @@ export function DetailedSchedulePage() {
   } : undefined;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-24">
+    <div style={{ background: '#060f1e', color: '#fff', minHeight: '100vh' }}>
       <SEO 
         title={`${t('prayer.title')} in ${location} Today`} 
-        description={`Accurate daily prayer times for ${location}. Fajr, Dhuhr, Asr, Maghrib, and Isha times with spiritual guidance. Updated for ${format(new Date(), 'MMMM yyyy')}.`}
+        description={`Accurate daily prayer times for ${location}. Fajr, Dhuhr, Asr, Maghrib, and Isha times. Updated for ${format(new Date(), 'MMMM yyyy')}.`}
         keywords={`prayer times ${location}, salat schedule ${location}, islamic prayer ${location}, fajr time ${location}`}
         schema={prayerSchema}
       />
 
-      <div className="space-y-16">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: 'clamp(80px,10vh,100px) clamp(16px,5vw,32px) 60px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 48 }}>
           <button 
             onClick={() => window.history.back()}
-            className="flex items-center text-gold font-black tracking-[0.3em] uppercase text-[10px] hover:text-cream transition-all group"
+            style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', color: '#D4AF37', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontWeight: 900, fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase' }}
           >
-            <ChevronLeft className="w-5 h-5 mr-3 group-hover:-translate-x-2 transition-transform" /> {t('prayer.back')}
+            <ChevronLeft style={{ width: 16, height: 16 }} /> {t('prayer.back')}
           </button>
-          
-          <div className="flex space-x-4">
-            <button className="p-4 bg-white/5 rounded-2xl text-gold/40 hover:text-gold hover:bg-gold/10 transition-all border border-gold/10">
-              <Download className="w-5 h-5" />
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: 12, border: '1px solid rgba(212,175,55,0.1)', color: 'rgba(212,175,55,0.5)', cursor: 'pointer' }}>
+              <Download style={{ width: 16, height: 16 }} />
             </button>
-            <button className="p-4 bg-white/5 rounded-2xl text-gold/40 hover:text-gold hover:bg-gold/10 transition-all border border-gold/10">
-              <Share2 className="w-5 h-5" />
+            <button style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: 12, border: '1px solid rgba(212,175,55,0.1)', color: 'rgba(212,175,55,0.5)', cursor: 'pointer' }}>
+              <Share2 style={{ width: 16, height: 16 }} />
             </button>
           </div>
         </div>
@@ -144,15 +143,15 @@ export function DetailedSchedulePage() {
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-8"
+          style={{ textAlign: 'center', marginBottom: 48 }}
         >
-          <h1 className="text-7xl md:text-[12rem] font-display font-black text-cream tracking-tighter leading-none">{t('prayer.title')}</h1>
-          <div className="flex flex-wrap justify-center items-center gap-8 text-[12px] text-gold/60 uppercase tracking-[0.4em] font-black">
-            <span className="flex items-center bg-white/5 px-8 py-3 rounded-full border border-gold/10 backdrop-blur-md">
-              <MapPin className="w-5 h-5 mr-4 text-gold" /> {location}
+          <h1 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(3rem,10vw,7rem)', color: '#ffffff', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 20 }}>{t('prayer.title')}</h1>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 14 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.05)', padding: '8px 20px', borderRadius: 99, border: '1px solid rgba(212,175,55,0.1)', fontSize: '0.7rem', color: 'rgba(212,175,55,0.7)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.3em' }}>
+              <MapPin style={{ width: 14, height: 14, color: '#D4AF37' }} /> {location}
             </span>
-            <span className="flex items-center bg-white/5 px-8 py-3 rounded-full border border-gold/10 backdrop-blur-md">
-              <Calendar className="w-5 h-5 mr-4 text-gold" /> {format(new Date(), 'MMMM dd, yyyy')}
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.05)', padding: '8px 20px', borderRadius: 99, border: '1px solid rgba(212,175,55,0.1)', fontSize: '0.7rem', color: 'rgba(212,175,55,0.7)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.3em' }}>
+              <Calendar style={{ width: 14, height: 14, color: '#D4AF37' }} /> {format(new Date(), 'MMMM dd, yyyy')}
             </span>
           </div>
         </motion.div>
@@ -160,42 +159,39 @@ export function DetailedSchedulePage() {
         <AdSense slot="7289012345" className="hidden md:flex" />
 
         {loading ? (
-          <div className="flex justify-center py-32">
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              <Clock className="w-24 h-24 text-gold/20" />
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '80px 0' }}>
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
+              <Clock style={{ width: 56, height: 56, color: 'rgba(212,175,55,0.25)' }} />
             </motion.div>
           </div>
         ) : times && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
             {Object.entries(times).filter(([name]) => !['Sunset', 'Imsak', 'Midnight', 'Firstthird', 'Lastthird'].includes(name)).map(([name, time], index) => (
               <motion.div
                 key={name}
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                whileHover={{ y: -15, borderColor: "rgba(212, 175, 55, 0.6)", backgroundColor: "rgba(212, 175, 55, 0.03)" }}
-                className="glass-card p-16 md:p-20 space-y-12 hover:border-gold transition-all group relative overflow-hidden border-gold/10"
+                transition={{ delay: index * 0.08, duration: 0.5 }}
+                whileHover={{ y: -6, borderColor: 'rgba(212,175,55,0.4)' }}
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(212,175,55,0.1)', borderRadius: 20, padding: 'clamp(20px,4vw,32px)', position: 'relative', overflow: 'hidden', transition: 'border-color 0.2s' }}
               >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full -mr-32 -mt-32 blur-[100px] group-hover:bg-gold/10 transition-all"></div>
+                <div style={{ position: 'absolute', top: 0, right: 0, width: 120, height: 120, background: 'rgba(212,175,55,0.04)', borderRadius: '50%', transform: 'translate(30%, -30%)', pointerEvents: 'none' }} />
                 
-                <div className="flex justify-between items-center relative z-10">
-                  <span className="text-6xl filter drop-shadow-2xl">{prayerIcons[name as keyof typeof prayerIcons]}</span>
-                  <button className="p-5 bg-white/5 rounded-2xl text-gold/20 hover:text-gold hover:bg-gold/10 transition-all border border-transparent hover:border-gold/20">
-                    <Bell className="w-6 h-6" />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, position: 'relative' }}>
+                  <span style={{ fontSize: '2rem' }}>{prayerIcons[name as keyof typeof prayerIcons]}</span>
+                  <button style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: 10, border: '1px solid rgba(212,175,55,0.1)', color: 'rgba(212,175,55,0.3)', cursor: 'pointer' }}>
+                    <Bell style={{ width: 16, height: 16 }} />
                   </button>
                 </div>
 
-                <div className="space-y-4 relative z-10">
-                  <h3 className="text-gold/40 text-xs font-black uppercase tracking-[0.6em]">{name}</h3>
-                  <p className="text-7xl md:text-9xl font-display font-black text-cream tracking-tighter leading-none">{time}</p>
+                <div style={{ position: 'relative' }}>
+                  <h3 style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 900, fontSize: '0.6rem', color: 'rgba(212,175,55,0.5)', textTransform: 'uppercase', letterSpacing: '0.5em', marginBottom: 8 }}>{name}</h3>
+                  <p style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: 'clamp(2.5rem,7vw,4rem)', color: '#ffffff', lineHeight: 1, letterSpacing: '-0.025em' }}>{time as string}</p>
                 </div>
 
-                <div className="pt-10 border-t border-gold/10 flex justify-between items-center relative z-10">
-                  <span className="text-xs text-cream/30 font-black uppercase tracking-[0.3em]">{t('prayer.status')}</span>
-                  <span className="text-xs text-gold font-black uppercase tracking-[0.3em] bg-gold/10 px-6 py-2 rounded-full border border-gold/20">{t('prayer.upcoming')}</span>
+                <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid rgba(212,175,55,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.55rem', color: 'rgba(255,255,255,0.25)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.25em' }}>{t('prayer.status')}</span>
+                  <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.55rem', color: '#D4AF37', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.25em', background: 'rgba(212,175,55,0.1)', padding: '4px 12px', borderRadius: 99, border: '1px solid rgba(212,175,55,0.15)' }}>{t('prayer.upcoming')}</span>
                 </div>
               </motion.div>
             ))}
@@ -208,22 +204,22 @@ export function DetailedSchedulePage() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="glass-card p-16 md:p-24 text-center space-y-10 border-gold/20 relative overflow-hidden"
+          style={{ marginTop: 48, background: 'rgba(212,175,55,0.04)', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 20, padding: 'clamp(24px,5vw,40px)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-gold/5 via-transparent to-gold/5"></div>
-          <h2 className="text-4xl font-display font-black text-cream relative z-10">{t('prayer.preparation')}</h2>
-          <p className="text-gold/60 max-w-2xl mx-auto font-light leading-relaxed relative z-10 text-lg italic">
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(212,175,55,0.04) 0%, transparent 50%, rgba(212,175,55,0.04) 100%)', pointerEvents: 'none' }} />
+          <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: '1.6rem', color: '#ffffff', position: 'relative', marginBottom: 12 }}>{t('prayer.preparation')}</h2>
+          <p style={{ fontFamily: "'DM Sans',sans-serif", color: 'rgba(212,175,55,0.55)', maxWidth: 520, margin: '0 auto 24px', fontWeight: 300, lineHeight: 1.8, fontStyle: 'italic', position: 'relative' }}>
             "{t('prayer.preparation_desc')}"
           </p>
-          <div className="flex justify-center gap-8 relative z-10">
-            <div className="text-center">
-              <p className="text-3xl font-display font-black text-gold">5</p>
-              <p className="text-[10px] text-cream/40 uppercase tracking-widest font-black">{t('prayer.daily_prayers')}</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 32, position: 'relative' }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: '1.8rem', color: '#D4AF37' }}>5</p>
+              <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.55rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.2em', fontWeight: 800 }}>{t('prayer.daily_prayers')}</p>
             </div>
-            <div className="w-px h-12 bg-gold/20"></div>
-            <div className="text-center">
-              <p className="text-3xl font-display font-black text-gold">100%</p>
-              <p className="text-[10px] text-cream/40 uppercase tracking-widest font-black">{t('prayer.accuracy')}</p>
+            <div style={{ width: 1, background: 'rgba(212,175,55,0.15)' }} />
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: '1.8rem', color: '#D4AF37' }}>100%</p>
+              <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.55rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.2em', fontWeight: 800 }}>{t('prayer.accuracy')}</p>
             </div>
           </div>
         </motion.div>
