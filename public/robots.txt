@@ -1,12 +1,18 @@
 User-agent: *
 Allow: /
 
-# Block internal/private paths
-Disallow: /api/
-Disallow: /_vercel/
+# Priority pages for crawlers
+Allow: /
+Allow: /qibla
+Allow: /quran
+Allow: /zakat
+Allow: /ramadan
+Allow: /duas
+Allow: /hajj
+Allow: /blog
+Allow: /about
 
-# Sitemaps
+# Don't index Scholar AI (AI-generated content)
+Disallow: /scholar
+
 Sitemap: https://www.alummahai.com/sitemap.xml
-
-# Crawl-delay for bots that respect it
-Crawl-delay: 1
