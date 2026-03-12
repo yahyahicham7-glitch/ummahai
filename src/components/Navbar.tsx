@@ -1,43 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  X, Menu, Moon, Sun, Clock, Compass, BookOpen, Calculator,
+  X, Menu, Clock, Compass, BookOpen,
   Star, PenLine, Sparkles, MapPin, ShoppingBag, Heart,
-  Globe, Check, ChevronRight, Wallet
+  Globe, Check, ChevronRight, Wallet, Beaker
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'motion/react';
 
 export const DarkModeContext = React.createContext<{ dark: boolean; setDark: (v: boolean) => void }>({ dark: false, setDark: () => {} });
 
-const SECTIONS = [
-  {
-    title: 'Prayer & Worship',
-    items: [
-      { label: 'Prayer Times', href: '/prayer-times', Icon: Clock },
-      { label: 'Qibla Finder', href: '/qibla',  Icon: Compass    },
-      { label: 'Quran',        href: '/quran',  Icon: BookOpen   },
-      { label: 'Zakat',        href: '/zakat',  Icon: Wallet     },
-    ],
-  },
-  {
-    title: 'Learn & Grow',
-    items: [
-      { label: 'Ramadan 2026', href: '/ramadan', Icon: Star      },
-      { label: 'Daily Duas',   href: '/duas',    Icon: BookOpen  },
-      { label: 'Blog',         href: '/blog',    Icon: PenLine   },
-      { label: 'Scholar AI',   href: '/scholar', Icon: Sparkles  },
-    ],
-  },
-  {
-    title: 'Explore',
-    items: [
-      { label: 'Hajj Guide',   href: '/hajj',   Icon: MapPin      },
-      { label: 'Store',        href: '/store',  Icon: ShoppingBag },
-      { label: 'About',        href: '/about',  Icon: Heart       },
-    ],
-  },
-];
+/* ─── Menu sections – translated via hook ───────────────── */
+const MENU_T: Record<string, { s1: string; s2: string; s3: string;
+  prayerTimes: string; qibla: string; quran: string; zakat: string; tasbih: string;
+  ramadan: string; duas: string; blog: string; scholar: string;
+  hajj: string; store: string; about: string; prayerCta: string; tagline: string; }> = {
+  en: { s1:'Prayer & Worship', s2:'Learn & Grow', s3:'Explore', prayerTimes:'Prayer Times', qibla:'Qibla Finder', quran:'Quran', zakat:'Zakat', tasbih:'Tasbih Counter', ramadan:'Ramadan 2026', duas:'Daily Duas', blog:'Blog', scholar:'Scholar AI', hajj:'Hajj Guide', store:'Store', about:'About', prayerCta:'Prayer Times', tagline:'Free for 1.8 billion Muslims' },
+  ar: { s1:'الصلاة والعبادة', s2:'التعلم والنمو', s3:'استكشف', prayerTimes:'أوقات الصلاة', qibla:'اتجاه القبلة', quran:'القرآن', zakat:'الزكاة', tasbih:'السبحة الرقمية', ramadan:'رمضان 2026', duas:'الأدعية اليومية', blog:'المدونة', scholar:'عالم الذكاء الاصطناعي', hajj:'دليل الحج', store:'المتجر', about:'من نحن', prayerCta:'أوقات الصلاة', tagline:'مجاناً لـ 1.8 مليار مسلم' },
+  fr: { s1:'Prière & Adoration', s2:'Apprendre & Grandir', s3:'Explorer', prayerTimes:'Heures de Prière', qibla:'Direction Qibla', quran:'Coran', zakat:'Zakat', tasbih:'Compteur Tasbih', ramadan:'Ramadan 2026', duas:'Douaas Quotidiennes', blog:'Blog', scholar:'Scholar AI', hajj:'Guide Hajj', store:'Boutique', about:'À Propos', prayerCta:'Heures de Prière', tagline:'Gratuit pour 1,8 milliard de musulmans' },
+  es: { s1:'Oración y Adoración', s2:'Aprender y Crecer', s3:'Explorar', prayerTimes:'Horarios de Oración', qibla:'Buscador de Qibla', quran:'Corán', zakat:'Zakat', tasbih:'Contador Tasbih', ramadan:'Ramadán 2026', duas:'Duas Diarias', blog:'Blog', scholar:'Scholar AI', hajj:'Guía Hajj', store:'Tienda', about:'Acerca de', prayerCta:'Horarios', tagline:'Gratis para 1800 millones de musulmanes' },
+};
 
 const LANGS = [
   { code: 'en', native: 'English',  sub: 'English'  },
@@ -46,12 +28,11 @@ const LANGS = [
   { code: 'es', native: 'Español',  sub: 'Spanish'  },
 ];
 
-const DARK_PATHS = ['/', '/qibla', '/quran', '/zakat', '/hajj', '/ramadan', '/blog', '/scholar', '/store', '/about', '/halal-money'];
+const DARK_PATHS = ['/', '/quran', '/zakat', '/hajj', '/ramadan', '/blog', '/scholar', '/store', '/about', '/halal-money', '/duas', '/tasbih'];
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
-  const [dark,     setDark]     = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 640 : false);
 
@@ -59,6 +40,10 @@ export function Navbar() {
   const location = useLocation();
   const menuRef  = useRef<HTMLDivElement>(null);
   const langRef  = useRef<HTMLDivElement>(null);
+
+  const lang = (i18n.language?.slice(0, 2) || 'en') as string;
+  const L = MENU_T[lang] || MENU_T.en;
+  const isRTL = lang === 'ar';
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -85,27 +70,15 @@ export function Navbar() {
     return () => document.removeEventListener('mousedown', fn);
   }, [menuOpen, langOpen]);
 
-  // Dark mode — applies to whole page via body class + CSS vars
-  useEffect(() => {
-    if (dark) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      document.body.style.background = '#071a2e';
-      document.body.style.color = '#f0f4f8';
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-      document.body.style.background = '#ffffff';
-      document.body.style.color = '#0a2540';
-    }
-  }, [dark]);
-
   const pathBase    = '/' + location.pathname.split('/')[1];
   const hasDarkHero = DARK_PATHS.includes(location.pathname) || DARK_PATHS.includes(pathBase);
   const glass       = hasDarkHero && !scrolled;
-  const curLang     = LANGS.find(l => i18n.language?.startsWith(l.code)) ?? LANGS[0];
 
-  const textC   = glass ? '#ffffff' : (dark ? '#f0f4f8' : '#0a2540');
-  const borderC = glass ? 'rgba(255,255,255,0.18)' : (dark ? 'rgba(255,255,255,0.15)' : 'rgba(10,37,64,0.11)');
-  const navBg   = glass ? 'transparent' : (dark ? 'rgba(7,26,46,0.97)' : 'rgba(255,255,255,0.97)');
+  const textC   = glass ? '#ffffff' : '#0a2540';
+  const borderC = glass ? 'rgba(255,255,255,0.18)' : 'rgba(10,37,64,0.11)';
+  const navBg   = glass ? 'transparent' : 'rgba(255,255,255,0.97)';
+
+  const curLang = LANGS.find(l => i18n.language?.startsWith(l.code)) ?? LANGS[0];
 
   const iconBtn = (active = false): React.CSSProperties => ({
     width: 36, height: 36, borderRadius: 9, padding: 0, flexShrink: 0,
@@ -116,6 +89,27 @@ export function Navbar() {
     cursor: 'pointer', transition: 'all 0.18s',
   });
 
+  const sections = [
+    { title: L.s1, items: [
+      { label: L.prayerTimes, href: '/prayer-times', Icon: Clock },
+      { label: L.qibla,       href: '/qibla',        Icon: Compass },
+      { label: L.quran,       href: '/quran',         Icon: BookOpen },
+      { label: L.zakat,       href: '/zakat',         Icon: Wallet },
+      { label: L.tasbih,      href: '/tasbih',        Icon: Star },
+    ]},
+    { title: L.s2, items: [
+      { label: L.ramadan, href: '/ramadan', Icon: Star },
+      { label: L.duas,    href: '/duas',    Icon: BookOpen },
+      { label: L.blog,    href: '/blog',    Icon: PenLine },
+      { label: L.scholar, href: '/scholar', Icon: Sparkles },
+    ]},
+    { title: L.s3, items: [
+      { label: L.hajj,  href: '/hajj',  Icon: MapPin },
+      { label: L.store, href: '/store', Icon: ShoppingBag },
+      { label: L.about, href: '/about', Icon: Heart },
+    ]},
+  ];
+
   return (
     <>
       <nav style={{
@@ -123,23 +117,24 @@ export function Navbar() {
         height: isMobile ? 56 : 64,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: isMobile ? '0 14px' : '0 clamp(20px,5vw,40px)',
+        direction: isRTL ? 'rtl' : 'ltr',
         background: navBg,
         backdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'none',
         WebkitBackdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'none',
-        borderBottom: `1px solid ${scrolled ? (dark ? 'rgba(255,255,255,0.08)' : 'rgba(10,37,64,0.08)') : 'transparent'}`,
+        borderBottom: `1px solid ${scrolled ? 'rgba(10,37,64,0.08)' : 'transparent'}`,
         transition: 'background 0.3s, border-color 0.3s',
       }}>
 
         {/* Logo */}
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <div style={{
-            width: isMobile ? 28 : 32, height: isMobile ? 28 : 32, borderRadius: 7, flexShrink: 0,
-            background: glass ? 'rgba(212,175,55,0.15)' : '#0a2540',
-            border: glass ? '1px solid rgba(212,175,55,0.3)' : 'none',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s',
-          }}>
-            <span style={{ color: '#D4AF37', fontSize: isMobile ? '0.82rem' : '0.9rem', lineHeight: 1 }}>☽</span>
-          </div>
+          {/* SVG logo mark */}
+          <svg width={isMobile ? 26 : 30} height={isMobile ? 26 : 30} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="9" fill={glass ? 'rgba(212,175,55,0.15)' : '#0a2540'} />
+            {/* crescent */}
+            <path d="M27 20a10 10 0 1 1-10.6-9.97A7.5 7.5 0 0 0 27 20z" fill="#D4AF37" opacity="0.95"/>
+            {/* star dot */}
+            <circle cx="26" cy="14" r="2" fill="#D4AF37"/>
+          </svg>
           <span style={{
             fontFamily: "'Playfair Display',serif", fontWeight: 900,
             fontSize: isMobile ? '0.86rem' : '0.95rem',
@@ -149,10 +144,10 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Right: mobile = globe + dark + menu | desktop = globe + dark + CTA + menu */}
+        {/* Right controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 8 }}>
 
-          {/* Globe */}
+          {/* Language picker */}
           <div ref={langRef} style={{ position: 'relative' }}>
             <button
               onClick={() => { setLangOpen(o => !o); setMenuOpen(false); }}
@@ -170,7 +165,7 @@ export function Navbar() {
                   exit={{ opacity: 0, y: -6, scale: 0.97 }}
                   transition={{ duration: 0.15 }}
                   style={{
-                    position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+                    position: 'absolute', top: 'calc(100% + 8px)', right: isRTL ? 'auto' : 0, left: isRTL ? 0 : 'auto',
                     background: '#ffffff', borderRadius: 14,
                     border: '1px solid rgba(10,37,64,0.1)',
                     boxShadow: '0 16px 48px rgba(10,37,64,0.13)',
@@ -184,7 +179,7 @@ export function Navbar() {
                     return (
                       <button key={l.code}
                         onClick={() => { i18n.changeLanguage(l.code); setLangOpen(false); }}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 14px', border: 'none', cursor: 'pointer', transition: 'background 0.13s', background: active ? 'rgba(212,175,55,0.06)' : 'transparent' }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 14px', border: 'none', cursor: 'pointer', transition: 'background 0.13s', background: active ? 'rgba(212,175,55,0.06)' : 'transparent', direction: l.code === 'ar' ? 'rtl' : 'ltr' }}
                         onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(10,37,64,0.03)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = active ? 'rgba(212,175,55,0.06)' : 'transparent'; }}>
                         <div>
@@ -200,18 +195,7 @@ export function Navbar() {
             </AnimatePresence>
           </div>
 
-          {/* Dark mode toggle */}
-          <button
-            onClick={() => setDark(d => !d)}
-            style={iconBtn(dark)}
-            aria-label="Toggle dark mode"
-            title={dark ? 'Switch to light mode' : 'Switch to dark mode'}>
-            {dark
-              ? <Sun  size={14} strokeWidth={2} style={{ color: '#D4AF37' }} />
-              : <Moon size={14} strokeWidth={2} />}
-          </button>
-
-          {/* Prayer Times CTA — desktop only, JS-gated */}
+          {/* Prayer Times CTA — desktop only */}
           {!isMobile && (
             <Link to="/prayer-times" style={{
               display: 'flex', alignItems: 'center', gap: 6,
@@ -224,11 +208,11 @@ export function Navbar() {
             }}
               onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
               onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}>
-              <Clock size={13} strokeWidth={2} /> Prayer Times
+              <Clock size={13} strokeWidth={2} /> {L.prayerCta}
             </Link>
           )}
 
-          {/* Hamburger — always visible, always last */}
+          {/* Hamburger */}
           <button
             onClick={() => { setMenuOpen(o => !o); setLangOpen(false); }}
             style={iconBtn(menuOpen)}
@@ -238,7 +222,7 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Menu panel */}
+      {/* Dropdown menu */}
       <AnimatePresence>
         {menuOpen && (
           <>
@@ -252,12 +236,12 @@ export function Navbar() {
               initial={{ opacity: 0, y: -8, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
-              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
               style={{
                 position: 'fixed',
                 top: isMobile ? 62 : 70,
-                right: isMobile ? 10 : 'clamp(12px,5vw,40px)',
-                left: isMobile ? 10 : 'auto',
+                right: isRTL ? 'auto' : (isMobile ? 10 : 'clamp(12px,5vw,40px)'),
+                left:  isRTL ? (isMobile ? 10 : 'clamp(12px,5vw,40px)') : (isMobile ? 10 : 'auto'),
                 width: isMobile ? 'auto' : 320,
                 zIndex: 399,
                 background: 'linear-gradient(160deg,#0d2a45,#0a2540)',
@@ -265,10 +249,11 @@ export function Navbar() {
                 border: '1px solid rgba(255,255,255,0.07)',
                 boxShadow: '0 24px 72px rgba(0,0,0,0.35)',
                 overflow: 'hidden',
+                direction: isRTL ? 'rtl' : 'ltr',
               }}>
 
               <div style={{ padding: '10px 10px 6px' }}>
-                {SECTIONS.map((section, si) => (
+                {sections.map((section, si) => (
                   <div key={section.title}>
                     <div style={{ padding: '8px 10px 5px', marginTop: si > 0 ? 4 : 0 }}>
                       <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.5rem', fontWeight: 900, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.24em' }}>
@@ -287,10 +272,10 @@ export function Navbar() {
                         <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.8rem', fontWeight: 700, color: '#ffffff' }}>
                           {item.label}
                         </span>
-                        <ChevronRight size={12} strokeWidth={2} style={{ color: 'rgba(255,255,255,0.2)', flexShrink: 0, marginLeft: 'auto' }} />
+                        <ChevronRight size={12} strokeWidth={2} style={{ color: 'rgba(255,255,255,0.2)', flexShrink: 0, marginLeft: isRTL ? 0 : 'auto', marginRight: isRTL ? 'auto' : 0, transform: isRTL ? 'rotate(180deg)' : 'none' }} />
                       </Link>
                     ))}
-                    {si < SECTIONS.length - 1 && (
+                    {si < sections.length - 1 && (
                       <div style={{ margin: '6px 10px', borderTop: '1px solid rgba(255,255,255,0.06)' }} />
                     )}
                   </div>
@@ -299,10 +284,10 @@ export function Navbar() {
 
               <div style={{ padding: '10px 16px', background: 'rgba(0,0,0,0.2)', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                 <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.6rem', color: 'rgba(255,255,255,0.25)', fontWeight: 500 }}>
-                  Free for 1.8 billion Muslims
+                  {L.tagline}
                 </span>
                 <Link to="/prayer-times" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#D4AF37', color: '#0a2540', padding: '7px 13px', borderRadius: 8, fontFamily: "'DM Sans',sans-serif", fontSize: '0.63rem', fontWeight: 800, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                  <Clock size={11} strokeWidth={2} /> Prayer Times
+                  <Clock size={11} strokeWidth={2} /> {L.prayerCta}
                 </Link>
               </div>
             </motion.div>
