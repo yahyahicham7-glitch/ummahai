@@ -164,18 +164,27 @@ export function Home() {
         {[520, 760].map(s => (
           <div key={s} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: `min(${s}px,85vw)`, height: `min(${s}px,85vw)`, borderRadius: '50%', border: '1px solid rgba(212,175,55,0.05)', pointerEvents: 'none' }} />
         ))}
-        {/* City dots */}
+        {/* Pulsing location dots — major Muslim cities */}
         {[
-          { n: 'London',  t: '22%', l: '44%' },
-          { n: 'Riyadh',  t: '36%', l: '57%' },
-          { n: 'Jakarta', t: '52%', l: '77%' },
-          { n: 'Madrid',  t: '26%', l: '41%' },
-          { n: 'Dubai',   t: '37%', l: '60%' },
-        ].map(c => (
-          <div key={c.n} style={{ position: 'absolute', top: c.t, left: c.l, pointerEvents: 'none', zIndex: 0 }}>
-            <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(212,175,55,0.3)', boxShadow: '0 0 7px rgba(212,175,55,0.22)' }} />
-            <div style={{ position: 'absolute', top: -18, left: '50%', transform: 'translateX(-50%)', fontSize: '0.47rem', fontFamily: "'DM Sans',sans-serif", fontWeight: 700, color: 'rgba(212,175,55,0.28)', whiteSpace: 'nowrap', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{c.n}</div>
-          </div>
+          { n: 'Makkah',  t: '41%', l: '57%' },
+          { n: 'London',  t: '24%', l: '44%' },
+          { n: 'Jakarta', t: '55%', l: '78%' },
+          { n: 'Cairo',   t: '38%', l: '53%' },
+          { n: 'Istanbul',t: '28%', l: '51%' },
+          { n: 'Karachi', t: '43%', l: '66%' },
+          { n: 'Lagos',   t: '50%', l: '46%' },
+        ].map((c, i) => (
+          <motion.div key={c.n}
+            animate={{ opacity: [0.25, 0.75, 0.25] }}
+            transition={{ duration: 2.5 + i * 0.4, repeat: Infinity, ease: 'easeInOut', delay: i * 0.35 }}
+            style={{ position: 'absolute', top: c.t, left: c.l, pointerEvents: 'none', zIndex: 0 }}>
+            <div style={{ position: 'relative' }}>
+              <motion.div animate={{ scale: [1, 2.2, 1], opacity: [0.5, 0, 0.5] }} transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.35 }}
+                style={{ position: 'absolute', inset: -3, borderRadius: '50%', background: 'rgba(212,175,55,0.15)' }} />
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#D4AF37', boxShadow: '0 0 8px rgba(212,175,55,0.6)' }} />
+            </div>
+            <div style={{ position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)', fontSize: '0.44rem', fontFamily: "'DM Sans',sans-serif", fontWeight: 800, color: 'rgba(212,175,55,0.5)', whiteSpace: 'nowrap', letterSpacing: '0.12em', textTransform: 'uppercase' }}>{c.n}</div>
+          </motion.div>
         ))}
 
         {/* Content */}
