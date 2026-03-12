@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   X, Menu, Clock, Compass, BookOpen,
   Star, PenLine, Sparkles, MapPin, ShoppingBag, Heart,
-  Globe, Check, ChevronRight, Wallet, Beaker
+  Globe, Check, ChevronRight, Wallet
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'motion/react';
