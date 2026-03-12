@@ -15,6 +15,7 @@ const BlogPage = lazy(() => import('./pages/BlogPage').then(m => ({ default: m.B
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage').then(m => ({ default: m.BlogPostPage })));
 const RamadanPage = lazy(() => import('./pages/RamadanPage').then(m => ({ default: m.RamadanPage })));
 const DetailedSchedulePage = lazy(() => import('./pages/DetailedSchedulePage').then(m => ({ default: m.DetailedSchedulePage })));
+const PrayerTimesPage = lazy(() => import('./pages/PrayerTimesPage').then(m => ({ default: m.PrayerTimesPage })));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
 const TermsPage = lazy(() => import('./pages/TermsPage').then(m => ({ default: m.TermsPage })));
 const AboutPage = lazy(() => import('./pages/AboutPage').then(m => ({ default: m.AboutPage })));
@@ -51,7 +52,8 @@ export default function App() {
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/about" element={<AboutPage />} />
-                <Route path="/prayer-times/:city" element={<DetailedSchedulePage />} />
+                <Route path="/prayer-times" element={<PrayerTimesPage />} />
+                <Route path="/prayer-times/:city" element={<PrayerTimesPage />} />
                 <Route path="/duas" element={<DailyDuasPage />} />
                 <Route path="/scholar" element={
                   <div className="max-w-4xl mx-auto px-4 py-16"><ScholarAI /></div>
