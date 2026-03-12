@@ -57,7 +57,7 @@ const POSTS: Post[] = [
       fr: 'Horaires précis de Suhoor et Iftar pour chaque ville du monde pendant le Ramadan 2026. Londres, Paris, Dubai, New York et plus de 50 villes couvertes.',
       es: 'Horarios precisos de Suhoor e Iftar para cada ciudad del mundo durante Ramadán 2026. Londres, París, Dubai, Nueva York y más de 50 ciudades cubiertas.',
     },
-    date: 'Mar 8, 2026', image: 'https://images.unsplash.com/photo-1542816052-e1b0b5c1c4b9?w=800&q=80', category: 'Ramadan', readTime: '5', trending: true,
+    date: 'Mar 8, 2026', image: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=800&q=80', category: 'Ramadan', readTime: '5', trending: true,
   },
   {
     id: 'fajr-time-today',
@@ -217,7 +217,7 @@ const POSTS: Post[] = [
       fr: 'Comment identifier les produits halal, les certifications fiables au Royaume-Uni, en France, en Espagne et en Allemagne, et les applications pour faciliter vos achats.',
       es: 'Cómo identificar productos halal, certificaciones de confianza en Reino Unido, Francia, España y Alemania, y apps que facilitan las compras halal.',
     },
-    date: 'Feb 26, 2026', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80', category: 'Lifestyle', readTime: '6',
+    date: 'Feb 26, 2026', image: 'https://images.unsplash.com/photo-1519814773579-eca90e5b32cf?w=800&q=80', category: 'Lifestyle', readTime: '6',
   },
   {
     id: 'zakat-al-fitr-2026',
@@ -233,7 +233,7 @@ const POSTS: Post[] = [
       fr: 'Quel est le montant de la Zakat al-Fitr en 2026 ? Qui doit la payer, quel est le délai, et qui sont les bénéficiaires éligibles selon la loi islamique.',
       es: '¿Cuánto es el Zakat al-Fitr en 2026? Quién debe pagarlo, cuándo es la fecha límite y quiénes son los beneficiarios elegibles según la ley islámica.',
     },
-    date: 'Feb 25, 2026', image: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=800&q=80', category: 'Finance', readTime: '5',
+    date: 'Feb 25, 2026', image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80', category: 'Finance', readTime: '5',
   },
   {
     id: 'islamic-parenting-guide',
@@ -249,7 +249,7 @@ const POSTS: Post[] = [
       fr: 'Comment cultiver l\'identité islamique, les valeurs et la pratique chez les enfants grandissant dans des pays à majorité non-musulmane — conseils pratiques pour les parents.',
       es: 'Cómo cultivar la identidad islámica, los valores y la práctica en niños que crecen en países de mayoría no musulmana — consejos prácticos para padres.',
     },
-    date: 'Feb 24, 2026', image: 'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=800&q=80', category: 'Lifestyle', readTime: '8',
+    date: 'Feb 24, 2026', image: 'https://images.unsplash.com/photo-1543168256-418811576931?w=800&q=80', category: 'Lifestyle', readTime: '8',
   },
   {
     id: 'prophet-muhammad-life',
@@ -265,7 +265,7 @@ const POSTS: Post[] = [
       fr: 'De sa naissance à La Mecque au dernier sermon. La vie, le caractère et l\'héritage du Prophète ﷺ — la personne la plus influente de l\'histoire.',
       es: 'Desde su nacimiento en La Meca hasta el sermón final. La vida, el carácter y el legado del Profeta ﷺ — la persona más influyente de la historia.',
     },
-    date: 'Feb 23, 2026', image: 'https://images.unsplash.com/photo-1519817650390-64a93db51149?w=800&q=80', category: 'History', readTime: '12',
+    date: 'Feb 23, 2026', image: 'https://images.unsplash.com/photo-1553514029-1318c9127859?w=800&q=80', category: 'History', readTime: '12',
   },
 ];
 
