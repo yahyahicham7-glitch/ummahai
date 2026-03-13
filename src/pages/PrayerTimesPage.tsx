@@ -39,7 +39,8 @@ const UI: Record<string, any> = {
     upcoming: 'Upcoming',
     passed: 'Passed',
     current: 'Current',
-    upcoming2: 'Upcoming',
+    upcoming2: "قادمة",
+        searchBtn: 'بحث',
   },
   ar: {
     badge: 'أوقات الصلاة الآنية · بإمداد من واجهة Aladhan',
@@ -127,6 +128,7 @@ const UI: Record<string, any> = {
     passed: 'Pasada',
     current: 'Actual',
     upcoming2: 'Próxima',
+        searchBtn: 'Buscar',
   },
 };
 
@@ -173,7 +175,7 @@ export function PrayerTimesPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchQ, setSearchQ] = useState('');
-  const [method, setMethod] = useState('2');
+  const [method, setMethod] = useState('3');
   const [showMethodMenu, setShowMethodMenu] = useState(false);
   const [statuses, setStatuses] = useState<Record<string, string>>({});
 
@@ -218,7 +220,20 @@ export function PrayerTimesPage() {
   const geoLocate = useCallback(() => {
     setLoading(true); setError(''); setLocation(L.detecting);
     navigator.geolocation.getCurrentPosition(
-      p => fetchByCoords(p.coords.latitude, p.coords.longitude),
+      async p => {
+        const { latitude, longitude } = p.coords;
+        // Auto-detect best calculation method for user's country
+        try {
+          const geoRes = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+          );
+          const geoData = await geoRes.json();
+          const countryCode = geoData.countryCode || '';
+          const autoMethod = getMethodForCountry(countryCode);
+          setMethod(autoMethod);
+        } catch { /* keep current method on error */ }
+        fetchByCoords(latitude, longitude);
+      },
       () => { setError(L.errorLocation); setLoading(false); }
     );
   }, [fetchByCoords, L]);
@@ -304,7 +319,7 @@ export function PrayerTimesPage() {
                 style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: "'DM Sans',sans-serif", fontSize: '0.86rem', color: '#fff', fontWeight: 300 }} />
             </div>
             <button type="submit" style={{ padding: '10px 18px', background: GOLD, border: 'none', borderRadius: 12, fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.7rem', color: NAVY, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.1em', whiteSpace: 'nowrap' }}>
-              Search
+              {L.searchBtn || '→'}
             </button>
           </form>
 
