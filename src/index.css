@@ -1,4 +1,4 @@
-}@import "tailwindcss";
+@import "tailwindcss";
 
 @theme {
   --font-display: "Playfair Display", serif;
@@ -12,7 +12,6 @@
 @layer base {
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* WHITE body — pages control their own bg */
   body {
     background: #ffffff;
     color: #0a2540;
@@ -20,7 +19,6 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Headings inherit from parent — NO global white override */
   h1, h2, h3, h4, h5, h6 {
     font-family: "Playfair Display", serif;
     font-weight: 900;
@@ -44,11 +42,11 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-@keyframes spin      { from{ transform:rotate(0deg)   } to{ transform:rotate(360deg)   } }
+@keyframes spin      { from{ transform:rotate(0deg) } to{ transform:rotate(360deg) } }
 @keyframes fadein    { from{ opacity:0;transform:translateY(8px) } to{ opacity:1;transform:translateY(0) } }
 @keyframes pulseGold { 0%,100%{ opacity:1 } 50%{ opacity:.4 } }
 
-/* ── Missing Tailwind custom class polyfills ────────────── */
+/* ── Tailwind custom class polyfills ── */
 .text-cream         { color: #ffffff; }
 .text-gold          { color: #D4AF37; }
 .font-display       { font-family: "Playfair Display", serif; }
