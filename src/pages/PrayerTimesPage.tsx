@@ -2,10 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SEO } from '@/src/components/SEO';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Search, Clock, Calendar, ChevronDown, Loader2, RefreshCw, Compass, BookOpen } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { MapPin, Search, Clock, Calendar, ChevronDown } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
-import { useParams, useNavigate } from 'react-router-dom';
 
 const NAVY  = '#0a2540';
 const NAVY2 = '#0d2e4d';
