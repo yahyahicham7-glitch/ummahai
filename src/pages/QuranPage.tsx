@@ -19,6 +19,75 @@ const UI: Record<string, { title: string; subtitle: string; search: string; back
   es: { title: 'El Santo Corán', subtitle: 'Revelaciones Sagradas para la Humanidad', search: 'Buscar Sura por nombre o número…', back: 'Volver a las Suras', edition: 'Traducción', ayahs: 'Aleyas', prev: 'Sura Anterior', next: 'Sura Siguiente', highlight: 'Subrayar', clearHL: 'Borrar', meccan: 'Mequeña', medinan: 'Medinense' },
 };
 
+
+/* ─── Surah name localization ─────────────────────────────── */
+// French and Spanish surah names for common surahs
+// Source: standard Islamic translation conventions
+const SURAH_NAMES_FR: Record<number, string> = {
+  1:'Al-Fatiha',2:'La Vache',3:"La Famille d'Imrân",4:'Les Femmes',5:'La Table Servie',
+  6:"Les Troupeaux",7:"Les Limbes",8:'Le Butin',9:'Le Repentir',10:'Jonas',
+  11:'Hûd',12:'Joseph',13:'Le Tonnerre',14:'Abraham',15:'Al-Hijr',
+  16:'Les Abeilles',17:'Le Voyage Nocturne',18:'La Caverne',19:'Marie',20:'Tâ-Hâ',
+  21:'Les Prophètes',22:'Le Pèlerinage',23:'Les Croyants',24:'La Lumière',25:'Le Critère',
+  26:'Les Poètes',27:'La Fourmi',28:'Le Récit',29:'L'Araignée',30:'Les Romains',
+  31:'Luqmân',32:'La Prosternation',33:'Les Coalisés',34:'Saba'',35:'Le Créateur',
+  36:'Yâ-Sîn',37:'Les Rangées',38:'Sâd',39:'Les Groupes',40:'Le Pardonneur',
+  41:'Les Versets Détaillés',42:'La Consultation',43:'L'Ornement',44:'La Fumée',45:'L'Agenouillée',
+  46:'Les Dunes',47:'Muhammad',48:'La Victoire',49:'Les Appartements',50:'Qâf',
+  51:'Les Éparpillants',52:'Le Mont',53:'L'Étoile',54:'La Lune',55:'Le Bienfaiteur',
+  56:'L'Événement',57:'Le Fer',58:'La Disputante',59:'L'Exode',60:'L'Éprouvée',
+  61:'Les Rangs',62:'Le Vendredi',63:'Les Hypocrites',64:'La Tricherie',65:'Le Divorce',
+  66:'L'Interdiction',67:'La Royauté',68:'La Plume',69:'La Réalité',70:'Les Voies d'Ascension',
+  71:'Noé',72:'Les Djinns',73:'L'Enveloppé',74:'Le Revêtu',75:'La Résurrection',
+  76:'L'Homme',77:'Les Envoyés',78:'La Nouvelle',79:'Les Arracheurs',80:'Il a Froncé',
+  81:'L'Obscurcissement',82:'La Fracture',83:'Les Fraudeurs',84:'L'Éclatement',85:'Les Constellations',
+  86:'L'Astre Nocturne',87:'Le Très-Haut',88:'L'Enveloppant',89:'L'Aurore',90:'La Cité',
+  91:'Le Soleil',92:'La Nuit',93:'La Matinée',94:'L'Expansion',95:'Le Figuier',
+  96:'L'Adhérence',97:'La Destinée',98:'La Preuve',99:'Le Tremblement',100:'Les Coureurs',
+  101:'La Catastrophe',102:'L'Accumulation',103:'L'Époque',104:'Le Diffamateur',105:'L'Éléphant',
+  106:'Quraych',107:'L'Aide',108:'L'Abondance',109:'Les Mécréants',110:'Le Secours',
+  111:'La Fibre',112:'Le Monothéisme Pur',113:'L'Aube Naissante',114:'Les Hommes',
+};
+
+const SURAH_NAMES_ES: Record<number, string> = {
+  1:'Al-Fatiha',2:'La Vaca',3:'La Familia de Imrán',4:'Las Mujeres',5:'La Mesa Servida',
+  6:'Los Rebaños',7:'Los Limbos',8:'El Botín',9:'El Arrepentimiento',10:'Jonás',
+  11:'Hud',12:'José',13:'El Trueno',14:'Abraham',15:'Al-Hijr',
+  16:'Las Abejas',17:'El Viaje Nocturno',18:'La Caverna',19:'María',20:'Ta-Ha',
+  21:'Los Profetas',22:'La Peregrinación',23:'Los Creyentes',24:'La Luz',25:'El Criterio',
+  26:'Los Poetas',27:'La Hormiga',28:'El Relato',29:'La Araña',30:'Los Romanos',
+  31:'Luqmán',32:'La Postración',33:'Los Coaligados',34:'Saba',35:'El Creador',
+  36:'Ya-Sin',37:'Los Alineados',38:'Sad',39:'Los Grupos',40:'El Perdonador',
+  41:'Los Versículos Detallados',42:'La Consulta',43:'El Ornamento',44:'El Humo',45:'La Arrodillada',
+  46:'Las Dunas',47:'Muhammad',48:'La Victoria',49:'Las Habitaciones',50:'Qaf',
+  51:'Los Vientos',52:'El Monte',53:'La Estrella',54:'La Luna',55:'El Misericordioso',
+  56:'El Acontecimiento',57:'El Hierro',58:'La Discutidora',59:'El Destierro',60:'La Examinada',
+  61:'Las Filas',62:'El Viernes',63:'Los Hipócritas',64:'El Engaño',65:'El Divorcio',
+  66:'La Prohibición',67:'La Soberanía',68:'La Pluma',69:'La Verdad',70:'Las Vías de Ascenso',
+  71:'Noé',72:'Los Genios',73:'El Envuelto',74:'El Encubierto',75:'La Resurrección',
+  76:'El Hombre',77:'Los Enviados',78:'La Noticia',79:'Los Arrancadores',80:'Frunció el Ceño',
+  81:'El Oscurecimiento',82:'La Fractura',83:'Los Defraudadores',84:'El Desgarro',85:'Las Constelaciones',
+  86:'El Astro',87:'El Altísimo',88:'Lo Envolvente',89:'El Amanecer',90:'La Ciudad',
+  91:'El Sol',92:'La Noche',93:'La Mañana',94:'La Expansión',95:'La Higuera',
+  96:'El Coágulo',97:'El Destino',98:'La Prueba',99:'El Temblor',100:'Los Corredores',
+  101:'La Calamidad',102:'La Rivalidad',103:'La Época',104:'El Difamador',105:'El Elefante',
+  106:'Quraish',107:'La Ayuda Mutua',108:'La Abundancia',109:'Los Incrédulos',110:'El Auxilio',
+  111:'La Fibra',112:'La Pureza',113:'El Amanecer',114:'Los Hombres',
+};
+
+function getSurahName(surah: Surah, lang: string): string {
+  if (lang === 'ar') return surah.name;
+  if (lang === 'fr') return SURAH_NAMES_FR[surah.number] || surah.englishName;
+  if (lang === 'es') return SURAH_NAMES_ES[surah.number] || surah.englishName;
+  return surah.englishName; // English default
+}
+
+function getSurahMeaning(surah: Surah, lang: string): string {
+  // englishNameTranslation is always in English from the API
+  // For other languages, the meaning is embedded in the translated name for most surahs
+  return surah.englishNameTranslation;
+}
+
 const NAVY = '#0a2540';
 const NAVY2 = '#071a2e';
 const GOLD = '#D4AF37';
@@ -178,7 +247,7 @@ export function QuranPage() {
 
                     {/* Name */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: '0.88rem', color: '#ffffff', marginBottom: 2 }}>{surah.englishName}</div>
+                      <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: '0.88rem', color: '#ffffff', marginBottom: 2 }}>{getSurahName(surah, lang)}</div>
                       <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.58rem', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{surah.englishNameTranslation} · {surah.numberOfAyahs} {L.ayahs}</div>
                     </div>
 
@@ -229,7 +298,7 @@ export function QuranPage() {
               {/* ── Surah title ── */}
               <div style={{ textAlign: 'center', marginBottom: 40, padding: '32px 20px', background: 'linear-gradient(135deg,rgba(212,175,55,0.07),rgba(212,175,55,0.03))', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 20 }}>
                 <h1 style={{ fontFamily: "'Amiri',serif", fontSize: 'clamp(2rem,6vw,3.5rem)', color: GOLD, marginBottom: 10, lineHeight: 1.2 }}>{selected.name}</h1>
-                <p style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 'clamp(1rem,3vw,1.5rem)', color: '#ffffff', marginBottom: 12 }}>{selected.englishName}</p>
+                <p style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 'clamp(1rem,3vw,1.5rem)', color: '#ffffff', marginBottom: 12 }}>{getSurahName(selected, lang)}</p>
                 <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', marginBottom: 12 }}>{selected.englishNameTranslation}</p>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
                   {[selected.revelationType === 'Meccan' ? L.meccan : L.medinan, `${selected.numberOfAyahs} ${L.ayahs}`, `Surah ${selected.number}`].map(tag => (
