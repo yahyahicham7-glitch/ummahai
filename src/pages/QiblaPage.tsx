@@ -3,6 +3,7 @@ import { SEO } from '@/src/components/SEO';
 import { MapPin, Search, Loader2, AlertCircle, CheckCircle, Navigation } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { searchCity, type CityInfo } from '@/src/services/prayerService';
+import { useTranslation } from 'react-i18next';
 
 /* ─── Math ──────────────────────────────────────────────── */
 const KAABA = { lat: 21.4225, lng: 39.8262 };
@@ -18,10 +19,121 @@ function calcDist(lat: number, lng: number) {
   const a = Math.sin(rad((KAABA.lat - lat) / 2)) ** 2 + Math.cos(rad(lat)) * Math.cos(rad(KAABA.lat)) * Math.sin(rad((KAABA.lng - lng) / 2)) ** 2;
   return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
-const cardinal = (d: number) => ['N','NE','E','SE','S','SW','W','NW'][Math.round(d / 45) % 8];
+const cardinal = (d: number, lang: string) => {
+  const en = ['N','NE','E','SE','S','SW','W','NW'];
+  const ar = ['ش','شش','ش','جشش','ج','جغ','غ','شغ'];
+  const fr = ['N','NE','E','SE','S','SO','O','NO'];
+  const es = ['N','NE','E','SE','S','SO','O','NO'];
+  const map: Record<string, string[]> = { en, ar, fr, es };
+  return (map[lang] || en)[Math.round(d / 45) % 8];
+};
 
-/* ─── Compass dial ──────────────────────────────────────── */
-function Dial({ qibla, heading }: { qibla: number; heading: number | null }) {
+/* ─── Translation table ─────────────────────────────────── */
+const UI: Record<string, any> = {
+  en: {
+    seoTitle: 'Qibla Direction Finder — GPS Compass to Mecca | Al Ummah AI',
+    seoDesc: 'Find the exact Qibla direction from anywhere. Real-time GPS compass pointing to the Holy Kaaba in Mecca.',
+    badge: '🧭 Real-Time GPS Compass',
+    h1: 'Qibla Finder',
+    sub: 'Precise direction to the Holy Kaaba from your location.',
+    searchPlaceholder: 'Search city — Madrid, Dubai, London...',
+    detecting: 'Detecting your location...',
+    locationUnavailable: 'Location unavailable',
+    enableCompass: '🧭 Enable live compass',
+    enableBtn: 'Enable',
+    locationBadge: (city: string) => city,
+    cardLabels: ['Direction', 'Distance', 'Location'],
+    towardMecca: 'Toward Mecca',
+    liveCompassTip: 'Live compass active. Hold phone flat and face the direction the 🕋 arrow points.',
+    staticTip: (deg: number, card: string) => `The Qibla direction from your location is ${deg}° ${card}.`,
+    staticTipSub: (deg: number, card: string) => `📱 On mobile: enable the compass for live guidance.\n💻 On desktop: use a compass app or face ${deg}° ${card}.`,
+    km: 'km',
+    kaabaTitle: 'Al-Masjid Al-Haram, Makkah',
+    kaabaCoords: '21.4225° N, 39.8262° E · Saudi Arabia',
+    errorDenied: 'Location denied — search your city below.',
+    errorFailed: 'Could not get location — search your city below.',
+    errorNoGeo: 'Geolocation not supported — search your city below.',
+    live: 'Live',
+  },
+  ar: {
+    seoTitle: 'اتجاه القبلة — بوصلة GPS نحو مكة | Al Ummah AI',
+    seoDesc: 'ابحث عن اتجاه القبلة الدقيق من أي مكان. بوصلة GPS في الوقت الفعلي تشير نحو الكعبة المشرفة في مكة.',
+    badge: '🧭 بوصلة GPS آنية',
+    h1: 'اتجاه القبلة',
+    sub: 'الاتجاه الدقيق نحو الكعبة المشرفة من موقعك.',
+    searchPlaceholder: 'ابحث عن مدينة — الرياض، دبي، القاهرة...',
+    detecting: 'جاري تحديد موقعك...',
+    locationUnavailable: 'الموقع غير متاح',
+    enableCompass: '🧭 تفعيل البوصلة المباشرة',
+    enableBtn: 'تفعيل',
+    locationBadge: (city: string) => city,
+    cardLabels: ['الاتجاه', 'المسافة', 'الموقع'],
+    towardMecca: 'نحو مكة المكرمة',
+    liveCompassTip: 'البوصلة المباشرة نشطة. امسك هاتفك بشكل مستوٍ واتجه نحو السهم 🕋.',
+    staticTip: (deg: number, card: string) => `اتجاه القبلة من موقعك هو ${deg}° ${card}.`,
+    staticTipSub: (deg: number, card: string) => `📱 على الهاتف: فعّل البوصلة للإرشاد المباشر.\n💻 على الكمبيوتر: استخدم تطبيق بوصلة أو اتجه ${deg}° ${card}.`,
+    km: 'كم',
+    kaabaTitle: 'المسجد الحرام، مكة المكرمة',
+    kaabaCoords: '21.4225° ش، 39.8262° ش · المملكة العربية السعودية',
+    errorDenied: 'تم رفض الموقع — ابحث عن مدينتك أدناه.',
+    errorFailed: 'تعذر الحصول على الموقع — ابحث عن مدينتك أدناه.',
+    errorNoGeo: 'تحديد الموقع غير مدعوم — ابحث عن مدينتك أدناه.',
+    live: 'مباشر',
+  },
+  fr: {
+    seoTitle: 'Direction Qibla — Boussole GPS vers La Mecque | Al Ummah AI',
+    seoDesc: 'Trouvez la direction exacte de la Qibla depuis n\'importe où. Boussole GPS en temps réel pointant vers la Sainte Kaaba à La Mecque.',
+    badge: '🧭 Boussole GPS en Temps Réel',
+    h1: 'Qibla Finder',
+    sub: 'Direction précise vers la Sainte Kaaba depuis votre position.',
+    searchPlaceholder: 'Rechercher une ville — Paris, Dubaï, Londres...',
+    detecting: 'Détection de votre position...',
+    locationUnavailable: 'Position indisponible',
+    enableCompass: '🧭 Activer la boussole en direct',
+    enableBtn: 'Activer',
+    locationBadge: (city: string) => city,
+    cardLabels: ['Direction', 'Distance', 'Position'],
+    towardMecca: 'Vers La Mecque',
+    liveCompassTip: 'Boussole en direct active. Tenez le téléphone à plat et faites face à la flèche 🕋.',
+    staticTip: (deg: number, card: string) => `La direction de la Qibla depuis votre position est ${deg}° ${card}.`,
+    staticTipSub: (deg: number, card: string) => `📱 Sur mobile : activez la boussole pour un guidage en direct.\n💻 Sur ordinateur : utilisez une application boussole ou faites face à ${deg}° ${card}.`,
+    km: 'km',
+    kaabaTitle: 'Al-Masjid Al-Haram, La Mecque',
+    kaabaCoords: '21.4225° N, 39.8262° E · Arabie Saoudite',
+    errorDenied: 'Position refusée — recherchez votre ville ci-dessous.',
+    errorFailed: 'Impossible d\'obtenir la position — recherchez votre ville ci-dessous.',
+    errorNoGeo: 'Géolocalisation non supportée — recherchez votre ville ci-dessous.',
+    live: 'En direct',
+  },
+  es: {
+    seoTitle: 'Dirección Qibla — Brújula GPS hacia La Meca | Al Ummah AI',
+    seoDesc: 'Encuentra la dirección exacta de la Qibla desde cualquier lugar. Brújula GPS en tiempo real apuntando hacia la Kaaba en La Meca.',
+    badge: '🧭 Brújula GPS en Tiempo Real',
+    h1: 'Qibla Finder',
+    sub: 'Dirección precisa hacia la Kaaba desde tu ubicación.',
+    searchPlaceholder: 'Buscar ciudad — Madrid, Dubai, Londres...',
+    detecting: 'Detectando tu ubicación...',
+    locationUnavailable: 'Ubicación no disponible',
+    enableCompass: '🧭 Activar brújula en vivo',
+    enableBtn: 'Activar',
+    locationBadge: (city: string) => city,
+    cardLabels: ['Dirección', 'Distancia', 'Ubicación'],
+    towardMecca: 'Hacia La Meca',
+    liveCompassTip: 'Brújula en vivo activa. Sostén el teléfono plano y mira hacia donde apunta la flecha 🕋.',
+    staticTip: (deg: number, card: string) => `La dirección de la Qibla desde tu ubicación es ${deg}° ${card}.`,
+    staticTipSub: (deg: number, card: string) => `📱 En móvil: activa la brújula para guía en tiempo real.\n💻 En ordenador: usa una app de brújula o mira hacia ${deg}° ${card}.`,
+    km: 'km',
+    kaabaTitle: 'Al-Masjid Al-Haram, La Meca',
+    kaabaCoords: '21.4225° N, 39.8262° E · Arabia Saudita',
+    errorDenied: 'Ubicación denegada — busca tu ciudad abajo.',
+    errorFailed: 'No se pudo obtener la ubicación — busca tu ciudad abajo.',
+    errorNoGeo: 'Geolocalización no soportada — busca tu ciudad abajo.',
+    live: 'En vivo',
+  },
+};
+
+/* ─── Compass Dial ───────────────────────────────────────── */
+function Dial({ qibla, heading, live }: { qibla: number; heading: number | null; live: string }) {
   const rotation = heading !== null ? qibla - heading : qibla;
   return (
     <div style={{ position: 'relative', width: 260, height: 260, margin: '0 auto' }}>
@@ -51,15 +163,20 @@ function Dial({ qibla, heading }: { qibla: number; heading: number | null }) {
       {heading !== null && (
         <div style={{ position: 'absolute', top: 12, right: 14, display: 'flex', alignItems: 'center', gap: 5 }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px rgba(34,197,94,0.7)', animation: 'lp 2s ease infinite' }} />
-          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize: '0.52rem', fontWeight: 800, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Live</span>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize: '0.52rem', fontWeight: 800, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{live}</span>
         </div>
       )}
     </div>
   );
 }
 
-/* ─── Page ──────────────────────────────────────────────── */
+/* ─── Page ───────────────────────────────────────────────── */
 export function QiblaPage() {
+  const { i18n } = useTranslation();
+  const lang = (i18n.language?.slice(0, 2) || 'en') as string;
+  const L = UI[lang] || UI.en;
+  const isRTL = lang === 'ar';
+
   const [status,  setStatus]  = useState<'loading'|'ok'|'error'>('loading');
   const [qibla,   setQibla]   = useState(0);
   const [dist,    setDist]    = useState(0);
@@ -73,7 +190,6 @@ export function QiblaPage() {
   const orientRef = useRef<((e: DeviceOrientationEvent) => void) | null>(null);
   const searchT   = useRef<ReturnType<typeof setTimeout>>();
 
-  /* Attach compass */
   function startCompass() {
     if (orientRef.current) return;
     const h = (e: DeviceOrientationEvent) => {
@@ -84,30 +200,26 @@ export function QiblaPage() {
     window.addEventListener('deviceorientation', h, true);
   }
 
-  /* iOS permission */
   async function askIOS() {
     const DOE = DeviceOrientationEvent as any;
-    try { if ((await DOE.requestPermission()) === 'granted') { startCompass(); setIosBtn(false); } }
-    catch {}
+    try { if ((await DOE.requestPermission()) === 'granted') { startCompass(); setIosBtn(false); } } catch {}
   }
 
-  /* GPS */
   function doGPS() {
     setStatus('loading');
-    if (!navigator.geolocation) { setStatus('error'); setErrMsg('Geolocation not supported — search your city below.'); return; }
+    if (!navigator.geolocation) { setStatus('error'); setErrMsg(L.errorNoGeo); return; }
     navigator.geolocation.getCurrentPosition(
       pos => {
         const { latitude: la, longitude: lo } = pos.coords;
-        setQibla(calcQibla(la, lo)); setDist(calcDist(la, lo)); setCity('Your GPS Location'); setStatus('ok');
+        setQibla(calcQibla(la, lo)); setDist(calcDist(la, lo)); setCity('GPS'); setStatus('ok');
         const DOE = DeviceOrientationEvent as any;
         if (typeof DOE.requestPermission === 'function') setIosBtn(true); else startCompass();
       },
-      err => { setStatus('error'); setErrMsg(err.code === 1 ? 'Location denied — search your city below.' : 'Could not get location — search your city below.'); },
+      err => { setStatus('error'); setErrMsg(err.code === 1 ? L.errorDenied : L.errorFailed); },
       { enableHighAccuracy: true, timeout: 12000 }
     );
   }
 
-  /* Auto GPS + non-iOS compass on mount */
   useEffect(() => {
     doGPS();
     const DOE = DeviceOrientationEvent as any;
@@ -115,7 +227,6 @@ export function QiblaPage() {
     return () => { if (orientRef.current) window.removeEventListener('deviceorientation', orientRef.current); };
   }, []);
 
-  /* City search */
   useEffect(() => {
     if (!query.trim()) { setResults([]); return; }
     clearTimeout(searchT.current);
@@ -131,16 +242,28 @@ export function QiblaPage() {
     setCity(`${c.name}, ${c.country}`); setStatus('ok'); setQuery(''); setResults([]);
   };
 
+  const card = cardinal(qibla, lang);
+  const cardValues = [
+    `${Math.round(qibla)}°`,
+    `${dist.toLocaleString()} ${L.km}`,
+    city.split(',')[0],
+  ];
+
   return (
-    <div style={{ background: '#ffffff', color: '#0a2540', minHeight: '100vh' }}>
-      <SEO title="Qibla Direction Finder — GPS Compass to Mecca | Al Ummah AI" description="Find the exact Qibla direction from anywhere. Real-time GPS compass pointing to the Holy Kaaba in Mecca." keywords="qibla direction, find qibla, mecca direction, kaaba compass" canonical="https://www.alummahai.com/qibla" />
+    <div dir={isRTL ? 'rtl' : 'ltr'} style={{ background: '#ffffff', color: '#0a2540', minHeight: '100vh' }}>
+      <SEO
+        title={L.seoTitle}
+        description={L.seoDesc}
+        keywords="qibla direction, find qibla, mecca direction, kaaba compass, direction mecque, dirección meca, اتجاه القبلة"
+        canonical="https://www.alummahai.com/qibla"
+      />
 
       {/* Hero */}
       <div style={{ background: 'linear-gradient(160deg,#0a2540 0%,#071a2e 100%)', padding: 'clamp(88px,12vh,116px) clamp(16px,5vw,48px) 48px', textAlign: 'center' }}>
         <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.6 }}>
-          <div style={{ display:'inline-block', padding:'4px 14px', background:'rgba(212,175,55,0.1)', border:'1px solid rgba(212,175,55,0.22)', borderRadius:99, fontSize:'0.56rem', fontWeight:800, color:'#D4AF37', letterSpacing:'0.3em', textTransform:'uppercase', marginBottom:14, fontFamily:"'DM Sans',sans-serif" }}>🧭 Real-Time GPS Compass</div>
-          <h1 style={{ fontFamily:"'Playfair Display',serif", fontWeight:900, fontSize:'clamp(2rem,6vw,3.5rem)', color:'#ffffff', marginBottom:10, letterSpacing:'-0.022em' }}>Qibla Finder</h1>
-          <p style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:300, color:'rgba(255,255,255,0.45)', fontSize:'0.97rem', maxWidth:320, margin:'0 auto' }}>Precise direction to the Holy Kaaba from your location.</p>
+          <div style={{ display:'inline-block', padding:'4px 14px', background:'rgba(212,175,55,0.1)', border:'1px solid rgba(212,175,55,0.22)', borderRadius:99, fontSize:'0.56rem', fontWeight:800, color:'#D4AF37', letterSpacing:'0.3em', textTransform:'uppercase', marginBottom:14, fontFamily:"'DM Sans',sans-serif" }}>{L.badge}</div>
+          <h1 style={{ fontFamily:"'Playfair Display',serif", fontWeight:900, fontSize:'clamp(2rem,6vw,3.5rem)', color:'#ffffff', marginBottom:10, letterSpacing:'-0.022em' }}>{L.h1}</h1>
+          <p style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:300, color:'rgba(255,255,255,0.45)', fontSize:'0.97rem', maxWidth:320, margin:'0 auto' }}>{L.sub}</p>
         </motion.div>
       </div>
 
@@ -152,13 +275,14 @@ export function QiblaPage() {
             <div style={{ flex:1, position:'relative' }}>
               <Search size={13} style={{ position:'absolute', left:12, top:'50%', transform:'translateY(-50%)', color:'rgba(10,37,64,0.3)', pointerEvents:'none' }} />
               <input value={query} onChange={e => setQuery(e.target.value)}
-                placeholder="Search city — Madrid, Dubai, London..."
+                placeholder={L.searchPlaceholder}
+                dir={isRTL ? 'rtl' : 'ltr'}
                 style={{ width:'100%', padding:'11px 12px 11px 34px', borderRadius:10, border:'1px solid rgba(10,37,64,0.12)', fontFamily:"'DM Sans',sans-serif", fontSize:'0.86rem', color:'#0a2540', background:'#fff', outline:'none', boxSizing:'border-box', boxShadow:'0 2px 10px rgba(10,37,64,0.04)', transition:'border-color 0.2s' }}
                 onFocus={e=>(e.target.style.borderColor='rgba(212,175,55,0.5)')}
                 onBlur={e=>(e.target.style.borderColor='rgba(10,37,64,0.12)')} />
               {busy && <Loader2 size={12} style={{ position:'absolute', right:11, top:'50%', transform:'translateY(-50%)', color:'#D4AF37', animation:'spin 1s linear infinite' }} />}
             </div>
-            <button onClick={doGPS} title="Use GPS"
+            <button onClick={doGPS} title="GPS"
               style={{ width:42, height:42, borderRadius:10, border:'1px solid rgba(10,37,64,0.12)', background:'#fff', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'#0a2540', flexShrink:0, transition:'all 0.18s' }}
               onMouseEnter={e=>{e.currentTarget.style.background='#D4AF37';e.currentTarget.style.borderColor='#D4AF37';}}
               onMouseLeave={e=>{e.currentTarget.style.background='#fff';e.currentTarget.style.borderColor='rgba(10,37,64,0.12)';}}>
@@ -191,7 +315,7 @@ export function QiblaPage() {
         {status === 'loading' && (
           <div style={{textAlign:'center',padding:'52px 0'}}>
             <Loader2 size={26} style={{color:'#D4AF37',margin:'0 auto 12px',display:'block',animation:'spin 1s linear infinite'}}/>
-            <p style={{fontFamily:"'DM Sans',sans-serif",color:'rgba(10,37,64,0.45)',fontSize:'0.86rem'}}>Detecting your location...</p>
+            <p style={{fontFamily:"'DM Sans',sans-serif",color:'rgba(10,37,64,0.45)',fontSize:'0.86rem'}}>{L.detecting}</p>
           </div>
         )}
 
@@ -201,7 +325,7 @@ export function QiblaPage() {
             style={{display:'flex',gap:10,padding:'13px 15px',background:'rgba(220,38,38,0.05)',border:'1px solid rgba(220,38,38,0.14)',borderRadius:11,marginBottom:20}}>
             <AlertCircle size={15} style={{color:'#ef4444',flexShrink:0,marginTop:1}}/>
             <div>
-              <p style={{fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:'0.82rem',color:'#991b1b',marginBottom:3}}>Location unavailable</p>
+              <p style={{fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:'0.82rem',color:'#991b1b',marginBottom:3}}>{L.locationUnavailable}</p>
               <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.78rem',color:'rgba(10,37,64,0.55)'}}>{errMsg}</p>
             </div>
           </motion.div>
@@ -211,35 +335,35 @@ export function QiblaPage() {
         {iosBtn && heading === null && status === 'ok' && (
           <motion.div initial={{opacity:0,y:6}} animate={{opacity:1,y:0}}
             style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,padding:'12px 15px',background:'rgba(212,175,55,0.05)',border:'1px solid rgba(212,175,55,0.2)',borderRadius:11,marginBottom:20,flexWrap:'wrap'}}>
-            <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.8rem',color:'rgba(10,37,64,0.65)'}}>🧭 Enable live compass</span>
-            <button onClick={askIOS} style={{background:'#D4AF37',color:'#0a2540',border:'none',borderRadius:7,padding:'7px 14px',fontFamily:"'DM Sans',sans-serif",fontWeight:800,fontSize:'0.7rem',textTransform:'uppercase',letterSpacing:'0.09em',cursor:'pointer'}}>Enable</button>
+            <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.8rem',color:'rgba(10,37,64,0.65)'}}>{L.enableCompass}</span>
+            <button onClick={askIOS} style={{background:'#D4AF37',color:'#0a2540',border:'none',borderRadius:7,padding:'7px 14px',fontFamily:"'DM Sans',sans-serif",fontWeight:800,fontSize:'0.7rem',textTransform:'uppercase',letterSpacing:'0.09em',cursor:'pointer'}}>{L.enableBtn}</button>
           </motion.div>
         )}
 
-        {/* Active */}
+        {/* Active compass */}
         {status === 'ok' && (
           <motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{duration:0.55,ease:[0.16,1,0.3,1]}}>
             {/* Location badge */}
             <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:7,marginBottom:22}}>
               <CheckCircle size={13} style={{color:'#22c55e'}}/>
-              <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.78rem',fontWeight:600,color:'rgba(10,37,64,0.52)'}}>{city}</span>
-              {heading !== null && <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.55rem',fontWeight:800,background:'rgba(34,197,94,0.1)',color:'#16a34a',border:'1px solid rgba(34,197,94,0.2)',padding:'2px 7px',borderRadius:99,textTransform:'uppercase',letterSpacing:'0.1em'}}>● Live</span>}
+              <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.78rem',fontWeight:600,color:'rgba(10,37,64,0.52)'}}>{L.locationBadge(city)}</span>
+              {heading !== null && <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.55rem',fontWeight:800,background:'rgba(34,197,94,0.1)',color:'#16a34a',border:'1px solid rgba(34,197,94,0.2)',padding:'2px 7px',borderRadius:99,textTransform:'uppercase',letterSpacing:'0.1em'}}>● {L.live}</span>}
             </div>
 
-            <Dial qibla={qibla} heading={heading} />
+            <Dial qibla={qibla} heading={heading} live={L.live} />
 
             {/* Degrees */}
             <div style={{textAlign:'center',marginTop:22,marginBottom:24}}>
               <div style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:'clamp(2.8rem,8vw,4rem)',color:'#0a2540',lineHeight:1}}>{Math.round(qibla)}°</div>
-              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.72rem',fontWeight:700,color:'rgba(10,37,64,0.38)',textTransform:'uppercase',letterSpacing:'0.2em',marginTop:5}}>{cardinal(qibla)} · Toward Mecca</div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.72rem',fontWeight:700,color:'rgba(10,37,64,0.38)',textTransform:'uppercase',letterSpacing:'0.2em',marginTop:5}}>{card} · {L.towardMecca}</div>
             </div>
 
             {/* Cards */}
             <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:20}}>
-              {[{l:'Direction',v:`${Math.round(qibla)}°`},{l:'Distance',v:`${dist.toLocaleString()} km`},{l:'Location',v:city.split(',')[0]}].map(({l,v})=>(
-                <div key={l} style={{background:'#f7f8fa',border:'1px solid rgba(10,37,64,0.07)',borderRadius:11,padding:'13px 10px',textAlign:'center'}}>
-                  <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.54rem',fontWeight:800,color:'rgba(10,37,64,0.3)',textTransform:'uppercase',letterSpacing:'0.18em',marginBottom:5}}>{l}</div>
-                  <div style={{fontFamily:"'Playfair Display',serif",fontWeight:800,fontSize:'0.92rem',color:'#0a2540'}}>{v}</div>
+              {L.cardLabels.map((label: string, i: number)=>(
+                <div key={label} style={{background:'#f7f8fa',border:'1px solid rgba(10,37,64,0.07)',borderRadius:11,padding:'13px 10px',textAlign:'center'}}>
+                  <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.54rem',fontWeight:800,color:'rgba(10,37,64,0.3)',textTransform:'uppercase',letterSpacing:'0.18em',marginBottom:5}}>{label}</div>
+                  <div style={{fontFamily:"'Playfair Display',serif",fontWeight:800,fontSize:'0.92rem',color:'#0a2540'}}>{cardValues[i]}</div>
                 </div>
               ))}
             </div>
@@ -248,17 +372,14 @@ export function QiblaPage() {
             {heading !== null ? (
               <div style={{background:'rgba(34,197,94,0.05)',border:'1px solid rgba(34,197,94,0.15)',borderRadius:11,padding:'12px 14px',display:'flex',gap:9}}>
                 <CheckCircle size={13} style={{color:'#22c55e',flexShrink:0,marginTop:2}}/>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.8rem',color:'rgba(10,37,64,0.62)',lineHeight:1.7}}>Live compass active. Hold phone flat and face the direction the 🕋 arrow points.</p>
+                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.8rem',color:'rgba(10,37,64,0.62)',lineHeight:1.7}}>{L.liveCompassTip}</p>
               </div>
             ) : (
               <div style={{background:'rgba(212,175,55,0.05)',border:'1px solid rgba(212,175,55,0.16)',borderRadius:11,padding:'12px 14px',display:'flex',gap:9}}>
                 <Navigation size={13} style={{color:'#D4AF37',flexShrink:0,marginTop:2}}/>
                 <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:'0.8rem',color:'rgba(10,37,64,0.62)',lineHeight:1.7}}>
-                  The Qibla direction from your location is <strong style={{color:'#0a2540'}}>{Math.round(qibla)}° {cardinal(qibla)}</strong>.<br/>
-                  <span style={{fontSize:'0.75rem',opacity:0.7}}>
-                    📱 On mobile: enable the compass for live guidance.<br/>
-                    💻 On desktop: use a compass app or phone and face <strong>{Math.round(qibla)}° {cardinal(qibla)}</strong>.
-                  </span>
+                  {L.staticTip(Math.round(qibla), card)}<br/>
+                  <span style={{fontSize:'0.75rem',opacity:0.7,whiteSpace:'pre-line'}}>{L.staticTipSub(Math.round(qibla), card)}</span>
                 </p>
               </div>
             )}
@@ -268,8 +389,8 @@ export function QiblaPage() {
         {/* Kaaba info */}
         <div style={{marginTop:40,padding:'22px 18px',background:'linear-gradient(135deg,#0a2540,#0d2e4d)',borderRadius:16,textAlign:'center'}}>
           <div style={{fontSize:'1.7rem',marginBottom:8}}>🕋</div>
-          <h3 style={{fontFamily:"'Playfair Display',serif",fontWeight:800,color:'#ffffff',fontSize:'1rem',marginBottom:4}}>Al-Masjid Al-Haram, Makkah</h3>
-          <p style={{fontFamily:"'DM Sans',sans-serif",fontWeight:300,color:'rgba(255,255,255,0.35)',fontSize:'0.76rem'}}>21.4225° N, 39.8262° E · Saudi Arabia</p>
+          <h3 style={{fontFamily:"'Playfair Display',serif",fontWeight:800,color:'#ffffff',fontSize:'1rem',marginBottom:4}}>{L.kaabaTitle}</h3>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontWeight:300,color:'rgba(255,255,255,0.35)',fontSize:'0.76rem'}}>{L.kaabaCoords}</p>
         </div>
       </div>
 
