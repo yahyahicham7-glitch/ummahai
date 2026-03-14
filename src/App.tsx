@@ -22,6 +22,7 @@ const PrayerTimesPage    = lazy(() => import('./pages/PrayerTimesPage').then(m =
 const DetailedSchedulePage = lazy(() => import('./pages/DetailedSchedulePage').then(m => ({ default: m.DetailedSchedulePage })));
 const DailyDuasPage      = lazy(() => import('./pages/DailyDuasPage').then(m => ({ default: m.DailyDuasPage })));
 const TasbihPage         = lazy(() => import('./pages/TasbihPage').then(m => ({ default: m.TasbihPage })));
+const MoodPage           = lazy(() => import('./pages/MoodPage').then(m => ({ default: m.MoodPage })));
 const ScholarAI          = lazy(() => import('./components/ScholarAI').then(m => ({ default: m.ScholarAI })));
 
 const LoadingFallback = () => (
@@ -63,6 +64,7 @@ function AppInner() {
             <Route path="/prayer-times/:city"  element={<PrayerTimesPage />} />
             <Route path="/duas"                element={<DailyDuasPage />} />
             <Route path="/tasbih"              element={<TasbihPage />} />
+            <Route path="/mood"                element={<MoodPage />} />
             <Route path="/scholar"             element={
               <div style={{ maxWidth: 900, margin: '0 auto', padding: '4rem 1.25rem', background: '#060f1e', minHeight: '100vh' }}>
                 <ScholarAI />
