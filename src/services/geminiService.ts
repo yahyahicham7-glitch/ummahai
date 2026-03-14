@@ -55,7 +55,7 @@ export async function askScholar(prompt: string): Promise<string> {
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         systemInstruction: SCHOLAR_SYSTEM,
@@ -85,7 +85,7 @@ export async function translateContent(text: string, targetLang: string): Promis
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       contents: `Translate the following text to ${langName}. Keep all HTML tags, JSX, and formatting intact. Only translate the visible text content. Return only the translated text, nothing else:\n\n${text}`,
       config: { temperature: 0.2 },
     });
