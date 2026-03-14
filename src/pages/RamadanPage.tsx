@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { SEO } from '@/src/components/SEO';
 import { Moon, Star, Clock, Heart, Sun, BookOpen, ChevronRight, Flame, Droplets, HandHeart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { RelatedTools } from '@/src/components/RelatedTools';
 import { useTranslation } from 'react-i18next';
 
 const NAVY = '#0a2540';
@@ -344,6 +345,11 @@ export function RamadanPage() {
           ))}
         </div>
       </div>
+    
+
+      {/* Related Tools — Interlinking */}
+      <RelatedTools exclude={["ramadan"]} max={6} />
+
     </div>
   );
 }
