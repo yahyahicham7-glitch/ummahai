@@ -19,6 +19,7 @@ const T: Record<string, any> = {
         { label: 'Ramadan 2026',       href: '/ramadan' },
         { label: 'Scholar AI',         href: '/scholar' },
         { label: 'Daily Duas',         href: '/duas' },
+        { label: 'Mood Guide',         href: '/mood' },
         { label: 'How to Pray',        href: '/blog/how-to-pray-salah-beginners' },
       ],
       'Company': [
@@ -48,6 +49,7 @@ const T: Record<string, any> = {
         { label: 'رمضان 2026',       href: '/ramadan' },
         { label: 'عالم الذكاء',     href: '/scholar' },
         { label: 'الأدعية اليومية', href: '/duas' },
+        { label: 'دليل المشاعر',     href: '/mood' },
         { label: 'كيفية الصلاة',    href: '/blog/how-to-pray-salah-beginners' },
       ],
       'الشركة': [
@@ -77,6 +79,7 @@ const T: Record<string, any> = {
         { label: 'Ramadan 2026',        href: '/ramadan' },
         { label: 'Scholar AI',          href: '/scholar' },
         { label: 'Douaas Quotidiennes', href: '/duas' },
+        { label: 'Guide Émotionnel',   href: '/mood' },
         { label: 'Comment Prier',       href: '/blog/how-to-pray-salah-beginners' },
       ],
       'Entreprise': [
@@ -106,6 +109,7 @@ const T: Record<string, any> = {
         { label: 'Ramadán 2026',        href: '/ramadan' },
         { label: 'Scholar AI',          href: '/scholar' },
         { label: 'Duas Diarias',        href: '/duas' },
+        { label: 'Guía Emocional',     href: '/mood' },
         { label: 'Cómo Rezar',          href: '/blog/how-to-pray-salah-beginners' },
       ],
       'Empresa': [
