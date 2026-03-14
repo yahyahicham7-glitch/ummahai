@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, ChevronLeft, ChevronRight, Loader2, Languages, Highlighter, X } from 'lucide-react';
+import { RelatedTools } from '@/src/components/RelatedTools';
 import { SEO } from '@/src/components/SEO';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from 'react-i18next';
@@ -416,6 +417,11 @@ export function QuranPage() {
           </div>
         )}
       </div>
+    
+
+      {/* Related Tools — Interlinking */}
+      <RelatedTools exclude={["quran"]} max={6} />
+
     </div>
   );
 }
