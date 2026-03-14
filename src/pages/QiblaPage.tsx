@@ -402,7 +402,7 @@ export function QiblaPage() {
     
 
       {/* Related Tools — Interlinking */}
-      <RelatedTools exclude={["qibla"]} max={6} />
+      <RelatedTools exclude={["qibla"]} max={6} light={true} />
 
     </div>
   );
