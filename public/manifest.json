@@ -1,21 +1,69 @@
 {
-  "name": "Ummah AI",
-  "short_name": "Ummah AI",
-  "description": "The #1 Islamic platform for prayer times, Quran, and spiritual guidance.",
+  "name": "Al Ummah AI",
+  "short_name": "Al Ummah AI",
+  "description": "Free Islamic platform — GPS prayer times, Qibla, Quran, Zakat & Scholar AI for 1.8 billion Muslims.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0A192F",
-  "theme_color": "#0A192F",
+  "orientation": "portrait-primary",
+  "background_color": "#010a1c",
+  "theme_color": "#0a2540",
+  "lang": "en",
+  "categories": ["lifestyle", "education", "religion"],
   "icons": [
     {
-      "src": "https://picsum.photos/seed/ummah-icon/192/192",
-      "sizes": "192x192",
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
       "type": "image/png"
     },
     {
-      "src": "https://picsum.photos/seed/ummah-icon/512/512",
-      "sizes": "512x512",
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
       "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Prayer Times",
+      "short_name": "Prayer",
+      "url": "/prayer-times",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Qibla",
+      "short_name": "Qibla",
+      "url": "/qibla",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Quran",
+      "short_name": "Quran",
+      "url": "/quran",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
 }
