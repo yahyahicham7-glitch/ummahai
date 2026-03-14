@@ -28,18 +28,29 @@ export function PrayerWidget() {
   }
 
   useEffect(() => {
+    // Check if we have cached data for today
     const key = `pw_${format(new Date(),'yyyy-MM-dd')}`;
     try {
       const raw = localStorage.getItem(key);
-      if (raw) { const { t, c } = JSON.parse(raw); setTimes(t); setCity(c); setLoading(false); return; }
+      if (raw) {
+        const { t, c } = JSON.parse(raw);
+        setTimes(t); setCity(c); setLoading(false); return;
+      }
     } catch {}
+    // No cache: show search UI instead of auto-requesting location
+    setLoading(false);
+  }, []);
+
+  // Called when user explicitly clicks "Use my location"
+  function requestGPS() {
+    setLoading(true);
     if (!navigator.geolocation) { loadCity(51.5074, -0.1278, 'London'); return; }
     navigator.geolocation.getCurrentPosition(
       p => loadCity(p.coords.latitude, p.coords.longitude),
       () => loadCity(51.5074, -0.1278, 'London'),
       { timeout: 8000 }
     );
-  }, []);
+  }
 
   useEffect(() => {
     if (!times) return;
@@ -78,6 +89,53 @@ export function PrayerWidget() {
     <div style={{ background: 'linear-gradient(135deg,#0a2540,#0d3060)', borderRadius: 20, padding: '60px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 320 }}>
       <Loader2 size={30} style={{ color: '#D4AF37', marginBottom: 14, animation: 'spin 1s linear infinite' }} />
       <p style={{ fontFamily: "'DM Sans',sans-serif", color: 'rgba(255,255,255,0.4)', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em' }}>Calculating prayer times...</p>
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+    </div>
+  );
+
+  // Show search/GPS prompt when no times loaded yet
+  if (!times) return (
+    <div style={{ background: 'linear-gradient(135deg,#0a2540,#0d3060)', borderRadius: 20, padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, minHeight: 280 }}>
+      <div style={{ fontSize: '2.2rem' }}>🕌</div>
+      <div style={{ textAlign: 'center' }}>
+        <h3 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: '1.2rem', color: '#fff', marginBottom: 6 }}>Prayer Times</h3>
+        <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.78rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, maxWidth: 260 }}>
+          Enter your city or share your location for accurate prayer times.
+        </p>
+      </div>
+      {/* GPS button — user must click, no auto-prompt */}
+      <button onClick={requestGPS}
+        style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#D4AF37', color: '#0a2540', border: 'none', borderRadius: 99, padding: '11px 22px', fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', boxShadow: '0 4px 16px rgba(212,175,55,0.35)', transition: 'transform 0.15s' }}
+        onMouseEnter={e => (e.currentTarget.style.transform='scale(1.03)')}
+        onMouseLeave={e => (e.currentTarget.style.transform='scale(1)')}>
+        <MapPin size={14} /> Use my location
+      </button>
+      {/* Search box */}
+      <div style={{ width: '100%', maxWidth: 320, position: 'relative' }}>
+        <Search size={13} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', pointerEvents: 'none' }} />
+        <input value={query} onChange={e => setQuery(e.target.value)}
+          placeholder="Or search your city..."
+          style={{ width: '100%', padding: '10px 12px 10px 34px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.15)', fontFamily: "'DM Sans',sans-serif", fontSize: '0.85rem', color: '#fff', background: 'rgba(255,255,255,0.08)', outline: 'none', boxSizing: 'border-box' }}
+          onFocus={e => (e.target.style.borderColor='rgba(212,175,55,0.5)')}
+          onBlur={e =>  (e.target.style.borderColor='rgba(255,255,255,0.15)')} />
+        {busy && <Loader2 size={12} style={{ position: 'absolute', right: 11, top: '50%', transform: 'translateY(-50%)', color: '#D4AF37', animation: 'spin 1s linear infinite' }} />}
+        {results.length > 0 && (
+          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50, marginTop: 5, background: '#fff', borderRadius: 10, border: '1px solid rgba(10,37,64,0.1)', boxShadow: '0 14px 40px rgba(10,37,64,0.18)', overflow: 'hidden' }}>
+            {results.slice(0,5).map((r,i) => (
+              <button key={i} onClick={() => pickCity(r)}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 14px', border: 'none', background: 'transparent', cursor: 'pointer', borderBottom: i<results.length-1 ? '1px solid rgba(10,37,64,0.06)' : 'none', transition: 'background 0.12s' }}
+                onMouseEnter={e=>(e.currentTarget.style.background='rgba(212,175,55,0.07)')}
+                onMouseLeave={e=>(e.currentTarget.style.background='transparent')}>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: '0.86rem', color: '#0a2540' }}>{r.name}</div>
+                  <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.68rem', color: 'rgba(10,37,64,0.45)' }}>{r.country}</div>
+                </div>
+                <ChevronRight size={13} style={{ color: 'rgba(10,37,64,0.3)' }} />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
   );
