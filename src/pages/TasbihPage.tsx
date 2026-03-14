@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SEO } from '@/src/components/SEO';
 import { RotateCcw, Plus, Minus, Check } from 'lucide-react';
+import { RelatedTools } from '@/src/components/RelatedTools';
 import { useTranslation } from 'react-i18next';
 
 const NAVY = '#060f1e';
@@ -370,6 +371,11 @@ export function TasbihPage() {
           </p>
         </div>
       </div>
+    
+
+      {/* Related Tools — Interlinking */}
+      <RelatedTools exclude={["tasbih"]} max={6} />
+
     </div>
   );
 }
