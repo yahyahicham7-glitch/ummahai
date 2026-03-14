@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Calculator, Info, DollarSign, Coins, TrendingDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calculator, Info, DollarSign, Coins, TrendingDown, RefreshCw } from 'lucide-react';
 import { SEO } from '@/src/components/SEO';
+import { RelatedTools } from '@/src/components/RelatedTools';
 import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 
@@ -75,15 +76,54 @@ export function ZakatPage() {
   const isRTL = lang === 'ar';
 
   const [wealth, setWealth] = useState({ cash: 0, gold: 0, investments: 0, business: 0, debts: 0 });
+  const [goldPrice, setGoldPrice] = useState<number|null>(null);
+  const [goldLoading, setGoldLoading] = useState(true);
   const total    = wealth.cash + wealth.gold + wealth.investments + wealth.business - wealth.debts;
+  const NISAB_GRAMS = 87.48;
+  const NISAB    = goldPrice ? Math.round(goldPrice * NISAB_GRAMS) : 6000;
   const zakatDue = Math.max(total, 0) * 0.025;
-  const NISAB    = 6000;
 
-  const zakatSchema = {
-    '@context': 'https://schema.org', '@type': 'HowTo',
-    name: 'How to Calculate Zakat',
-    description: 'Step-by-step Zakat calculation based on Islamic principles.',
-  };
+  // Fetch live gold price
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await fetch('https://api.metalpriceapi.com/v1/latest?api_key=demo&base=USD&currencies=XAU');
+        const j = await r.json();
+        if (j?.rates?.XAU) { setGoldPrice(Math.round(1 / j.rates.XAU)); }
+      } catch {
+        // Fallback: try alternative free API
+        try {
+          const r2 = await fetch('https://api.gold-api.com/price/XAU');
+          const j2 = await r2.json();
+          if (j2?.price) { setGoldPrice(Math.round(j2.price)); }
+        } catch {
+          // Use fallback estimate
+          setGoldPrice(null);
+        }
+      }
+      setGoldLoading(false);
+    })();
+  }, []);
+
+  const zakatSchema = [
+    {
+      '@context': 'https://schema.org', '@type': 'FinancialService',
+      name: 'Al Ummah AI Zakat Calculator',
+      description: 'Free Islamic Zakat calculator with live gold prices and Nisab threshold. Calculate your annual Zakat obligation.',
+      url: 'https://www.alummahai.com/zakat',
+      provider: { '@type': 'Organization', name: 'Al Ummah AI', url: 'https://www.alummahai.com' },
+      areaServed: 'Worldwide',
+      serviceType: 'Zakat Calculation',
+    },
+    {
+      '@context': 'https://schema.org', '@type': 'FAQPage',
+      mainEntity: [
+        { '@type': 'Question', name: 'What is Nisab for Zakat in 2026?', acceptedAnswer: { '@type': 'Answer', text: `Nisab is the minimum wealth threshold for Zakat. It equals 87.48 grams of gold or 612.36 grams of silver. At current gold prices, Nisab is approximately $${NISAB.toLocaleString()} USD.` }},
+        { '@type': 'Question', name: 'How much is Zakat?', acceptedAnswer: { '@type': 'Answer', text: 'Zakat is 2.5% of your total eligible wealth that has been held for one full lunar year above the Nisab threshold.' }},
+        { '@type': 'Question', name: 'What wealth is Zakatable?', acceptedAnswer: { '@type': 'Answer', text: 'Zakatable wealth includes: cash savings, gold and silver, investments and stocks, business inventory, and debts owed to you. Personal items like your home, car, and clothing are exempt.' }},
+      ]
+    }
+  ];
 
   const inp = (key: keyof typeof wealth) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setWealth(w => ({ ...w, [key]: Number(e.target.value) || 0 }));
@@ -129,8 +169,12 @@ export function ZakatPage() {
             </div>
             <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 300, fontSize: '0.84rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.75, marginBottom: 14 }}>
               {L.nisabDesc} <span style={{ color: GOLD, fontWeight: 800 }}>${NISAB.toLocaleString()}</span>
+              {goldPrice && <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.6rem', color: '#22c55e', marginLeft: 8 }}>● Live</span>}
+              {goldLoading && <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', marginLeft: 8 }}>Loading...</span>}
             </p>
-            <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.62rem', color: 'rgba(212,175,55,0.5)', fontStyle: 'italic' }}>{L.nisabBased}</p>
+            <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.62rem', color: 'rgba(212,175,55,0.5)', fontStyle: 'italic' }}>
+              {L.nisabBased} {goldPrice ? ` · Gold: $${goldPrice}/oz` : ' · Estimated'}
+            </p>
             <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid rgba(212,175,55,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.52rem', fontWeight: 900, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Status</span>
               <span style={{
@@ -219,6 +263,9 @@ export function ZakatPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Related Tools — Interlinking */}
+      <RelatedTools exclude={['zakat']} max={6} />
     </div>
   );
 }
