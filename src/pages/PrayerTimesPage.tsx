@@ -456,7 +456,7 @@ export function PrayerTimesPage() {
     
 
       {/* Related Tools — Interlinking */}
-      <RelatedTools exclude={["prayer"]} max={6} />
+      <RelatedTools exclude={["prayer"]} max={6} light={true} />
 
     </div>
   );
