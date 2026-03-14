@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle, ChevronDown, ChevronUp, MapPin, Calendar, AlertCircle, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { RelatedTools } from '@/src/components/RelatedTools';
 
 const NAVY  = '#0a2540';
 const NAVY2 = '#0d2e4d';
@@ -404,6 +405,11 @@ export function HajjPage() {
           ))}
         </div>
       </div>
+    
+
+      {/* Related Tools — Interlinking */}
+      <RelatedTools exclude={["hajj"]} max={6} />
+
     </div>
   );
 }
