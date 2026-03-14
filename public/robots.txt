@@ -1,18 +1,27 @@
 User-agent: *
 Allow: /
 
-# Priority pages for crawlers
-Allow: /
+# Core pages
+Allow: /prayer-times
 Allow: /qibla
 Allow: /quran
 Allow: /zakat
 Allow: /ramadan
 Allow: /duas
 Allow: /hajj
+Allow: /tasbih
 Allow: /blog
 Allow: /about
+Allow: /store
+Allow: /halal-money
 
-# Don't index Scholar AI (AI-generated content)
+# Prayer times city pages (429 cities)
+Allow: /prayer-times/
+
+# Don't index AI-generated chat responses
 Disallow: /scholar
+
+# Crawl delay for politeness
+Crawl-delay: 1
 
 Sitemap: https://www.alummahai.com/sitemap.xml
