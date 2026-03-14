@@ -28,16 +28,25 @@ const TITLE: Record<string,string> = {
 interface Props {
   exclude?: string[];
   max?: number;
+  light?: boolean;
 }
 
-export function RelatedTools({ exclude = [], max = 5 }: Props) {
+export function RelatedTools({ exclude = [], max = 5, light = false }: Props) {
   const { i18n } = useTranslation();
   const lang = (i18n.language?.slice(0,2) || 'en') as string;
   const tools = ALL_TOOLS.filter(t => !exclude.includes(t.id)).slice(0, max);
 
+  const titleColor = light ? 'rgba(10,37,64,0.35)' : 'rgba(212,175,55,0.4)';
+  const linkBg = light ? 'rgba(10,37,64,0.04)' : 'rgba(255,255,255,0.03)';
+  const linkBorder = light ? 'rgba(10,37,64,0.1)' : 'rgba(212,175,55,0.12)';
+  const linkColor = light ? 'rgba(10,37,64,0.6)' : 'rgba(255,255,255,0.6)';
+  const hoverBorder = light ? 'rgba(10,37,64,0.3)' : 'rgba(212,175,55,0.4)';
+  const hoverColor = light ? '#0a2540' : GOLD;
+  const hoverBg = light ? 'rgba(10,37,64,0.08)' : 'rgba(212,175,55,0.06)';
+
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 20px 60px' }}>
-      <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.55rem', fontWeight: 900, color: 'rgba(212,175,55,0.4)', textTransform: 'uppercase', letterSpacing: '0.22em', marginBottom: 16, textAlign: 'center' }}>
+      <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.55rem', fontWeight: 900, color: titleColor, textTransform: 'uppercase', letterSpacing: '0.22em', marginBottom: 16, textAlign: 'center' }}>
         {TITLE[lang] || TITLE.en}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
@@ -45,14 +54,14 @@ export function RelatedTools({ exclude = [], max = 5 }: Props) {
           <Link key={t.id} to={t.link} style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             padding: '10px 18px', borderRadius: 12,
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(212,175,55,0.12)',
+            background: linkBg,
+            border: `1px solid ${linkBorder}`,
             textDecoration: 'none', transition: 'all 0.2s',
             fontFamily: "'DM Sans',sans-serif", fontSize: '0.8rem', fontWeight: 600,
-            color: 'rgba(255,255,255,0.6)',
+            color: linkColor,
           }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.4)'; e.currentTarget.style.color = GOLD; e.currentTarget.style.background = 'rgba(212,175,55,0.06)'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = hoverBorder; e.currentTarget.style.color = hoverColor; e.currentTarget.style.background = hoverBg; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = linkBorder; e.currentTarget.style.color = linkColor; e.currentTarget.style.background = linkBg; }}
           >
             <span style={{ fontSize: '1.1rem' }}>{t.emoji}</span>
             {(t as any)[lang] || t.en}
