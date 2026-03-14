@@ -4,6 +4,7 @@ import { SEO } from '@/src/components/SEO';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Search, Clock, Calendar, ChevronDown } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { RelatedTools } from '@/src/components/RelatedTools';
 import { format } from 'date-fns';
 
 const NAVY  = '#0a2540';
@@ -452,6 +453,11 @@ export function PrayerTimesPage() {
           </div>
         </div>
       </div>
+    
+
+      {/* Related Tools — Interlinking */}
+      <RelatedTools exclude={["prayer"]} max={6} />
+
     </div>
   );
 }
