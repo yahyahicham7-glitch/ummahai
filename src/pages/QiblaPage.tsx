@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SEO } from '@/src/components/SEO';
 import { MapPin, Search, Loader2, AlertCircle, CheckCircle, Navigation } from 'lucide-react';
+import { RelatedTools } from '@/src/components/RelatedTools';
 import { motion, AnimatePresence } from 'motion/react';
 import { searchCity, type CityInfo } from '@/src/services/prayerService';
 import { useTranslation } from 'react-i18next';
@@ -398,6 +399,11 @@ export function QiblaPage() {
         @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
         @keyframes lp   { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.5)} }
       `}</style>
+    
+
+      {/* Related Tools — Interlinking */}
+      <RelatedTools exclude={["qibla"]} max={6} />
+
     </div>
   );
 }
