@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { SEO } from '@/src/components/SEO';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Heart, Moon, Sun, Home, Car, Utensils, Shield, ChevronDown, Copy, Check } from 'lucide-react';
+import { RelatedTools } from '@/src/components/RelatedTools';
 
 const NAVY = '#0a2540';
 const GOLD = '#D4AF37';
@@ -384,6 +385,11 @@ export function DailyDuasPage() {
           </AnimatePresence>
         </div>
       </div>
+    
+
+      {/* Related Tools — Interlinking */}
+      <RelatedTools exclude={["duas"]} max={6} />
+
     </div>
   );
 }
