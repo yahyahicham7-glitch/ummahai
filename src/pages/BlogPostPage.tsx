@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { RelatedTools } from '@/src/components/RelatedTools';
 import { motion } from 'motion/react';
@@ -6,6 +6,7 @@ import { SEO } from '@/src/components/SEO';
 import { Calendar, ArrowLeft, Clock, Share2 } from 'lucide-react';
 import { AdSense } from '@/src/components/AdSense';
 import { useTranslation } from 'react-i18next';
+import { translateContent } from '@/src/services/geminiService';
 
 interface Post {
   id: string;
@@ -619,18 +620,45 @@ const posts: Record<string, Post> = {
 
 export function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = (i18n.language?.slice(0,2) || 'en') as string;
   const post = slug ? posts[slug] : null;
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [translated, setTranslated] = useState(false);
+
+  // Auto-translate content when language is not English
+  useEffect(() => {
+    if (lang === 'en' || !contentRef.current || translated) return;
+    const el = contentRef.current;
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const textNodes: Text[] = [];
+    let node;
+    while ((node = walker.nextNode())) {
+      if (node.textContent && node.textContent.trim().length > 10) textNodes.push(node as Text);
+    }
+    // Translate in batches
+    const batch = textNodes.map(n => n.textContent || '').join('|||SPLIT|||');
+    if (batch.trim()) {
+      translateContent(batch, lang).then(result => {
+        const parts = result.split('|||SPLIT|||');
+        textNodes.forEach((n, i) => { if (parts[i]) n.textContent = parts[i]; });
+        setTranslated(true);
+      }).catch(() => {});
+    }
+  }, [lang, post, translated]);
+
+  // Reset translation when slug changes
+  useEffect(() => { setTranslated(false); }, [slug, lang]);
 
   if (!post) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-24 text-center space-y-6">
         <SEO title="Article" description="Islamic knowledge article on Al Ummah AI." />
         <div className="text-6xl">📖</div>
-        <h2 className="text-3xl font-display font-black text-cream">Article Coming Soon</h2>
+        <h2 className="text-3xl font-display font-black text-cream">{lang==='ar'?'المقال قريباً':lang==='fr'?'Article à Venir':lang==='es'?'Artículo Próximamente':'Article Coming Soon'}</h2>
         <p className="text-cream/50">Our scholars are working on this article. Check back soon.</p>
         <Link to="/blog" className="inline-flex items-center bg-gold text-glamour-blue px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 transition-all">
-          ← Back to Blog
+          {lang==='ar'?'العودة للمدونة ←':lang==='fr'?'← Retour au Blog':lang==='es'?'← Volver al Blog':'← Back to Blog'}
         </Link>
       </div>
     );
@@ -674,18 +702,18 @@ export function BlogPostPage() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 mb-12">
         <div className="flex items-center gap-3 flex-wrap">
           <span className="px-4 py-1 bg-gold/10 border border-gold/30 rounded-full text-gold text-[10px] font-black uppercase tracking-widest">{post.category}</span>
-          <span className="flex items-center gap-1 text-cream/30 text-xs"><Clock className="w-3 h-3" />{post.readTime} read</span>
+          <span className="flex items-center gap-1 text-cream/30 text-xs"><Clock className="w-3 h-3" />{post.readTime} {lang==='ar'?'قراءة':lang==='fr'?'lecture':lang==='es'?'lectura':'read'}</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-display font-black text-cream leading-tight">{post.title}</h1>
         <p className="text-xl text-cream/60 font-light leading-relaxed">{post.excerpt}</p>
         <div className="flex items-center justify-between pt-4 border-t border-gold/10">
           <div className="flex items-center gap-4 text-xs text-cream/40">
             <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{post.date}</span>
-            <span className="text-cream/30">By {post.author}</span>
+            <span className="text-cream/30">{lang==='ar'?'بواسطة':lang==='fr'?'Par':lang==='es'?'Por':'By'} {post.author}</span>
           </div>
           <button onClick={() => navigator.share?.({ title: post.title, url: window.location.href })}
             className="flex items-center gap-2 text-gold/50 hover:text-gold text-xs transition-colors">
-            <Share2 className="w-4 h-4" /> Share
+            <Share2 className="w-4 h-4" /> {lang==='ar'?'مشاركة':lang==='fr'?'Partager':lang==='es'?'Compartir':'Share'}
           </button>
         </div>
       </motion.div>
@@ -697,7 +725,14 @@ export function BlogPostPage() {
       <AdSense slot="3002505678" format="rectangle" className="mb-12" />
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-        {post.content}
+        <div ref={contentRef}>
+            {lang !== 'en' && !translated && (
+              <div style={{ textAlign:'center', padding:'12px', background:'rgba(212,175,55,0.06)', borderRadius:12, marginBottom:16, fontFamily:"'DM Sans',sans-serif", fontSize:'0.75rem', color:'rgba(212,175,55,0.5)' }}>
+                {lang==='ar'?'جارٍ الترجمة...':lang==='fr'?'Traduction en cours...':lang==='es'?'Traduciendo...':'Translating...'}
+              </div>
+            )}
+            {post.content}
+          </div>
       </motion.div>
 
       <AdSense slot="3002505678" format="rectangle" className="mt-16" />
