@@ -11,7 +11,9 @@ import { translateContent } from '@/src/services/geminiService';
 interface Post {
   id: string;
   title: string;
+  titles?: Record<string, string>;
   excerpt: string;
+  excerpts?: Record<string, string>;
   author: string;
   date: string;
   modified: string;
@@ -51,6 +53,7 @@ const posts: Record<string, Post> = {
   'last-10-nights-ramadan': {
     id: 'last-10-nights-ramadan',
     title: 'The Last 10 Nights of Ramadan: Complete Guide to Laylatul Qadr',
+    titles: {en:'The Last 10 Nights of Ramadan: Complete Guide to Laylatul Qadr',ar:'العشر الأواخر من رمضان: الدليل الشامل لليلة القدر',fr:'Les 10 Dernières Nuits du Ramadan: Guide Complet',es:'Las Últimas 10 Noches de Ramadán: Guía Completa'},
     excerpt: 'The most sacred nights in Islam. Learn how to find Laylatul Qadr, perform Itikaf, and transform your worship during Ramadan 2026.',
     author: 'Al Ummah AI', date: '2026-03-09', modified: '2026-03-09',
     image: 'https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=1200&q=80',
@@ -111,6 +114,7 @@ const posts: Record<string, Post> = {
   'ramadan-2026-prayer-timetable': {
     id: 'ramadan-2026-prayer-timetable',
     title: 'Ramadan 2026 Prayer Timetable: Suhoor & Iftar Times by City',
+    titles: {en:'Ramadan 2026 Prayer Timetable',ar:'جدول صلاة رمضان 2026: أوقات السحور والإفطار',fr:'Calendrier de Prière du Ramadan 2026',es:'Calendario de Oración de Ramadán 2026'},
     excerpt: 'Accurate Suhoor and Iftar times for 50+ cities worldwide during Ramadan 2026.',
     author: 'Al Ummah AI', date: '2026-03-08', modified: '2026-03-08',
     image: 'https://images.unsplash.com/photo-1542816052-e1b0b5c1c4b9?w=1200&q=80',
@@ -165,6 +169,7 @@ const posts: Record<string, Post> = {
   'fajr-time-today': {
     id: 'fajr-time-today',
     title: 'What Time is Fajr Today? Complete Guide to Dawn Prayer',
+    titles: {en:'What Time is Fajr Today?',ar:'ما وقت صلاة الفجر اليوم؟',fr:"À Quelle Heure est le Fajr Aujourd'hui ?",es:'¿A Qué Hora es Fajr Hoy?'},
     excerpt: 'How to find exact Fajr time, why it is the most rewarded prayer, and tips for waking up consistently.',
     author: 'Al Ummah AI', date: '2026-03-07', modified: '2026-03-07',
     image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80',
@@ -352,6 +357,7 @@ const posts: Record<string, Post> = {
   'morning-evening-adhkar': {
     id: 'morning-evening-adhkar',
     title: 'Morning & Evening Adhkar: The Complete Daily Dhikr Guide',
+    titles: {en:'Morning & Evening Adhkar',ar:'أذكار الصباح والمساء: الدليل الشامل',fr:'Adhkar du Matin et du Soir : Guide Complet',es:'Adhkar de Mañana y Tarde: Guía Completa'},
     excerpt: 'Authentic Adhkar from Quran and Sunnah to protect and bless every day.',
     author: 'Al Ummah AI', date: '2026-03-02', modified: '2026-03-02',
     image: 'https://images.unsplash.com/photo-1519817914152-22d216bb9170?w=1200&q=80',
@@ -386,6 +392,7 @@ const posts: Record<string, Post> = {
   'islamic-history-golden-age': {
     id: 'islamic-history-golden-age',
     title: 'The Islamic Golden Age: When Muslims Led the World in Science',
+    titles: {en:'The Islamic Golden Age',ar:'العصر الذهبي الإسلامي',fr:"L'Âge d'Or Islamique",es:'La Edad de Oro Islámica'},
     excerpt: 'How Muslim scholars in Baghdad, Cordoba and Cairo shaped modern science between 800–1300 CE.',
     author: 'Al Ummah AI', date: '2026-03-01', modified: '2026-03-01',
     image: 'https://images.unsplash.com/photo-1548013146-72479768bada?w=1200&q=80',
@@ -480,6 +487,7 @@ const posts: Record<string, Post> = {
   'halal-food-guide-europe': {
     id: 'halal-food-guide-europe',
     title: 'Halal Food Guide for Muslims Living in Europe 2026',
+    titles: {en:'Halal Food Guide Europe 2026',ar:'دليل الطعام الحلال في أوروبا 2026',fr:'Guide Nourriture Halal en Europe 2026',es:'Guía Alimentación Halal en Europa 2026'},
     excerpt: 'Trusted halal certifications, apps and tips for Muslims in UK, France, Spain and Germany.',
     author: 'Al Ummah AI', date: '2026-02-26', modified: '2026-02-26',
     image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80',
@@ -515,6 +523,7 @@ const posts: Record<string, Post> = {
   'zakat-al-fitr-2026': {
     id: 'zakat-al-fitr-2026',
     title: 'Zakat al-Fitr 2026: Amount, Rules and When to Pay',
+    titles: {en:'Zakat al-Fitr 2026',ar:'زكاة الفطر 2026: المقدار والأحكام',fr:'Zakat al-Fitr 2026 : Montant et Règles',es:'Zakat al-Fitr 2026: Cantidad y Reglas'},
     excerpt: 'How much, when and to whom to pay Zakat al-Fitr before Eid al-Fitr 2026.',
     author: 'Al Ummah AI', date: '2026-02-25', modified: '2026-02-25',
     image: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=1200&q=80',
@@ -550,6 +559,7 @@ const posts: Record<string, Post> = {
   'islamic-parenting-guide': {
     id: 'islamic-parenting-guide',
     title: 'Raising Muslim Children in the West: A Practical Guide',
+    titles: {en:'Raising Muslim Children in the West',ar:'تربية الأطفال المسلمين في الغرب',fr:'Élever des Enfants Musulmans en Occident',es:'Criar Hijos Musulmanes en Occidente'},
     excerpt: 'How to build Islamic identity, values and practice in children growing up in non-Muslim countries.',
     author: 'Al Ummah AI', date: '2026-02-24', modified: '2026-02-24',
     image: 'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=1200&q=80',
@@ -584,6 +594,7 @@ const posts: Record<string, Post> = {
   'prophet-muhammad-life': {
     id: 'prophet-muhammad-life',
     title: 'The Life of Prophet Muhammad ﷺ: A Complete Biography',
+    titles: {en:'The Life of Prophet Muhammad ﷺ',ar:'سيرة النبي محمد ﷺ',fr:'La Vie du Prophète Muhammad ﷺ',es:'La Vida del Profeta Muhammad ﷺ'} ﷺ: A Complete Biography',
     excerpt: 'From his birth in Mecca to the final sermon — the life and legacy of the Prophet of Islam.',
     author: 'Al Ummah AI', date: '2026-02-23', modified: '2026-02-23',
     image: 'https://images.unsplash.com/photo-1519817650390-64a93db51149?w=1200&q=80',
@@ -704,8 +715,8 @@ export function BlogPostPage() {
           <span className="px-4 py-1 bg-gold/10 border border-gold/30 rounded-full text-gold text-[10px] font-black uppercase tracking-widest">{post.category}</span>
           <span className="flex items-center gap-1 text-cream/30 text-xs"><Clock className="w-3 h-3" />{post.readTime} {lang==='ar'?'قراءة':lang==='fr'?'lecture':lang==='es'?'lectura':'read'}</span>
         </div>
-        <h1 className="text-4xl md:text-6xl font-display font-black text-cream leading-tight">{post.title}</h1>
-        <p className="text-xl text-cream/60 font-light leading-relaxed">{post.excerpt}</p>
+        <h1 className="text-4xl md:text-6xl font-display font-black text-cream leading-tight">{post.titles?.[lang] || post.title}</h1>
+        <p className="text-xl text-cream/60 font-light leading-relaxed">{post.excerpts?.[lang] || post.excerpt}</p>
         <div className="flex items-center justify-between pt-4 border-t border-gold/10">
           <div className="flex items-center gap-4 text-xs text-cream/40">
             <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{post.date}</span>
