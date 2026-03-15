@@ -53,7 +53,7 @@ const posts: Record<string, Post> = {
   'last-10-nights-ramadan': {
     id: 'last-10-nights-ramadan',
     title: 'The Last 10 Nights of Ramadan: Complete Guide to Laylatul Qadr',
-    titles: {en:'The Last 10 Nights of Ramadan: Complete Guide to Laylatul Qadr',ar:'العشر الأواخر من رمضان: الدليل الشامل لليلة القدر',fr:'Les 10 Dernières Nuits du Ramadan: Guide Complet',es:'Las Últimas 10 Noches de Ramadán: Guía Completa'},
+    titles: {en:'The Last 10 Nights of Ramadan: Complete Guide to Laylatul Qadr',ar:'العشر الأواخر من رمضان: الدليل الشامل لليلة القدر',fr:"Les 10 Dernières Nuits du Ramadan: Guide Complet',es:'Las Últimas 10 Noches de Ramadán: Guía Completa"},
     excerpt: 'The most sacred nights in Islam. Learn how to find Laylatul Qadr, perform Itikaf, and transform your worship during Ramadan 2026.',
     author: 'Al Ummah AI', date: '2026-03-09', modified: '2026-03-09',
     image: 'https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=1200&q=80',
@@ -114,7 +114,7 @@ const posts: Record<string, Post> = {
   'ramadan-2026-prayer-timetable': {
     id: 'ramadan-2026-prayer-timetable',
     title: 'Ramadan 2026 Prayer Timetable: Suhoor & Iftar Times by City',
-    titles: {en:'Ramadan 2026 Prayer Timetable',ar:'جدول صلاة رمضان 2026: أوقات السحور والإفطار',fr:'Calendrier de Prière du Ramadan 2026',es:'Calendario de Oración de Ramadán 2026'},
+    titles: {en:'Ramadan 2026 Prayer Timetable',ar:'جدول صلاة رمضان 2026: أوقات السحور والإفطار',fr:"Calendrier de Prière du Ramadan 2026',es:'Calendario de Oración de Ramadán 2026"},
     excerpt: 'Accurate Suhoor and Iftar times for 50+ cities worldwide during Ramadan 2026.',
     author: 'Al Ummah AI', date: '2026-03-08', modified: '2026-03-08',
     image: 'https://images.unsplash.com/photo-1542816052-e1b0b5c1c4b9?w=1200&q=80',
@@ -357,7 +357,7 @@ const posts: Record<string, Post> = {
   'morning-evening-adhkar': {
     id: 'morning-evening-adhkar',
     title: 'Morning & Evening Adhkar: The Complete Daily Dhikr Guide',
-    titles: {en:'Morning & Evening Adhkar',ar:'أذكار الصباح والمساء: الدليل الشامل',fr:'Adhkar du Matin et du Soir : Guide Complet',es:'Adhkar de Mañana y Tarde: Guía Completa'},
+    titles: {en:'Morning & Evening Adhkar',ar:'أذكار الصباح والمساء: الدليل الشامل',fr:"Adhkar du Matin et du Soir : Guide Complet',es:'Adhkar de Mañana y Tarde: Guía Completa"},
     excerpt: 'Authentic Adhkar from Quran and Sunnah to protect and bless every day.',
     author: 'Al Ummah AI', date: '2026-03-02', modified: '2026-03-02',
     image: 'https://images.unsplash.com/photo-1519817914152-22d216bb9170?w=1200&q=80',
@@ -487,7 +487,7 @@ const posts: Record<string, Post> = {
   'halal-food-guide-europe': {
     id: 'halal-food-guide-europe',
     title: 'Halal Food Guide for Muslims Living in Europe 2026',
-    titles: {en:'Halal Food Guide Europe 2026',ar:'دليل الطعام الحلال في أوروبا 2026',fr:'Guide Nourriture Halal en Europe 2026',es:'Guía Alimentación Halal en Europa 2026'},
+    titles: {en:'Halal Food Guide Europe 2026',ar:'دليل الطعام الحلال في أوروبا 2026',fr:"Guide Nourriture Halal en Europe 2026',es:'Guía Alimentación Halal en Europa 2026"},
     excerpt: 'Trusted halal certifications, apps and tips for Muslims in UK, France, Spain and Germany.',
     author: 'Al Ummah AI', date: '2026-02-26', modified: '2026-02-26',
     image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80',
@@ -523,7 +523,7 @@ const posts: Record<string, Post> = {
   'zakat-al-fitr-2026': {
     id: 'zakat-al-fitr-2026',
     title: 'Zakat al-Fitr 2026: Amount, Rules and When to Pay',
-    titles: {en:'Zakat al-Fitr 2026',ar:'زكاة الفطر 2026: المقدار والأحكام',fr:'Zakat al-Fitr 2026 : Montant et Règles',es:'Zakat al-Fitr 2026: Cantidad y Reglas'},
+    titles: {en:'Zakat al-Fitr 2026',ar:'زكاة الفطر 2026: المقدار والأحكام',fr:"Zakat al-Fitr 2026 : Montant et Règles',es:'Zakat al-Fitr 2026: Cantidad y Reglas"},
     excerpt: 'How much, when and to whom to pay Zakat al-Fitr before Eid al-Fitr 2026.',
     author: 'Al Ummah AI', date: '2026-02-25', modified: '2026-02-25',
     image: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=1200&q=80',
@@ -559,7 +559,7 @@ const posts: Record<string, Post> = {
   'islamic-parenting-guide': {
     id: 'islamic-parenting-guide',
     title: 'Raising Muslim Children in the West: A Practical Guide',
-    titles: {en:'Raising Muslim Children in the West',ar:'تربية الأطفال المسلمين في الغرب',fr:'Élever des Enfants Musulmans en Occident',es:'Criar Hijos Musulmanes en Occidente'},
+    titles: {en:'Raising Muslim Children in the West',ar:'تربية الأطفال المسلمين في الغرب',fr:"Élever des Enfants Musulmans en Occident',es:'Criar Hijos Musulmanes en Occidente"},
     excerpt: 'How to build Islamic identity, values and practice in children growing up in non-Muslim countries.',
     author: 'Al Ummah AI', date: '2026-02-24', modified: '2026-02-24',
     image: 'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=1200&q=80',
@@ -594,7 +594,7 @@ const posts: Record<string, Post> = {
   'prophet-muhammad-life': {
     id: 'prophet-muhammad-life',
     title: 'The Life of Prophet Muhammad ﷺ: A Complete Biography',
-    titles: {en:'The Life of Prophet Muhammad ﷺ',ar:'سيرة النبي محمد ﷺ',fr:'La Vie du Prophète Muhammad ﷺ',es:'La Vida del Profeta Muhammad ﷺ'} ﷺ: A Complete Biography',
+    titles: {en:'The Life of Prophet Muhammad',ar:'سيرة النبي محمد ﷺ',fr:"La Vie du Prophète Muhammad",es:'La Vida del Profeta Muhammad'},
     excerpt: 'From his birth in Mecca to the final sermon — the life and legacy of the Prophet of Islam.',
     author: 'Al Ummah AI', date: '2026-02-23', modified: '2026-02-23',
     image: 'https://images.unsplash.com/photo-1519817650390-64a93db51149?w=1200&q=80',
