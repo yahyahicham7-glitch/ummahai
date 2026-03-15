@@ -58,10 +58,9 @@ export function SEO({
 
   const HREFLANGS = [
     { lang: 'en',        href: `${SITE_URL}${path}` },
-    { lang: 'ar',        href: `${SITE_URL}/ar${path}` },
-    { lang: 'fr',        href: `${SITE_URL}/fr${path}` },
-    { lang: 'es',        href: `${SITE_URL}/es${path}` },
-    { lang: 'id',        href: `${SITE_URL}/id${path}` },
+    { lang: 'ar',        href: `${SITE_URL}${path}` },
+    { lang: 'fr',        href: `${SITE_URL}${path}` },
+    { lang: 'es',        href: `${SITE_URL}${path}` },
     { lang: 'x-default', href: `${SITE_URL}${path}` },
   ];
 
