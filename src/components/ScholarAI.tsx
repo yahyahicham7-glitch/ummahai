@@ -106,7 +106,7 @@ export function ScholarAI() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) { requestAnimationFrame(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }); }
+    if (scrollRef.current) { requestAnimationFrame(() => { if (scrollRef.current) { const el = scrollRef.current; setTimeout(() => { el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }); }, 50); } }); }
   }, [messages]);
 
   // Reset when language changes
@@ -128,9 +128,9 @@ export function ScholarAI() {
   const clear = () => setMessages([{ role: 'assistant', content: L.greeting }]);
 
   return (
-    <div dir={isRTL ? 'rtl' : 'ltr'} style={{ background: NAVY, display: 'flex', flexDirection: 'column', minHeight: '80vh' }}>
+    <div dir={isRTL ? 'rtl' : 'ltr'} style={{ background: NAVY, display: 'flex', flexDirection: 'column' }}>
       {/* Page header */}
-      <div style={{ background: `linear-gradient(160deg,#071a2e 0%,${NAVY} 60%,${NAVY2} 100%)`, borderBottom: '1px solid rgba(212,175,55,0.14)', padding: 'clamp(60px,8vw,80px) 16px 18px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: `linear-gradient(160deg,#071a2e 0%,${NAVY} 60%,${NAVY2} 100%)`, borderBottom: '1px solid rgba(212,175,55,0.14)', padding: 'clamp(56px,8vw,80px) 16px 16px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(212,175,55,0.06) 1px,transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 10 }}>
@@ -153,7 +153,7 @@ export function ScholarAI() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', maxWidth: 820, width: '100%', margin: '0 auto', padding: '0 16px 16px', gap: 0, position: 'relative' }}>
 
         {/* Messages */}
-        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '20px 0', display: 'flex', flexDirection: 'column', gap: 16, minHeight: 300, maxHeight: '55vh' }}>
+        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '20px 0', display: 'flex', flexDirection: 'column', gap: 16, minHeight: 280, maxHeight: 420 }}>
           <AnimatePresence>
             {messages.map((m, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
@@ -166,7 +166,7 @@ export function ScholarAI() {
                   background: m.role === 'user' ? GOLD : 'rgba(255,255,255,0.05)',
                   border: m.role === 'user' ? 'none' : '1px solid rgba(255,255,255,0.1)',
                   fontFamily: "'DM Sans',sans-serif",
-                  fontSize: '0.82rem',
+                  fontSize: '0.8rem',
                   lineHeight: 1.75,
                   color: m.role === 'user' ? NAVY : 'rgba(255,255,255,0.82)',
                   fontWeight: m.role === 'user' ? 700 : 300,
@@ -209,7 +209,7 @@ export function ScholarAI() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {suggs.map(s => (
                 <button key={s} onClick={() => send(s)}
-                  style={{ padding: '7px 13px', background: 'rgba(212,175,55,0.07)', border: '1px solid rgba(212,175,55,0.18)', borderRadius: 99, fontFamily: "'DM Sans',sans-serif", fontSize: '0.68rem', fontWeight: 600, color: 'rgba(255,255,255,0.65)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'left' }}
+                  style={{ padding: '7px 13px', background: 'rgba(212,175,55,0.07)', border: '1px solid rgba(212,175,55,0.18)', borderRadius: 99, fontFamily: "'DM Sans',sans-serif", fontSize: '0.65rem', fontWeight: 600, color: 'rgba(255,255,255,0.65)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'left' }}
                   onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor='rgba(212,175,55,0.45)'; el.style.color='#fff'; el.style.background='rgba(212,175,55,0.12)'; }}
                   onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor='rgba(212,175,55,0.18)'; el.style.color='rgba(255,255,255,0.65)'; el.style.background='rgba(212,175,55,0.07)'; }}>
                   {s}
