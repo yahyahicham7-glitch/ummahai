@@ -56,12 +56,12 @@ const UI: Record<string, any> = {
 /* ── Animated bot avatar ───────────────────────────────────── */
 function BotAvatar({ thinking }: { thinking?: boolean }) {
   return (
-    <div style={{ position: 'relative', width: 44, height: 44, flexShrink: 0 }}>
+    <div style={{ position: 'relative', width: 36, height: 36, flexShrink: 0 }}>
       {/* Outer pulse ring */}
       <motion.div animate={{ scale: [1, 1.35, 1], opacity: [0.4, 0, 0.4] }} transition={{ duration: 2.2, repeat: Infinity }}
         style={{ position: 'absolute', inset: -4, borderRadius: '50%', background: 'rgba(212,175,55,0.2)' }} />
       {/* Bot circle */}
-      <div style={{ width: 44, height: 44, borderRadius: '50%', background: `linear-gradient(135deg, ${GOLD}, #f1d279)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', boxShadow: '0 4px 20px rgba(212,175,55,0.4)' }}>
+      <div style={{ width: 36, height: 36, borderRadius: '50%', background: `linear-gradient(135deg, ${GOLD}, #f1d279)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', boxShadow: '0 4px 20px rgba(212,175,55,0.4)' }}>
         {/* Crescent moon face */}
         <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>☽</span>
       </div>
@@ -106,7 +106,7 @@ export function ScholarAI() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (scrollRef.current) { requestAnimationFrame(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }); }
   }, [messages]);
 
   // Reset when language changes
@@ -128,9 +128,9 @@ export function ScholarAI() {
   const clear = () => setMessages([{ role: 'assistant', content: L.greeting }]);
 
   return (
-    <div dir={isRTL ? 'rtl' : 'ltr'} style={{ background: NAVY, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div dir={isRTL ? 'rtl' : 'ltr'} style={{ background: NAVY, display: 'flex', flexDirection: 'column', minHeight: '80vh' }}>
       {/* Page header */}
-      <div style={{ background: `linear-gradient(160deg,#071a2e 0%,${NAVY} 60%,${NAVY2} 100%)`, borderBottom: '1px solid rgba(212,175,55,0.14)', padding: 'clamp(70px,10vw,100px) 20px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: `linear-gradient(160deg,#071a2e 0%,${NAVY} 60%,${NAVY2} 100%)`, borderBottom: '1px solid rgba(212,175,55,0.14)', padding: 'clamp(60px,8vw,80px) 16px 18px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(212,175,55,0.06) 1px,transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 10 }}>
@@ -150,10 +150,10 @@ export function ScholarAI() {
       </div>
 
       {/* Chat area */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', maxWidth: 820, width: '100%', margin: '0 auto', padding: '0 16px 16px', gap: 0 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', maxWidth: 820, width: '100%', margin: '0 auto', padding: '0 16px 16px', gap: 0, position: 'relative' }}>
 
         {/* Messages */}
-        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '20px 0', display: 'flex', flexDirection: 'column', gap: 16, minHeight: 'calc(100vh - 380px)', maxHeight: 'calc(100vh - 320px)' }}>
+        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '20px 0', display: 'flex', flexDirection: 'column', gap: 16, minHeight: 300, maxHeight: '55vh' }}>
           <AnimatePresence>
             {messages.map((m, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
