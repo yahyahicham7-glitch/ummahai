@@ -263,13 +263,13 @@ export function Navbar() {
                     {section.items.map(item => (
                       <Link key={item.label} to={item.href}
                         onClick={() => setMenuOpen(false)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '8px 10px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.13s' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.13s' }}
                         onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                        <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: 26, height: 26, borderRadius: 6, flexShrink: 0, background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <item.Icon size={14} strokeWidth={1.75} style={{ color: '#D4AF37' }} />
                         </div>
-                        <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.8rem', fontWeight: 700, color: '#ffffff' }}>
+                        <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.72rem', fontWeight: 700, color: '#ffffff' }}>
                           {item.label}
                         </span>
                         <ChevronRight size={12} strokeWidth={2} style={{ color: 'rgba(255,255,255,0.2)', flexShrink: 0, marginLeft: isRTL ? 0 : 'auto', marginRight: isRTL ? 'auto' : 0, transform: isRTL ? 'rotate(180deg)' : 'none' }} />
