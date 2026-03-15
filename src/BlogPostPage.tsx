@@ -1,5 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { RelatedTools } from '@/src/components/RelatedTools';
 import { motion } from 'motion/react';
 import { SEO } from '@/src/components/SEO';
 import { Calendar, ArrowLeft, Clock, Share2 } from 'lucide-react';
@@ -717,6 +718,11 @@ export function BlogPostPage() {
           </div>
         </div>
       )}
+    
+
+      {/* Related Tools */}
+      <RelatedTools exclude={["blog"]} max={6} />
+
     </div>
   );
 }
