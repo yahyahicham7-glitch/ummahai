@@ -53,7 +53,7 @@ const posts: Record<string, Post> = {
   'last-10-nights-ramadan': {
     id: 'last-10-nights-ramadan',
     title: 'The Last 10 Nights of Ramadan: Complete Guide to Laylatul Qadr',
-    titles: {en:'The Last 10 Nights of Ramadan: Complete Guide to Laylatul Qadr',ar:'العشر الأواخر من رمضان: الدليل الشامل لليلة القدر',fr:"Les 10 Dernières Nuits du Ramadan: Guide Complet',es:'Las Últimas 10 Noches de Ramadán: Guía Completa"},
+    titles:{en:"Last 10 Nights of Ramadan",ar:"العشر الأواخر من رمضان",fr:"Les 10 Dernières Nuits du Ramadan",es:"Últimas 10 Noches de Ramadán"},
     excerpt: 'The most sacred nights in Islam. Learn how to find Laylatul Qadr, perform Itikaf, and transform your worship during Ramadan 2026.',
     author: 'Al Ummah AI', date: '2026-03-09', modified: '2026-03-09',
     image: 'https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=1200&q=80',
@@ -114,7 +114,7 @@ const posts: Record<string, Post> = {
   'ramadan-2026-prayer-timetable': {
     id: 'ramadan-2026-prayer-timetable',
     title: 'Ramadan 2026 Prayer Timetable: Suhoor & Iftar Times by City',
-    titles: {en:'Ramadan 2026 Prayer Timetable',ar:'جدول صلاة رمضان 2026: أوقات السحور والإفطار',fr:"Calendrier de Prière du Ramadan 2026',es:'Calendario de Oración de Ramadán 2026"},
+    titles:{en:"Ramadan 2026 Prayer Timetable",ar:"جدول صلاة رمضان 2026",fr:"Calendrier Prière Ramadan 2026",es:"Calendario Oración Ramadán 2026"},
     excerpt: 'Accurate Suhoor and Iftar times for 50+ cities worldwide during Ramadan 2026.',
     author: 'Al Ummah AI', date: '2026-03-08', modified: '2026-03-08',
     image: 'https://images.unsplash.com/photo-1542816052-e1b0b5c1c4b9?w=1200&q=80',
@@ -169,7 +169,7 @@ const posts: Record<string, Post> = {
   'fajr-time-today': {
     id: 'fajr-time-today',
     title: 'What Time is Fajr Today? Complete Guide to Dawn Prayer',
-    titles: {en:'What Time is Fajr Today?',ar:'ما وقت صلاة الفجر اليوم؟',fr:"À Quelle Heure est le Fajr Aujourd'hui ?",es:'¿A Qué Hora es Fajr Hoy?'},
+    titles:{en:"What Time is Fajr Today?",ar:"ما وقت صلاة الفجر اليوم؟",fr:"Heure du Fajr Aujourd hui",es:"Hora del Fajr Hoy"},
     excerpt: 'How to find exact Fajr time, why it is the most rewarded prayer, and tips for waking up consistently.',
     author: 'Al Ummah AI', date: '2026-03-07', modified: '2026-03-07',
     image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80',
@@ -206,6 +206,7 @@ const posts: Record<string, Post> = {
   'calculate-zakat-2026': {
     id: 'calculate-zakat-2026',
     title: 'How to Calculate Zakat 2026: Complete Step-by-Step Guide',
+    titles:{en:"How to Calculate Zakat 2026",ar:"كيفية حساب الزكاة 2026",fr:"Calculer la Zakat 2026",es:"Calcular Zakat 2026"},
     excerpt: 'Nisab, rates, gold, silver, cash, stocks — everything to calculate your Zakat correctly in 2026.',
     author: 'Al Ummah AI', date: '2026-03-06', modified: '2026-03-06',
     image: 'https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?w=1200&q=80',
@@ -253,6 +254,7 @@ const posts: Record<string, Post> = {
   'hajj-packages-uk-2026': {
     id: 'hajj-packages-uk-2026',
     title: 'Hajj 2026 Complete Guide: Rituals, Dates & Tips',
+    titles:{en:"Hajj 2026 Complete Guide",ar:"الدليل الشامل للحج 2026",fr:"Guide Complet Hajj 2026",es:"Guía Completa Hajj 2026"},
     excerpt: 'Everything you need to know about Hajj 2026 — from Ihram to Tawaf, Arafat to Muzdalifah.',
     author: 'Al Ummah AI', date: '2026-03-05', modified: '2026-03-05',
     image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=1200&q=80',
@@ -287,6 +289,7 @@ const posts: Record<string, Post> = {
   'best-halal-investment-apps-2026': {
     id: 'best-halal-investment-apps-2026',
     title: 'Best Halal Investment Apps 2026: Grow Your Wealth the Sharia Way',
+    titles:{en:"Best Halal Investment Apps 2026",ar:"أفضل تطبيقات الاستثمار الحلال",fr:"Meilleures Apps Investissement Halal",es:"Mejores Apps Inversión Halal"},
     excerpt: 'Top Sharia-compliant platforms: Wahed Invest, Zoya, Aghaz and more compared.',
     author: 'Al Ummah AI', date: '2026-03-04', modified: '2026-03-04',
     image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&q=80',
@@ -322,6 +325,7 @@ const posts: Record<string, Post> = {
   'surah-al-kahf-friday': {
     id: 'surah-al-kahf-friday',
     title: 'Why Muslims Read Surah Al-Kahf Every Friday: Full Guide',
+    titles:{en:"Why Read Surah Al-Kahf on Friday",ar:"لماذا نقرأ سورة الكهف الجمعة",fr:"Pourquoi Lire Al-Kahf le Vendredi",es:"Por Qué Leer Al-Kahf los Viernes"},
     excerpt: 'The 4 stories of Surah Al-Kahf, their lessons, and the protection this Surah provides.',
     author: 'Al Ummah AI', date: '2026-03-03', modified: '2026-03-03',
     image: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?w=1200&q=80',
@@ -357,7 +361,7 @@ const posts: Record<string, Post> = {
   'morning-evening-adhkar': {
     id: 'morning-evening-adhkar',
     title: 'Morning & Evening Adhkar: The Complete Daily Dhikr Guide',
-    titles: {en:'Morning & Evening Adhkar',ar:'أذكار الصباح والمساء: الدليل الشامل',fr:"Adhkar du Matin et du Soir : Guide Complet',es:'Adhkar de Mañana y Tarde: Guía Completa"},
+    titles:{en:"Morning and Evening Adhkar",ar:"أذكار الصباح والمساء",fr:"Adhkar du Matin et du Soir",es:"Adhkar de Mañana y Tarde"},
     excerpt: 'Authentic Adhkar from Quran and Sunnah to protect and bless every day.',
     author: 'Al Ummah AI', date: '2026-03-02', modified: '2026-03-02',
     image: 'https://images.unsplash.com/photo-1519817914152-22d216bb9170?w=1200&q=80',
@@ -392,7 +396,7 @@ const posts: Record<string, Post> = {
   'islamic-history-golden-age': {
     id: 'islamic-history-golden-age',
     title: 'The Islamic Golden Age: When Muslims Led the World in Science',
-    titles: {en:'The Islamic Golden Age',ar:'العصر الذهبي الإسلامي',fr:"L'Âge d'Or Islamique",es:'La Edad de Oro Islámica'},
+    titles:{en:"The Islamic Golden Age",ar:"العصر الذهبي الإسلامي",fr:"Age d Or Islamique",es:"Edad de Oro Islámica"},
     excerpt: 'How Muslim scholars in Baghdad, Cordoba and Cairo shaped modern science between 800–1300 CE.',
     author: 'Al Ummah AI', date: '2026-03-01', modified: '2026-03-01',
     image: 'https://images.unsplash.com/photo-1548013146-72479768bada?w=1200&q=80',
@@ -424,6 +428,7 @@ const posts: Record<string, Post> = {
   'how-to-pray-salah-beginners': {
     id: 'how-to-pray-salah-beginners',
     title: 'How to Pray Salah: Complete Step-by-Step Guide for Beginners',
+    titles:{en:"How to Pray Salah",ar:"كيفية أداء الصلاة",fr:"Comment Prier la Salah",es:"Cómo Rezar la Salah"},
     excerpt: 'From Wudu to Tashahhud — every step of Islamic prayer explained with Arabic and transliteration.',
     author: 'Al Ummah AI', date: '2026-02-28', modified: '2026-02-28',
     image: 'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=1200&q=80',
@@ -467,6 +472,7 @@ const posts: Record<string, Post> = {
   'quran-memorization-tips': {
     id: 'quran-memorization-tips',
     title: '10 Proven Tips to Memorize the Quran Faster',
+    titles:{en:"10 Tips to Memorise the Quran",ar:"10 نصائح لحفظ القرآن",fr:"10 Conseils Memoriser le Coran",es:"10 Consejos Memorizar el Corán"},
     excerpt: 'Science-backed and traditional Hifz techniques for faster, lasting Quran memorization.',
     author: 'Al Ummah AI', date: '2026-02-27', modified: '2026-02-27',
     image: 'https://images.unsplash.com/photo-1585036156171-384164a8c675?w=1200&q=80',
@@ -487,7 +493,7 @@ const posts: Record<string, Post> = {
   'halal-food-guide-europe': {
     id: 'halal-food-guide-europe',
     title: 'Halal Food Guide for Muslims Living in Europe 2026',
-    titles: {en:'Halal Food Guide Europe 2026',ar:'دليل الطعام الحلال في أوروبا 2026',fr:"Guide Nourriture Halal en Europe 2026',es:'Guía Alimentación Halal en Europa 2026"},
+    titles:{en:"Halal Food Guide Europe",ar:"دليل الطعام الحلال أوروبا",fr:"Guide Nourriture Halal Europe",es:"Guía Alimentación Halal Europa"},
     excerpt: 'Trusted halal certifications, apps and tips for Muslims in UK, France, Spain and Germany.',
     author: 'Al Ummah AI', date: '2026-02-26', modified: '2026-02-26',
     image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80',
@@ -523,7 +529,7 @@ const posts: Record<string, Post> = {
   'zakat-al-fitr-2026': {
     id: 'zakat-al-fitr-2026',
     title: 'Zakat al-Fitr 2026: Amount, Rules and When to Pay',
-    titles: {en:'Zakat al-Fitr 2026',ar:'زكاة الفطر 2026: المقدار والأحكام',fr:"Zakat al-Fitr 2026 : Montant et Règles',es:'Zakat al-Fitr 2026: Cantidad y Reglas"},
+    titles:{en:"Zakat al-Fitr 2026",ar:"زكاة الفطر 2026",fr:"Zakat al-Fitr 2026",es:"Zakat al-Fitr 2026"},
     excerpt: 'How much, when and to whom to pay Zakat al-Fitr before Eid al-Fitr 2026.',
     author: 'Al Ummah AI', date: '2026-02-25', modified: '2026-02-25',
     image: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=1200&q=80',
@@ -559,7 +565,7 @@ const posts: Record<string, Post> = {
   'islamic-parenting-guide': {
     id: 'islamic-parenting-guide',
     title: 'Raising Muslim Children in the West: A Practical Guide',
-    titles: {en:'Raising Muslim Children in the West',ar:'تربية الأطفال المسلمين في الغرب',fr:"Élever des Enfants Musulmans en Occident',es:'Criar Hijos Musulmanes en Occidente"},
+    titles:{en:"Raising Muslim Children in the West",ar:"تربية الأطفال المسلمين في الغرب",fr:"Elever des Enfants Musulmans en Occident",es:"Criar Hijos Musulmanes en Occidente"},
     excerpt: 'How to build Islamic identity, values and practice in children growing up in non-Muslim countries.',
     author: 'Al Ummah AI', date: '2026-02-24', modified: '2026-02-24',
     image: 'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=1200&q=80',
@@ -594,7 +600,7 @@ const posts: Record<string, Post> = {
   'prophet-muhammad-life': {
     id: 'prophet-muhammad-life',
     title: 'The Life of Prophet Muhammad ﷺ: A Complete Biography',
-    titles: {en:'The Life of Prophet Muhammad',ar:'سيرة النبي محمد ﷺ',fr:"La Vie du Prophète Muhammad",es:'La Vida del Profeta Muhammad'},
+    titles:{en:"Life of Prophet Muhammad",ar:"سيرة النبي محمد ﷺ",fr:"Vie du Prophete Muhammad",es:"Vida del Profeta Muhammad"},
     excerpt: 'From his birth in Mecca to the final sermon — the life and legacy of the Prophet of Islam.',
     author: 'Al Ummah AI', date: '2026-02-23', modified: '2026-02-23',
     image: 'https://images.unsplash.com/photo-1519817650390-64a93db51149?w=1200&q=80',
