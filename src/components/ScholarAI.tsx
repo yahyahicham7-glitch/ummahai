@@ -53,7 +53,7 @@ export function ScholarAI() {
     <div dir={isRTL ? 'rtl' : 'ltr'} style={{ background:NAVY, height:'100dvh', display:'flex', flexDirection:'column', overflow:'hidden' }}>
 
       {/* Header */}
-      <div style={{ background:'rgba(0,0,0,0.25)', borderBottom:'1px solid rgba(212,175,55,0.1)', padding:'10px 16px', display:'flex', alignItems:'center', gap:10, flexShrink:0, marginTop:56 }}>
+      <div style={{ background:'rgba(0,0,0,0.25)', borderBottom:'1px solid rgba(212,175,55,0.1)', padding:'10px 16px', display:'flex', alignItems:'center', gap:10, flexShrink:0, marginTop:0 }}>
         <div style={{ width:30, height:30, borderRadius:'50%', background:`linear-gradient(135deg,${GOLD},#f1d279)`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, boxShadow:'0 2px 10px rgba(212,175,55,0.3)' }}>
           <span style={{ fontSize:'0.85rem' }}>☽</span>
         </div>
