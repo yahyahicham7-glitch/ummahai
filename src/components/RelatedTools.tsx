@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const GOLD = '#D4AF37';
@@ -31,7 +31,10 @@ interface Props {
   light?: boolean;
 }
 
-export function RelatedTools({ exclude = [], max = 5, light = false }: Props) {
+export function RelatedTools({ exclude = [], max = 5, light: lightProp }: Props) {
+  const { pathname } = useLocation();
+  const autoLight = pathname === '/' || pathname.startsWith('/qibla') || pathname.startsWith('/prayer-times');
+  const light = lightProp !== undefined ? lightProp : autoLight;
   const { i18n } = useTranslation();
   const lang = (i18n.language?.slice(0,2) || 'en') as string;
   const tools = ALL_TOOLS.filter(t => !exclude.includes(t.id)).slice(0, max);
