@@ -153,20 +153,20 @@ export function ScholarAI() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', maxWidth: 820, width: '100%', margin: '0 auto', padding: '0 16px 16px', gap: 0 }}>
 
         {/* Messages */}
-        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '20px 0', display: 'flex', flexDirection: 'column', gap: 16, minHeight: 'calc(100vh - 340px)', maxHeight: 'calc(100vh - 280px)' }}>
+        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '20px 0', display: 'flex', flexDirection: 'column', gap: 16, minHeight: 'calc(100vh - 380px)', maxHeight: 'calc(100vh - 320px)' }}>
           <AnimatePresence>
             {messages.map((m, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', gap: 10, alignItems: 'flex-end' }}>
                 {m.role === 'assistant' && <BotAvatar />}
                 <div style={{
-                  maxWidth: '76%',
-                  padding: '14px 18px',
+                  maxWidth: '82%',
+                  padding: '10px 14px',
                   borderRadius: m.role === 'user' ? '18px 18px 4px 18px' : '4px 18px 18px 18px',
                   background: m.role === 'user' ? GOLD : 'rgba(255,255,255,0.05)',
                   border: m.role === 'user' ? 'none' : '1px solid rgba(255,255,255,0.1)',
                   fontFamily: "'DM Sans',sans-serif",
-                  fontSize: '0.87rem',
+                  fontSize: '0.82rem',
                   lineHeight: 1.75,
                   color: m.role === 'user' ? NAVY : 'rgba(255,255,255,0.82)',
                   fontWeight: m.role === 'user' ? 700 : 300,
@@ -190,7 +190,7 @@ export function ScholarAI() {
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
               style={{ display: 'flex', alignItems: 'flex-end', gap: 10 }}>
               <BotAvatar thinking />
-              <div style={{ padding: '14px 18px', borderRadius: '4px 18px 18px 18px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ padding: '10px 14px', borderRadius: '4px 18px 18px 18px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <TypingDots />
                   <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.62rem', fontWeight: 700, color: 'rgba(212,175,55,0.5)', textTransform: 'uppercase', letterSpacing: '0.14em' }}>{L.consulting}</span>
