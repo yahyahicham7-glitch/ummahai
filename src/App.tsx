@@ -65,11 +65,7 @@ function AppInner() {
             <Route path="/duas"                element={<DailyDuasPage />} />
             <Route path="/tasbih"              element={<TasbihPage />} />
             <Route path="/mood"                element={<MoodPage />} />
-            <Route path="/scholar"             element={
-              <div style={{ maxWidth: 900, margin: '0 auto', padding: '4rem 1.25rem', background: '#060f1e', minHeight: '100vh' }}>
-                <ScholarAI />
-              </div>
-            } />
+            <Route path="/scholar"             element={<ScholarAI />} />
             <Route path="*" element={
               <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', background: '#060f1e', padding: '2rem' }}>
                 <div style={{ fontFamily: "'Playfair Display',serif", fontWeight: 900, fontSize: '6rem', color: '#D4AF37', lineHeight: 1 }}>404</div>
